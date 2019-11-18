@@ -64,12 +64,12 @@ void OptionPanelThemes::ThemePanel::ThemePreview::paint(Graphics &g)
         const Image thumbnail    = theme->getThemeThumbnail();
         const Font &font         = panel.font;
         const Font title_font    = font.withHeight(18.0f).withStyle(Font::bold);
-        const Font version_font  = font.withHeight(10.0f);
+        const Font version_font  = font.withHeight(11.0f);
         const String title       = theme->getThemeMeta()->getName();
         const String version     = theme->getThemeMeta()->getVersion();
         const String license     = theme->getThemeMeta()->getLicense().first.isEmpty() ? "n/a"
                                  : theme->getThemeMeta()->getLicense().first;
-        const String authors     = theme->getThemeMeta()->getAuthors().isEmpty() ? "n/a"
+        const String authors     = theme->getThemeMeta()->getAuthors().isEmpty() ? ""
                                  : theme->getThemeMeta()->getAuthors().joinIntoString("; ");
         const int version_length = version_font.getStringWidth(version);
         const int max_text_width = getWidth() - 12;
@@ -91,16 +91,17 @@ void OptionPanelThemes::ThemePanel::ThemePreview::paint(Graphics &g)
                          Justification::topLeft, 10, 1.0f);
         g.drawText("Author: " + theme->getThemeMeta()->getAuthor(), 70, 74, getWidth() - 70, 14,
                    Justification::bottomLeft);
-        g.drawText("Website: ", 0, 98, 55, 14, Justification::left);
-        g.drawText("License: " + license, 0, 116, max_text_width, 14, Justification::left);
-        g.drawText("Other authors:", 0, 134, 100, 14, Justification::left);
-        g.drawText(authors, 0, 151, max_text_width, 14, Justification::left);
+        g.drawText("Website: ", 0, 96, 55, 14, Justification::left);
+        g.drawText("License: " + license, 0, 114, max_text_width, 14, Justification::left);
+        g.drawText("Other authors:", 0, 132, 100, 14, Justification::left);
+        g.setOpacity(0.6f);
+        g.drawText(authors, 0, 148, max_text_width, 14, Justification::left);
     }
 }
 
 void OptionPanelThemes::ThemePanel::ThemePreview::resized()
 {
-    buttonWebsiteLink.setBounds(60, 106, getWidth() - 66, 14);
+    buttonWebsiteLink.setBounds(56, 102, getWidth() - 68, 14);
     gallery.setBounds(6, getHeight() - 106, getWidth() - 12, 100);
     labelNoPreview.setBounds(6, getHeight() - 106, getWidth() - 12, 100);
 }

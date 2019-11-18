@@ -59,7 +59,7 @@ const String ThemeMeta::getAuthor() const
 
 const StringArray ThemeMeta::getAuthors() const
 {
-    return StringArray(metaData["authors"]);
+    return StringArray(*metaData["authors"].getArray());
 }
 
 const String ThemeMeta::getDescription() const
@@ -69,15 +69,8 @@ const String ThemeMeta::getDescription() const
 
 const std::pair<String, String> ThemeMeta::getLicense() const
 {
-    Array<var> objects("", "");
-
-    if (metaData.contains("license"))
-    {
-        objects[0] = static_cast<StringArray>(metaData["license"])[0];
-        objects[1] = static_cast<StringArray>(metaData["license"])[1];
-    }
-
-    return std::make_pair(objects.getUnchecked(0).toString(), objects.getUnchecked(1).toString());
+    auto objects = metaData["license"];
+    return std::make_pair(objects[0].toString(), objects[1].toString());
 }
 
 const String ThemeMeta::getVersion() const
