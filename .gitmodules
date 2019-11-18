@@ -1,0 +1,9 @@
+[submodule "externals/yaml-cpp"]
+	path = externals/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp
+[submodule "externals/jaut"]
+	path = externals/jaut
+	url = https://github.com/elandasunshine/jaut
+[submodule "externals/modules/ff_meters"]
+	path = externals/modules/ff_meters
+	url = https://github.com/ffAudio/ff_meters
