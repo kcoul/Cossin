@@ -7,6 +7,3 @@
 [submodule "externals/modules/ff_meters"]
 	path = externals/modules/ff_meters
 	url = https://github.com/ffAudio/ff_meters.git
-[submodule "externals/modules/externals/modules/ff_meters"]
-	path = externals/modules/externals/modules/ff_meters
-	url = https://github.com/ffAudio/ff_meters.git
