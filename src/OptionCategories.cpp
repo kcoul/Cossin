@@ -36,6 +36,11 @@ inline bool isDefaultTheme(const jaut::ThemeManager::ThemePointer &theme) noexce
 {
     return theme->getThemeMeta()->getName().removeCharacters(" ").equalsIgnoreCase("cossindefault");
 }
+
+inline constexpr int getAuthorPosY(float maxLineWidth, int descriptionLength) noexcept
+{
+    return 16 * std::min(static_cast<int>(std::ceil(static_cast<float>(descriptionLength) / maxLineWidth)), 3);
+}
 }
 /* ==================================================================================
  * ================================== ThemePreview ==================================
@@ -45,10 +50,12 @@ OptionPanelThemes::ThemePanel::ThemePreview::ThemePreview(ThemePanel &panel) noe
     : panel(panel)
 {
     addAndMakeVisible(buttonWebsiteLink);
+    addAndMakeVisible(buttonLicenseLink);
 
     gallery.setViewedComponent(new Component());
     gallery.setScrollBarsShown(false, true);
     addAndMakeVisible(gallery);
+
 
     labelNoPreview.setJustificationType(Justification::centred);
     labelNoPreview.setEditable(false);
@@ -65,18 +72,24 @@ void OptionPanelThemes::ThemePanel::ThemePreview::paint(Graphics &g)
         const Font &font         = panel.font;
         const Font title_font    = font.withHeight(18.0f).withStyle(Font::bold);
         const Font version_font  = font.withHeight(11.0f);
+        const Font content_font  = font.withHeight(14.0f);
         const String title       = theme->getThemeMeta()->getName();
         const String version     = theme->getThemeMeta()->getVersion();
-        const String license     = theme->getThemeMeta()->getLicense().first.isEmpty() ? "n/a"
-                                 : theme->getThemeMeta()->getLicense().first;
+        const String description = theme->getThemeMeta()->getDescription();
+        const String author      = theme->getThemeMeta()->getAuthor();
+        const String website     = buttonWebsiteLink.getURL().isEmpty() ? buttonWebsiteLink.getButtonText() : "";
+        const String license     = buttonLicenseLink.getURL().isEmpty() ? buttonLicenseLink.getButtonText() : "";
         const String authors     = theme->getThemeMeta()->getAuthors().isEmpty() ? ""
                                  : theme->getThemeMeta()->getAuthors().joinIntoString("; ");
         const int version_length = version_font.getStringWidth(version);
         const int max_text_width = getWidth() - 12;
+        const int description_w  = max_text_width - 72;
+        const int author_pos_y   = ::getAuthorPosY(description_w, content_font.getStringWidthFloat(description));
 
         g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourContainerBackgroundId));
         g.fillAll();
 
+        // Title
         g.setOrigin(6, 6);
         g.setFont(title_font);
         g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourFontId));
@@ -84,24 +97,27 @@ void OptionPanelThemes::ThemePanel::ThemePreview::paint(Graphics &g)
         g.setFont(version_font);
         g.drawText(version, title_font.getStringWidth(title) + 3, 0, version_length, 18, Justification::bottomLeft);
 
+        // Header
         g.drawImageWithin(thumbnail, 0, 24, 64, 64, RectanglePlacement::stretchToFit);
-
-        g.setFont(font.withHeight(14.0f));
-        g.drawFittedText(theme->getThemeMeta()->getDescription(), 70, 24, getWidth() - 70, 50,
-                         Justification::topLeft, 10, 1.0f);
-        g.drawText("Author: " + theme->getThemeMeta()->getAuthor(), 70, 74, getWidth() - 70, 14,
-                   Justification::bottomLeft);
-        g.drawText("Website: ", 0, 96, 55, 14, Justification::left);
+        g.setFont(content_font);
+        g.drawFittedText(description, 70, 24, description_w, 50, Justification::topLeft, 3, 1.0f);
+        g.setOpacity(0.5f);
+        g.drawText(author, 70, 24 + author_pos_y, getWidth() - 70, 14, Justification::bottomLeft);
+        g.setOpacity(1.0f);
+        
+        // Body
+        g.drawText("Website: " + website, 0, 96,  max_text_width, 14, Justification::left);
         g.drawText("License: " + license, 0, 114, max_text_width, 14, Justification::left);
-        g.drawText("Other authors:", 0, 132, 100, 14, Justification::left);
-        g.setOpacity(0.6f);
+        g.drawText("Authors: ", 0, 132, 100, 14, Justification::left);
+        g.setOpacity(0.5f);
         g.drawText(authors, 0, 148, max_text_width, 14, Justification::left);
     }
 }
 
 void OptionPanelThemes::ThemePanel::ThemePreview::resized()
 {
-    buttonWebsiteLink.setBounds(56, 102, getWidth() - 68, 14);
+    buttonWebsiteLink.setBounds(56, 102, getWidth() - 62, 14);
+    buttonLicenseLink.setBounds(56, 120, getWidth() - 62, 14);
     gallery.setBounds(6, getHeight() - 106, getWidth() - 12, 100);
     labelNoPreview.setBounds(6, getHeight() - 106, getWidth() - 12, 100);
 }
@@ -171,18 +187,38 @@ void OptionPanelThemes::ThemePanel::ThemePreview::updateContent(const jaut::Them
     }
 
     labelNoPreview.setVisible(content.getNumChildComponents() < 1);
+    const String website_url  = theme->getThemeMeta()->getWebsite();
+    const String license_url  = theme->getThemeMeta()->getLicense().second;
+    const String license_text = theme->getThemeMeta()->getLicense().first;
 
-    const URL website_url = theme->getThemeMeta()->getWebsite();
-
-    if(!website_url.isEmpty())
+    if(URL::isProbablyAWebsiteURL(website_url))
     {
-        buttonWebsiteLink.setButtonText(website_url.toString(true));
+        buttonWebsiteLink.setMouseCursor(MouseCursor::PointingHandCursor);
+        buttonWebsiteLink.setButtonText(website_url);
         buttonWebsiteLink.setURL(website_url);
+        buttonWebsiteLink.setVisible(true);
     }
     else
     {
-        buttonWebsiteLink.setButtonText("n/a");
+        buttonWebsiteLink.setMouseCursor(MouseCursor::NormalCursor);
+        buttonWebsiteLink.setButtonText("N/A");
         buttonWebsiteLink.setURL(String());
+        buttonWebsiteLink.setVisible(false);
+    }
+
+    if(URL::isProbablyAWebsiteURL(license_url))
+    {
+        buttonLicenseLink.setMouseCursor(MouseCursor::PointingHandCursor);
+        buttonLicenseLink.setButtonText(license_text.isEmpty() ? "Link" : license_text);
+        buttonLicenseLink.setURL(license_url);
+        buttonLicenseLink.setVisible(true);
+    }
+    else
+    {
+        buttonLicenseLink.setMouseCursor(MouseCursor::NormalCursor);
+        buttonLicenseLink.setButtonText(license_text.isEmpty() ? "N/A" : license_text);
+        buttonLicenseLink.setURL(String());
+        buttonLicenseLink.setVisible(false);
     }
 }
 #endif // ThemePreview
@@ -270,7 +306,7 @@ void OptionPanelThemes::ThemePanel::paintListBoxItem(int row, Graphics &g, int w
     {
         g.setFont(font);
         g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourFontId));
-        g.drawText("n/a", 6, 0, width, height, Justification::centredLeft);
+        g.drawText("N/A", 6, 0, width, height, Justification::centredLeft);
     }
 }
 
@@ -326,7 +362,9 @@ void OptionPanelThemes::ThemePanel::buttonClicked(Button*)
 void OptionPanelThemes::ThemePanel::changeButtonState() noexcept
 {
     const int selected_row = themeList.getSelectedRow();
-    buttonApply.setEnabled(selected_row != selectedTheme);
+    const bool is_selected = themeList.getSelectedRow() == selectedTheme;
+    buttonApply.setEnabled(!is_selected);
+    buttonApply.setMouseCursor(!is_selected ? MouseCursor::PointingHandCursor : MouseCursor::NormalCursor);
 }
 #endif // ThemePanel
 
@@ -408,6 +446,7 @@ void OptionPanelThemes::reloadTheme(const jaut::ThemeManager::ThemePointer &them
     themePanel.themeList.setColour(ListBox::textColourId, colour_font);
     themePanel.imageApply = theme->getImage(res::Png_Play);
     themePanel.previewBox.buttonWebsiteLink.setFont(themePanel.font.withHeight(14.0f), false, Justification::left);
+    themePanel.previewBox.buttonLicenseLink.setFont(themePanel.font.withHeight(14.0f), false, Justification::left);
     themePanel.previewBox.labelNoPreview.setFont(themePanel.font.withHeight(14.0f).withStyle(Font::bold));
     themePanel.previewBox.labelNoPreview.setColour(Label::outlineColourId, colour_font);
     themePanel.previewBox.labelNoPreview.setColour(Label::textColourId,    colour_font);

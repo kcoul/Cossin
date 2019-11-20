@@ -224,6 +224,8 @@
         <FILE id="COflk1" name="localisation.cpp" compile="1" resource="0"
               file="externals/jaut/src/localisation.cpp"/>
         <FILE id="pHOqB2" name="lookandfeel.cpp" compile="1" resource="0" file="externals/jaut/src/lookandfeel.cpp"/>
+        <FILE id="pnsMur" name="metadatahelper.cpp" compile="1" resource="0"
+              file="externals/jaut/src/metadatahelper.cpp"/>
         <FILE id="B7yfpk" name="propertyattribute.cpp" compile="1" resource="0"
               file="externals/jaut/src/propertyattribute.cpp"/>
         <FILE id="OZtBUE" name="propertymap.cpp" compile="1" resource="0" file="externals/jaut/src/propertymap.cpp"/>

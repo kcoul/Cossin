@@ -157,6 +157,15 @@ void SharedData::initialize()
     initThemeManager(); // <- depends on appdata and config
     initPluginStyle();  // <- depends on config and thememanager
 
+    using jaut::MetadataHelper;
+    MetadataHelper::setPlaceholder("name",    res::App_Name);
+    MetadataHelper::setPlaceholder("version", res::App_Version);
+    MetadataHelper::setPlaceholder("author",  res::App_Author);
+    MetadataHelper::setPlaceholder("vendor",  res::App_Vendor);
+    MetadataHelper::setPlaceholder("license", res::App_License);
+    MetadataHelper::setPlaceholder("website", res::App_Website);
+    MetadataHelper::setPlaceholder("license_url", "https://www.gnu.org/licenses/gpl-3.0.de.html");
+
     initState = InitializationState::DONE;
 
     rwLock.exitWrite();

@@ -33,7 +33,7 @@ class CossinAudioProcessorEditor;
 
 class OptionPanelGeneral final : public Component
 {
-
+    
 };
 
 class OptionPanelThemes final : public Component, public ReloadListener
@@ -62,6 +62,7 @@ private:
             ImageComponent screenshots[10];
             Viewport gallery;
             HyperlinkButton buttonWebsiteLink;
+            HyperlinkButton buttonLicenseLink;
             Label labelNoPreview;
 
             //==========================================================================================================
