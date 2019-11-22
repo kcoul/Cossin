@@ -81,7 +81,6 @@ CossinAudioProcessorEditor::CossinAudioProcessorEditor(CossinAudioProcessor &p, 
         auto lock        = shared_data->setReading();
         
         setLookAndFeel(&const_cast<PluginStyle&>(shared_data->Style()));
-        
         initializeData(*shared_data);
     }
 
@@ -126,7 +125,6 @@ void CossinAudioProcessorEditor::initializeData(SharedData &sharedData)
         listener.reloadTheme(sharedData.Style().getTheme());
     });
 
-    lastLocale = ::getLocaleName(sharedData.Locale());
     lastTheme  = sharedData.Style().getTheme().getName();
 }
 
@@ -287,7 +285,7 @@ void CossinAudioProcessorEditor::resized()
     buttonPanningLawSelection.setBounds(footer_middle + 107, footer_panning_y, 45, 15);
     buttonPanningLaw         .setBounds(footer_middle + 92,  footer_panning_y, 15, 15);
 
-    // Pop-ups and everything else that doesn't neccessarily has to fit into grid (these stand by their own)
+    // Pop-ups and everything else that doesn't necessarily has to fit into grid (these stand by their own)
     const int options_x = optionsPanel.isShowing() ? getWidth() / 2 - 400
                                                    : (options[Flag_AnimationComponents] ? -::Const_Window_Default_Width
                                                                   : getWidth() / 2 - ::Const_Window_Default_Width / 2);
@@ -422,7 +420,7 @@ void CossinAudioProcessorEditor::reloadTheme(SharedData &sharedData)
 
     processorPanel.reloadTheme(theme);
     
-    logger.writeToLog("Resources succesfully reloaded!");
+    logger.writeToLog("Resources successfully reloaded!");
     repaint();
 }
 
@@ -639,38 +637,24 @@ void CossinAudioProcessorEditor::reloadAllData()
     auto shared_data = SharedData::getInstance();
     auto lock        = shared_data->setReading();
 
-    bool should_repaint = false;
-
     const String name_locale = ::getLocaleName(shared_data->Locale());
     const String name_theme  = shared_data->Style().getTheme().getName();
 
-    const bool should_update_locale = !name_locale.isEmpty() && lastLocale != name_locale;
     const bool should_update_theme  = !name_theme .isEmpty() && lastTheme  != name_theme;
 
     reloadConfig(*shared_data);
-
-    if(should_update_locale)
-    {
-        reloadLocale(*shared_data);
-        lastLocale     = name_locale;
-        should_repaint = true;
-    }
+    reloadLocale(*shared_data);
 
     if(should_update_theme)
     {
         reloadTheme(*shared_data);
-        lastTheme      = name_theme;
-        should_repaint = true;
+        lastTheme = name_theme;
     }
     
-    listeners.call([&shared_data, should_update_locale, should_update_theme](ReloadListener &listener)
+    listeners.call([&shared_data, should_update_theme](ReloadListener &listener)
     {
         listener.reloadConfig(shared_data->Configuration());
-
-        if(should_update_locale)
-        {
-            listener.reloadLocale(shared_data->Locale());
-        }
+        listener.reloadLocale(shared_data->Locale());
 
         if(should_update_theme)
         {
@@ -678,10 +662,7 @@ void CossinAudioProcessorEditor::reloadAllData()
         }
     });
 
-    if(should_repaint)
-    {
-        repaint();
-    }
+    repaint();
 
     MouseCursor::hideWaitCursor();
 }

@@ -27,6 +27,7 @@
 #include "PluginEditor.h"
 #include "Resources.h"
 #include "SharedData.h"
+#include <jaut/appdata.h>
 #include <jaut/config.h>
 #include <jaut/fontformat.h>
 #include <jaut/localisation.h>
@@ -99,7 +100,7 @@ void OptionPanel::OptionsContainer::showPanel(int lastIndex, int newIndex, bool 
 OptionPanel::OptionPanel(CossinAudioProcessorEditor &cossin, jaut::Localisation &locale)
     : cossin(cossin), closeCallback(nullptr), lastSelectedRow(0), bttClose("X"),
       optionContainer(*this), optionTabs("OptionTabs", this), locale(locale),
-      optionsThemes(cossin)
+      optionsGeneral(cossin, locale), optionsThemes(cossin)
 {   
     cossin.addReloadListener(this);
 
@@ -110,7 +111,7 @@ OptionPanel::OptionPanel(CossinAudioProcessorEditor &cossin, jaut::Localisation 
     categories.add(res::Cfg_Standalone);
 
     // TODO option categories
-    //optionContainer.addOptionPanel(optionsGeneral);
+    optionContainer.addOptionPanel(optionsGeneral);
     optionContainer.addOptionPanel(optionsThemes);
     //optionContainer.addOptionPanel(optionsOptimization);
     //optionContainer.addOptionPanel(optionsAccount);
@@ -172,6 +173,10 @@ void OptionPanel::show()
         auto lock        = shared_data->setReading();
 
         // General tab
+        optionsGeneral.resetLangList(shared_data->App().getDir("Lang").toFile());
+        optionsGeneral.selectLangRow(locale.getLanguageFile());
+
+        // Themes tab
         optionsThemes.resetThemeList(shared_data->getDefaultTheme(), shared_data->Themes().getAllThemePacks());
         optionsThemes.selectThemeRow(shared_data->Style().getTheme());
     }

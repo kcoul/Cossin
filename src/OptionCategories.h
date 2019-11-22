@@ -31,24 +31,74 @@
 
 class CossinAudioProcessorEditor;
 
-class OptionPanelGeneral final : public Component
+/* Holds general and default settings*/
+class OptionPanelGeneral final : public Component, public ReloadListener, public ListBoxModel
 {
+public:
+    OptionPanelGeneral(CossinAudioProcessorEditor&, jaut::Localisation&);
+    ~OptionPanelGeneral();
+
+    //==================================================================================================================
+    void paint(Graphics&) override;
+    void resized() override;
     
+    //==================================================================================================================
+    void selectLangRow(const File&);
+    void resetLangList(const File&);
+
+private:
+    class PanelDefaults final : public Component
+    {
+    public:
+        jaut::Localisation &locale;
+        ComboBox boxPanningLaw;
+        ComboBox boxProcessor;
+
+        //==============================================================================================================
+        PanelDefaults(jaut::Localisation&);
+
+        //==============================================================================================================
+        void paint(Graphics&) override;
+        void resized() override;
+
+        JUCE_DECLARE_NON_COPYABLE(PanelDefaults)
+    };
+    
+    CossinAudioProcessorEditor &editor;
+    jaut::Localisation &locale;
+    int lastSelected;
+    int currentLanguageIndex;
+    std::vector<std::pair<String, String>> languages;
+    ListBox languageList;
+    Font font;
+
+    //==================================================================================================================
+    void reloadLocale(const jaut::Localisation&) override;
+    void reloadTheme(const jaut::ThemeManager::ThemePointer&) override;
+    void reloadConfig(const jaut::Config&) override;
+
+    //==================================================================================================================
+    int getNumRows() override;
+    void paintListBoxItem(int, Graphics&, int, int, bool) override;
+    void listBoxItemClicked(int, const MouseEvent&) override;
+    void listBoxItemDoubleClicked(int, const MouseEvent&) override;
+
+    JUCE_DECLARE_NON_COPYABLE(OptionPanelGeneral)
 };
 
+/* Holds theme settings. */
 class OptionPanelThemes final : public Component, public ReloadListener
 {
 public:
-    OptionPanelThemes(CossinAudioProcessorEditor &editor);
+    OptionPanelThemes(CossinAudioProcessorEditor&);
     ~OptionPanelThemes();
 
-    //==============================================================================================================
+    //==================================================================================================================
     void resized() override;
 
-    //==============================================================================================================
-    void selectThemeRow(const jaut::ThemeManager::ThemePointer &theme);
-    void resetThemeList(const jaut::ThemeManager::ThemePointer &defaultTheme,
-                        const std::vector<jaut::ThemeManager::ThemePointer> &themes);
+    //==================================================================================================================
+    void selectThemeRow(const jaut::ThemeManager::ThemePointer&);
+    void resetThemeList(const jaut::ThemeManager::ThemePointer&, const std::vector<jaut::ThemeManager::ThemePointer>&);
 
 private:
     class ThemePanel final : public Component, public ListBoxModel, TextButton::Listener
@@ -66,14 +116,16 @@ private:
             Label labelNoPreview;
 
             //==========================================================================================================
-            ThemePreview(ThemePanel &panel) noexcept;
+            ThemePreview(ThemePanel&);
 
             //==========================================================================================================
             void paint(Graphics&) override;
             void resized() override;
             
             //==========================================================================================================
-            void updateContent(const jaut::ThemeManager::ThemePointer&) noexcept;
+            void updateContent(const jaut::ThemeManager::ThemePointer&);
+
+            JUCE_DECLARE_NON_COPYABLE(ThemePreview)
         };
 
         //==============================================================================================================
@@ -92,7 +144,7 @@ private:
         Font font;
 
         //==============================================================================================================
-        ThemePanel() noexcept;
+        ThemePanel();
 
         //==============================================================================================================
         void paint(Graphics&) override;
@@ -106,7 +158,9 @@ private:
 
         //==============================================================================================================
         void buttonClicked(Button*) override;
-        void changeButtonState() noexcept;
+        void changeButtonState();
+
+        JUCE_DECLARE_NON_COPYABLE(ThemePanel)
     };
 
     CossinAudioProcessorEditor &editor;
@@ -114,5 +168,7 @@ private:
 
     //==================================================================================================================
     void reloadLocale(const jaut::Localisation&) override;
-    void reloadTheme(const jaut::ThemeManager::ThemePointer &theme) override;
+    void reloadTheme(const jaut::ThemeManager::ThemePointer&) override;
+
+    JUCE_DECLARE_NON_COPYABLE(OptionPanelThemes)
 };

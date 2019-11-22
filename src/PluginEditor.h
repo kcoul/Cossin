@@ -125,7 +125,6 @@ private:
     ListenerList<ReloadListener> listeners;
 
     // Update data
-    String lastLocale;
     String lastTheme;
     jaut::Localisation locale;
     std::atomic<bool> needsUpdate;

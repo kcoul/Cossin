@@ -29,9 +29,12 @@
 #include "Resources.h"
 #include "SharedData.h"
 #include "ThemeFolder.h"
+#include <jaut/appdata.h>
 
 namespace
 {
+LocalisedStrings emptyLocale("", true);
+
 inline bool isDefaultTheme(const jaut::ThemeManager::ThemePointer &theme) noexcept
 {
     return theme->getThemeMeta()->getName().removeCharacters(" ").equalsIgnoreCase("cossindefault");
@@ -41,12 +44,230 @@ inline constexpr int getAuthorPosY(float maxLineWidth, int descriptionLength) no
 {
     return 16 * std::min(static_cast<int>(std::ceil(static_cast<float>(descriptionLength) / maxLineWidth)), 3);
 }
+
+inline int getLanguageListIndex(const File &languageFile, const std::vector<std::pair<String, String>> &languageList)
+{
+    const String language_name = languageFile.getFileNameWithoutExtension();
+
+    for(int i = 0; i < languageList.size(); ++i)
+    {
+        if(languageList.at(i).first.equalsIgnoreCase(language_name))
+        {
+            return i;
+        }
+    }
+
+    return -1;
 }
+}
+
+
+
+#if(1) // CategoryGeneral
+/* ==================================================================================
+ * ================================= PanelDefaults ==================================
+ * ================================================================================== */
+#if(1) // PanelDefaults
+OptionPanelGeneral::PanelDefaults::PanelDefaults(jaut::Localisation &locale)
+    : locale(locale)
+{
+    boxPanningLaw.addItem("Linear",     0);
+    boxPanningLaw.addItem("Square",     1);
+    boxPanningLaw.addItem("Sinusoidal", 2);
+    addAndMakeVisible(boxPanningLaw);
+
+    // FUTURE (stack, graph)
+    boxProcessor.addItem("Solo",  0);
+    //boxProcessor.addItem("Stack", 1);
+    //boxProcessor.addItem("Graph", 2);
+    addAndMakeVisible(boxProcessor);
+}
+
+//======================================================================================================================
+void OptionPanelGeneral::PanelDefaults::paint(Graphics &g)
+{
+    
+}
+
+void OptionPanelGeneral::PanelDefaults::resized()
+{
+    
+}
+#endif // PanelDefaults
+
+
+
+/* ==================================================================================
+ * =============================== OptionPanelGeneral ===============================
+ * ================================================================================== */
+#if(1) // OptionPanelGeneral
+OptionPanelGeneral::OptionPanelGeneral(CossinAudioProcessorEditor &editor, jaut::Localisation &locale)
+    : editor(editor), lastSelected(0), currentLanguageIndex(0), locale(locale), languageList("", this)
+{
+    editor.addReloadListener(this);
+
+    languageList.setColour(ListBox::backgroundColourId, Colours::transparentBlack);
+    addAndMakeVisible(languageList);
+}
+
+OptionPanelGeneral::~OptionPanelGeneral()
+{
+    editor.removeReloadListener(this);
+}
+
+//======================================================================================================================
+void OptionPanelGeneral::paint(Graphics &g)
+{
+    const LookAndFeel &lf = getLookAndFeel();
+
+    g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourContainerBackgroundId));
+    g.fillRect(languageList.getBoundsInParent().expanded(0, 1));
+}
+
+void OptionPanelGeneral::resized()
+{
+    languageList.setBounds(6, 8, 150, getHeight() - 16);
+}
+
+//======================================================================================================================
+void OptionPanelGeneral::selectLangRow(const File &languageFile)
+{
+    if(languageFile.getFileNameWithoutExtension().equalsIgnoreCase("en_gb")
+       || languageFile.getFullPathName().isEmpty())
+    {
+        languageList.selectRow(0);
+        return;
+    }
+
+    languageList.selectRow(::getLanguageListIndex(languageFile, languages));
+}
+
+void OptionPanelGeneral::resetLangList(const File &langDirectory)
+{
+    DirectoryIterator iterator(langDirectory, false, "*.lang");
+
+    languages.clear();
+    languages.emplace_back("en_GB", "Default (English - GB)");
+
+    while(iterator.next())
+    {
+        const File language_file = iterator.getFile();
+        const String file_name   = language_file.getFileNameWithoutExtension();
+        auto lang_data           = jaut::Localisation::getLanguageFileData(language_file);
+
+        if(!(lang_data.first.equalsIgnoreCase("english") && lang_data.second.contains("gb", true))
+           && jaut::Localisation::isValidLanguageFile(language_file))
+        {
+            languages.emplace_back(file_name, lang_data.first + " - " + lang_data.second.joinIntoString(" "));
+        }
+    }
+
+    languageList.updateContent();
+}
+
+//======================================================================================================================
+void OptionPanelGeneral::reloadLocale(const jaut::Localisation &locale)
+{
+    selectLangRow(locale.getLanguageFile());
+}
+
+void OptionPanelGeneral::reloadTheme(const jaut::ThemeManager::ThemePointer &theme)
+{
+    font = theme->getThemeFont();
+}
+
+void OptionPanelGeneral::reloadConfig(const jaut::Config &config)
+{
+
+}
+
+//======================================================================================================================
+int OptionPanelGeneral::getNumRows()
+{
+    return languages.size();
+}
+
+void OptionPanelGeneral::paintListBoxItem(int row, Graphics &g, int width, int height, bool selected)
+{
+    const LookAndFeel &lf       = getLookAndFeel();
+    const bool is_selected_lang = row == currentLanguageIndex;
+
+    if(selected)
+    {
+        Colour selected_background_colour = lf.findColour(is_selected_lang
+                                                          ? CossinAudioProcessorEditor::ColourComponentForegroundId
+                                                          : CossinAudioProcessorEditor::ColourComponentBackgroundId);
+        g.setColour(selected_background_colour);
+        g.fillRect(g.getClipBounds().reduced(2, 1));
+
+        g.setColour(is_selected_lang ? selected_background_colour.contrasting()
+                                     : lf.findColour(CossinAudioProcessorEditor::ColourFontId));
+    }
+    else
+    {
+        if(is_selected_lang)
+        {
+            g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourContainerForegroundId));
+            g.fillRect(g.getClipBounds().reduced(2, 1));
+        }
+
+        g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourFontId));
+    }
+
+    g.setFont(font);
+    g.drawText(languages.at(row).second, 0, 0, width, height, Justification::centred);
+}
+
+void OptionPanelGeneral::listBoxItemClicked(int row, const MouseEvent&)
+{
+    lastSelected = row;
+}
+
+void OptionPanelGeneral::listBoxItemDoubleClicked(int row, const MouseEvent&)
+{
+    if(row == currentLanguageIndex)
+    {
+        return;
+    }
+
+    const auto shared_data = SharedData::getInstance();
+    auto lock              = shared_data->setWriting();
+
+    auto property_language = shared_data->Configuration().getProperty("language");
+    const String lang_code = languages.at(row).first;
+
+    if(row == 0)
+    {
+        shared_data->Locale().setCurrentLanguage(emptyLocale);
+        property_language.setValue("en_GB");
+        shared_data->sendUpdate();
+        currentLanguageIndex = row;
+    }
+    else if(shared_data->Locale().setCurrentLanguage(lang_code))
+    {
+        property_language.setValue(lang_code);
+        shared_data->sendUpdate();
+        currentLanguageIndex = row;
+    }
+    else
+    {
+        resetLangList(shared_data->App().getDir("Lang").toFile());
+        languageList.selectRow(lastSelected);
+    }
+
+    lastSelected = row;
+}
+#endif // OptionPanelGeneral
+#endif // CategoryGeneral
+
+
+
+#if(1) // CategoryThemes
 /* ==================================================================================
  * ================================== ThemePreview ==================================
  * ================================================================================== */
 #if(1) // ThemePreview
-OptionPanelThemes::ThemePanel::ThemePreview::ThemePreview(ThemePanel &panel) noexcept
+OptionPanelThemes::ThemePanel::ThemePreview::ThemePreview(ThemePanel &panel)
     : panel(panel)
 {
     addAndMakeVisible(buttonWebsiteLink);
@@ -123,7 +344,7 @@ void OptionPanelThemes::ThemePanel::ThemePreview::resized()
 }
 
 //======================================================================================================================
-void OptionPanelThemes::ThemePanel::ThemePreview::updateContent(const jaut::ThemeManager::ThemePointer &theme) noexcept
+void OptionPanelThemes::ThemePanel::ThemePreview::updateContent(const jaut::ThemeManager::ThemePointer &theme)
 {
     if(!theme || this->theme == theme)
     {
@@ -229,7 +450,7 @@ void OptionPanelThemes::ThemePanel::ThemePreview::updateContent(const jaut::Them
  * =================================== ThemePanel ===================================
  * ================================================================================== */
 #if(1) // ThemePanel
-OptionPanelThemes::ThemePanel::ThemePanel() noexcept
+OptionPanelThemes::ThemePanel::ThemePanel()
     : selectedTheme(0), selectedRow(0),
       previewBox(*this), themeList("", this)
 {
@@ -359,7 +580,7 @@ void OptionPanelThemes::ThemePanel::buttonClicked(Button*)
     MouseCursor::hideWaitCursor();
 }
 
-void OptionPanelThemes::ThemePanel::changeButtonState() noexcept
+void OptionPanelThemes::ThemePanel::changeButtonState()
 {
     const int selected_row = themeList.getSelectedRow();
     const bool is_selected = themeList.getSelectedRow() == selectedTheme;
@@ -371,9 +592,9 @@ void OptionPanelThemes::ThemePanel::changeButtonState() noexcept
 
 
 /* ==================================================================================
- * =============================== OptionPanelGeneral ===============================
+ * ================================ OptionPanelThemes ===============================
  * ================================================================================== */
-#if (1) // OptionPanelGeneral
+#if (1) // OptionPanelThemes
 OptionPanelThemes::OptionPanelThemes(CossinAudioProcessorEditor &editor)
     : editor(editor)
 {
@@ -462,4 +683,5 @@ void OptionPanelThemes::reloadTheme(const jaut::ThemeManager::ThemePointer &them
     repaint();
 }
 
-#endif // OptionPanelGeneral
+#endif // OptionPanelThemes
+#endif // CategoryThemes

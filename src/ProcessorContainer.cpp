@@ -32,8 +32,9 @@ ProcessorContainer::ProcessorContainer(AudioProcessor &processor, AudioProcessor
 {
     // TODO stack processor
     // FUTURE processors (stack, graph)
-    processors.add(new jaut::DspUnitManager(processor, vts, &undoManager, 0, false)); // frame processor (0)
+    processors.add(new jaut::DspUnitManager(processor, vts, &undoManager, 0, false));  // frame processor (0)
     //processors.add(new jaut::DspStackManager(processor, vts, &undoManager, 0, false)); // stack processor (1)
+    //processors.add(new jaut::DspGraphManager(processor, vts, &undoManager, 0, false)); // graph processor (2)
 }
 
 ProcessorContainer::~ProcessorContainer() {}

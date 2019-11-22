@@ -51,6 +51,7 @@ public:
         CREATING,
         DONE
     };
+    
     //==================================================================================================================
     static SharedResourcePointer<SharedData> getInstance();
 

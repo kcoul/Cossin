@@ -87,7 +87,7 @@ private:
     // Components
     TextButton bttClose;
     OptionsContainer optionContainer;
-    //OptionPanelGeneral optionsGeneral;
+    OptionPanelGeneral optionsGeneral;
     OptionPanelThemes optionsThemes;
     //OptionPanelOptimization optionsOptimization;
     //OptionPanelAccount optionsAccount;

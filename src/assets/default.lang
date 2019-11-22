@@ -1,5 +1,5 @@
-language: english
-countries: gb
+language: English
+countries: GB
 
 "alert.cancel" = "Cancel"
 "alert.no"     = "No"
