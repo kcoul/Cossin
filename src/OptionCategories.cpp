@@ -68,30 +68,35 @@ inline int getLanguageListIndex(const File &languageFile, const std::vector<std:
  * ================================= PanelDefaults ==================================
  * ================================================================================== */
 #if(1) // PanelDefaults
-OptionPanelGeneral::PanelDefaults::PanelDefaults(jaut::Localisation &locale)
-    : locale(locale)
+OptionPanelGeneral::PanelDefaults::PanelDefaults(OptionPanelGeneral &panel, jaut::Localisation &locale)
+    : panel(panel), locale(locale)
 {
-    boxPanningLaw.addItem("Linear",     0);
-    boxPanningLaw.addItem("Square",     1);
-    boxPanningLaw.addItem("Sinusoidal", 2);
+    boxPanningLaw.addItem("Linear",     1);
+    boxPanningLaw.addItem("Square",     2);
+    boxPanningLaw.addItem("Sinusoidal", 3);
     addAndMakeVisible(boxPanningLaw);
 
     // FUTURE (stack, graph)
-    boxProcessor.addItem("Solo",  0);
-    //boxProcessor.addItem("Stack", 1);
-    //boxProcessor.addItem("Graph", 2);
+    boxProcessor.addItem("Solo",  1);
+    //boxProcessor.addItem("Stack", 2);
+    //boxProcessor.addItem("Graph", 3);
     addAndMakeVisible(boxProcessor);
 }
 
 //======================================================================================================================
 void OptionPanelGeneral::PanelDefaults::paint(Graphics &g)
 {
-    
+    const LookAndFeel &lf = getLookAndFeel();
+
+    g.setFont(panel.font.withHeight(13.0f));
+    g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourFontId));
+    jaut::FontFormat::drawSmallCaps(g, locale.translate("options.category.general.default_panning"),
+                                    0, 0, getWidth(), 13, Justification::centredLeft);
 }
 
 void OptionPanelGeneral::PanelDefaults::resized()
 {
-    
+    boxPanningLaw.setBounds(0, 15, 200, 30);
 }
 #endif // PanelDefaults
 
@@ -102,9 +107,13 @@ void OptionPanelGeneral::PanelDefaults::resized()
  * ================================================================================== */
 #if(1) // OptionPanelGeneral
 OptionPanelGeneral::OptionPanelGeneral(CossinAudioProcessorEditor &editor, jaut::Localisation &locale)
-    : editor(editor), lastSelected(0), currentLanguageIndex(0), locale(locale), languageList("", this)
+    : editor(editor), locale(locale), currentLanguageIndex(0), lastSelected(0),
+      defaultsBox(*this, locale), languageList("", this)
+
 {
     editor.addReloadListener(this);
+
+    addAndMakeVisible(defaultsBox);
 
     languageList.setColour(ListBox::backgroundColourId, Colours::transparentBlack);
     addAndMakeVisible(languageList);
@@ -133,10 +142,28 @@ void OptionPanelGeneral::paint(Graphics &g)
 
 void OptionPanelGeneral::resized()
 {
-    languageList.setBounds(getWidth() - 177, 27, 169, getHeight() - 34);
+    const int component_height = getHeight() - 34;
+    const int defaults_width   = getWidth() - 183;
+
+    languageList.setBounds(defaults_width + 6, 27, 169, component_height);
+    defaultsBox.setBounds(6, 27, defaults_width, component_height);
 }
 
 //======================================================================================================================
+void OptionPanelGeneral::resetDefaults(const jaut::Config &config)
+{
+    const int panning_value = config.getProperty("panning", res::Cfg_Defaults).getValue();
+
+    if(std::is_in_ran)
+    {
+
+    }
+    else
+    {
+        defaultsBox.boxPanningLaw.setSelectedId(2);   
+    }
+}
+
 void OptionPanelGeneral::selectLangRow(const File &languageFile)
 {
     if(languageFile.getFullPathName().isEmpty())

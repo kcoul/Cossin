@@ -43,6 +43,7 @@ public:
     void resized() override;
     
     //==================================================================================================================
+    void resetDefaults(const jaut::Config&);
     void selectLangRow(const File&);
     void resetLangList(const File&);
 
@@ -50,12 +51,16 @@ private:
     class PanelDefaults final : public Component
     {
     public:
+        // General data
+        OptionPanelGeneral &panel;
         jaut::Localisation &locale;
+
+        // Components
         ComboBox boxPanningLaw;
         ComboBox boxProcessor;
 
         //==============================================================================================================
-        PanelDefaults(jaut::Localisation&);
+        PanelDefaults(OptionPanelGeneral&, jaut::Localisation&);
 
         //==============================================================================================================
         void paint(Graphics&) override;
@@ -64,12 +69,18 @@ private:
         JUCE_DECLARE_NON_COPYABLE(PanelDefaults)
     };
     
+    // General data
     CossinAudioProcessorEditor &editor;
     jaut::Localisation &locale;
-    int lastSelected;
     int currentLanguageIndex;
     std::vector<std::pair<String, String>> languages;
+    int lastSelected;
+
+    // Components
+    PanelDefaults defaultsBox;
     ListBox languageList;
+
+    // Theme resources
     Font font;
 
     //==================================================================================================================
@@ -134,7 +145,7 @@ private:
         int selectedRow;
         std::vector<jaut::ThemeManager::ThemePointer> themes;
         
-        // Controls
+        // Components
         TextButton buttonApply;
         ThemePreview previewBox;
         ListBox themeList;

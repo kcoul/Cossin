@@ -1,0 +1,16 @@
+{
+	"name": "{name} Default",
+	"description": "The default skin for {name}.",
+	"version": "{version}",
+	"author": "{author}",
+	"license": {
+		"type": "{license}",
+		"url": "{license_url}"
+	},
+	"website": "{website}",
+	"screenshots": [
+		"preview/screenshot-000.png",
+		"preview/screenshot-001.png",
+		"preview/screenshot-002.png"
+	]
+}
