@@ -262,10 +262,9 @@ void MetreLookAndFeel::drawMaxNumber(juce::Graphics &g, const FFAU::LevelMeter::
                                      const juce::Rectangle<float> bounds, const float maxGain)
 {
     const float maxDb = juce::Decibels::gainToDecibels(lastUpdate.getPeak(), infinity);
-    const Colour col  = pluginStyle.findColour(FFAU::LevelMeter::lmTextColour);
     g.setFont(font);
-    jaut::FontFormat::drawSmallCaps(g, "Peak", bounds, col, Justification::bottomLeft);
-    g.setColour(col);
+    g.setColour(pluginStyle.findColour(FFAU::LevelMeter::lmTextColour));
+    jaut::FontFormat::drawSmallCaps(g, "Peak", bounds, Justification::bottomLeft);
     g.drawText((maxDb <= infinity ? "-INF" : juce::String(maxDb, 2) + " ") + "dB", bounds, Justification::bottomRight);
 }
 

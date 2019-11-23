@@ -298,9 +298,9 @@ void SharedData::initConfig()
 
 void SharedData::initLangs()
 {    
-    String language_name = appConfig->getProperty("language").getValue().toString();
-    jaut::Localisation *locale(new jaut::Localisation((*appData)["Lang"].toFile(),
-                                                      LocalisedStrings(defaultLocale->getInternalLocalisation())));
+    String language_name       = appConfig->getProperty("language").getValue().toString();
+    jaut::Localisation *locale = new jaut::Localisation(appData->getDir("Lang").toFile(),
+                                                        defaultLocale->getInternalLocalisation());
     
     if(!language_name.equalsIgnoreCase("default") && !language_name.equalsIgnoreCase("en_gb"))
     {

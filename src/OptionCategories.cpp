@@ -122,24 +122,36 @@ void OptionPanelGeneral::paint(Graphics &g)
 
     g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourContainerBackgroundId));
     g.fillRect(languageList.getBoundsInParent().expanded(0, 1));
+
+    g.setFont(font);
+    g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourFontId));
+    jaut::FontFormat::drawSmallCaps(g, locale.translate("options.category.general.defaults_title"),
+                                    8, 0, getWidth() - 183, 27, Justification::centred);
+    jaut::FontFormat::drawSmallCaps(g, locale.translate("options.category.general.select_language"),
+                                    getWidth() - 177, 0, 169, 27, Justification::centred);
 }
 
 void OptionPanelGeneral::resized()
 {
-    languageList.setBounds(6, 8, 150, getHeight() - 16);
+    languageList.setBounds(getWidth() - 177, 27, 169, getHeight() - 34);
 }
 
 //======================================================================================================================
 void OptionPanelGeneral::selectLangRow(const File &languageFile)
 {
-    if(languageFile.getFileNameWithoutExtension().equalsIgnoreCase("en_gb")
-       || languageFile.getFullPathName().isEmpty())
+    if(languageFile.getFullPathName().isEmpty())
     {
         languageList.selectRow(0);
+        currentLanguageIndex = 0;
+        lastSelected         = 0;
+
         return;
     }
 
-    languageList.selectRow(::getLanguageListIndex(languageFile, languages));
+    const int index      = ::getLanguageListIndex(languageFile, languages);
+    currentLanguageIndex = index;
+    lastSelected         = index;
+    languageList.selectRow(index);
 }
 
 void OptionPanelGeneral::resetLangList(const File &langDirectory)

@@ -42,6 +42,13 @@
               file="src/assets/screenshot-001.png"/>
         <FILE id="ZGLmFa" name="screenshot-002.png" compile="0" resource="1"
               file="src/assets/screenshot-002.png"/>
+        <FILE id="foWraN" name="social_discord.png" compile="0" resource="1"
+              file="src/assets/social_discord.png"/>
+        <FILE id="tFNkxB" name="social_tumblr.png" compile="0" resource="1"
+              file="src/assets/social_tumblr.png"/>
+        <FILE id="EOd5pu" name="social_twitter.png" compile="0" resource="1"
+              file="src/assets/social_twitter.png"/>
+        <FILE id="POV29w" name="social_web.png" compile="0" resource="1" file="src/assets/social_web.png"/>
         <FILE id="A60r9q" name="theme.meta" compile="0" resource="1" file="src/assets/theme.meta"/>
         <FILE id="Gf0rCV" name="theme.png" compile="0" resource="1" file="src/assets/theme.png"/>
       </GROUP>

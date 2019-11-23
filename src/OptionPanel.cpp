@@ -110,6 +110,13 @@ OptionPanel::OptionPanel(CossinAudioProcessorEditor &cossin, jaut::Localisation 
     categories.add("account");
     categories.add(res::Cfg_Standalone);
 
+    // About resources
+    imgCossinAbout   = ImageCache::getFromMemory(Assets::png011_png,         Assets::png011_pngSize);
+    imgSocialDiscord = ImageCache::getFromMemory(Assets::social_discord_png, Assets::social_discord_pngSize);
+    imgSocialTumblr  = ImageCache::getFromMemory(Assets::social_tumblr_png,  Assets::social_tumblr_pngSize);
+    imgSocialTwitter = ImageCache::getFromMemory(Assets::social_twitter_png, Assets::social_twitter_pngSize);
+    imgSocialWebsite = ImageCache::getFromMemory(Assets::social_web_png,     Assets::social_web_pngSize);
+
     // TODO option categories
     optionContainer.addOptionPanel(optionsGeneral);
     optionContainer.addOptionPanel(optionsThemes);
@@ -129,8 +136,27 @@ OptionPanel::OptionPanel(CossinAudioProcessorEditor &cossin, jaut::Localisation 
     bttClose.getProperties().set("OptionsPanelClose", var());
     addAndMakeVisible(bttClose);
 
-    show();
-    setVisible(false);
+    const Font link_font = Font().withHeight(14.0f);
+
+    linkDiscord.setURL(URL("https://discord.io/ElandaSunshine"));
+    linkDiscord.setButtonText("Discord");
+    linkDiscord.setFont(link_font, false, Justification::centredLeft);
+    addAndMakeVisible(linkDiscord);
+
+    linkTumblr.setURL(URL("https://blog." + String(res::App_Website)));
+    linkTumblr.setButtonText("ES Blog");
+    linkTumblr.setFont(link_font, false, Justification::centredLeft);
+    addAndMakeVisible(linkTumblr);
+
+    linkTwitter.setURL(URL("https://twitter.com/elandaofficial"));
+    linkTwitter.setButtonText("Twitter");
+    linkTwitter.setFont(link_font, false, Justification::centredLeft);
+    addAndMakeVisible(linkTwitter);
+
+    linkWebsite.setURL(URL("https://www." + String(res::App_Website)));
+    linkWebsite.setButtonText("Website");
+    linkWebsite.setFont(link_font, false, Justification::centredLeft);
+    addAndMakeVisible(linkWebsite);
 }
 
 OptionPanel::~OptionPanel()
@@ -147,13 +173,23 @@ void OptionPanel::paint(Graphics &g)
     g.fillAll();
     g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourContainerBackgroundId));
     g.drawRect(0, 30, getWidth(), 2);
-    g.fillRect(getWidth() - 202, 32, 202, getHeight() - 32);
-    g.drawImage(imgCossinAbout, {600.0f, 32.0f, 200.0f, 322.0f});
 
     g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourFontId));
     g.setFont(font);
-    jaut::FontFormat::drawSmallCaps(g, locale.translate("options.title"), 0, 0, getWidth(), 30,
-                                    lf.findColour(CossinAudioProcessorEditor::ColourFontId), Justification::centred);
+    jaut::FontFormat::drawSmallCaps(g, locale.translate("options.title"), 0, 0, getWidth(), 30, Justification::centred);
+
+    g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourContainerBackgroundId));
+    g.setOrigin(getWidth() - 202, 32);
+    g.fillRect(0, 0, 202, getHeight() - 32);
+
+    const int distance = 10;
+    const int start    = 12;
+    g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourContainerBackgroundId).contrasting());
+    g.drawImageAt(imgCossinAbout, 0, 0, true);
+    g.drawImageAt(imgSocialDiscord, start, start,                     true);
+    g.drawImageAt(imgSocialTumblr,  start, start + 32 + distance,     true);
+    g.drawImageAt(imgSocialTwitter, start, start + 64 + distance * 2, true);
+    g.drawImageAt(imgSocialWebsite, start, start + 96 + distance * 3, true);
 }
 
 void OptionPanel::resized()
@@ -163,6 +199,18 @@ void OptionPanel::resized()
     optionContainer.setBounds(100, 32, getWidth() - 300, content_pos_x);
     optionTabs     .setBounds(0, 32, 100, content_pos_x);
     bttClose       .setBounds(getWidth() - 30, 0, 30, 30);
+    
+    const int distance = 10;
+    const int start    = 12;
+    const int x        = getWidth() - 160;
+    const int y        = 31 + start;
+    const int w        = 160;
+    const int h        = 32;
+
+    linkDiscord.setBounds(x + distance, y,                     w, h);
+    linkTumblr .setBounds(x + distance, y + 32 + distance,     w, h);
+    linkTwitter.setBounds(x + distance, y + 64 + distance * 2, w, h);
+    linkWebsite.setBounds(x + distance, y + 96 + distance * 3, w, h);
 }
 
 //======================================================================================================================
@@ -174,7 +222,7 @@ void OptionPanel::show()
 
         // General tab
         optionsGeneral.resetLangList(shared_data->App().getDir("Lang").toFile());
-        optionsGeneral.selectLangRow(locale.getLanguageFile());
+        optionsGeneral.selectLangRow(shared_data->Locale().getLanguageFile());
 
         // Themes tab
         optionsThemes.resetThemeList(shared_data->getDefaultTheme(), shared_data->Themes().getAllThemePacks());
@@ -308,12 +356,19 @@ void OptionPanel::reloadConfig(const jaut::Config &config)
 
 void OptionPanel::reloadTheme(const jaut::ThemeManager::ThemePointer &theme)
 {
-    const LookAndFeel &lf = getLookAndFeel();
-    imgCossinAbout        = theme->getImage(res::Png_Cossin_About);
-    font                  = theme->getThemeFont();
+    const LookAndFeel &lf    = getLookAndFeel();
+    const Colour colour_container_background   = theme->getThemeColour(res::Col_Container_Bg);
+    const Colour colour_background_contrasting = colour_container_background.contrasting();
 
-    optionTabs.setColour(ListBox::backgroundColourId, theme->getThemeColour(res::Col_Container_Bg));
+    optionTabs.setColour(ListBox::backgroundColourId, colour_container_background);
     optionTabs.setColour(ListBox::textColourId,       theme->getThemeColour(res::Col_Font));
+
+    linkDiscord.setColour(HyperlinkButton::textColourId, colour_background_contrasting);
+    linkTumblr .setColour(HyperlinkButton::textColourId, colour_background_contrasting);
+    linkTwitter.setColour(HyperlinkButton::textColourId, colour_background_contrasting);
+    linkWebsite.setColour(HyperlinkButton::textColourId, colour_background_contrasting);
+
+    font = theme->getThemeFont();
 }
 
 void OptionPanel::reloadLocale(const jaut::Localisation &locale)

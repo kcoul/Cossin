@@ -25,7 +25,7 @@ inline constexpr const char* App_Name    = "Cossin";
 inline constexpr const char* App_Version = "1.0.0 Alpha";
 inline constexpr const char* App_Author  = "Elanda";
 inline constexpr const char* App_Vendor  = "ElandaSunshine";
-inline constexpr const char* App_Website = "https://www.elandasunshine.xyz/";
+inline constexpr const char* App_Website = "elandasunshine.xyz";
 inline constexpr const char* App_License = "GPL v3";
 
 /**

@@ -341,15 +341,13 @@ void CossinAudioProcessorEditor::paintBasicInterface(Graphics &g) const
     g.setColour(lf.findColour(ColourContainerForegroundId));
     g.fillRect(footer.getX(), footer.getY(), footer.getWidth(), footer.getHeight());
 
+    g.setColour(colour_font);
     jaut::FontFormat::drawSmallCaps(g, locale.translate("control.slider.master.level"),
-                                    footer_middle - 107, footer_label_slider_small, 50, 31, colour_font,
-                                    Justification::centred);
+                                    footer_middle - 107, footer_label_slider_small, 50, 31, Justification::centred);
     jaut::FontFormat::drawSmallCaps(g, locale.translate("control.slider.master.mix"),
-                                    footer_middle - 30, footer_centre - 28, 60, 60, colour_font,
-                                    Justification::centred);
+                                    footer_middle - 30, footer_centre - 28, 60, 60, Justification::centred);
     jaut::FontFormat::drawSmallCaps(g, locale.translate("control.slider.master.pan"),
-                                    footer_middle + 50, footer_label_slider_small, 50, 31, colour_font,
-                                    Justification::centred);
+                                    footer_middle + 50, footer_label_slider_small, 50, 31, Justification::centred);
 
     g.setFont(fontTheme.withHeight(12.0f));
     g.drawText("L", footer_metre_channel_text_x, footer.getBottom() - 44.0f, 212.0f, 53.0f, Justification::left);

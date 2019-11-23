@@ -93,12 +93,20 @@ private:
     //OptionPanelAccount optionsAccount;
     //OptionPanelStandalone optionsStandalone;
     ListBox optionTabs;
+    HyperlinkButton linkDiscord;
+    HyperlinkButton linkTumblr;
+    HyperlinkButton linkTwitter;
+    HyperlinkButton linkWebsite;
 
     // Shared Data
     jaut::Localisation &locale;
 
     // Paint data
     Image imgCossinAbout;
+    Image imgSocialDiscord;
+    Image imgSocialTumblr;
+    Image imgSocialTwitter;
+    Image imgSocialWebsite;
     Font font;
 
     //==================================================================================================================
