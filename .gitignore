@@ -330,6 +330,7 @@ ASALocalRun/
 
 # UNTRACKED FILES
 bin/
+Builds/
 JuceLibraryCode/
 logs/
 .settings/
