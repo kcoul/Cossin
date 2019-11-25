@@ -26,16 +26,18 @@
 #include "OptionCategories.h"
 
 #include "PluginEditor.h"
+#include "PluginStyle.h"
 #include "Resources.h"
 #include "SharedData.h"
 #include "ThemeFolder.h"
 #include <jaut/appdata.h>
+#include <jaut/config.h>
+#include <jaut/fontformat.h>
+#include <jaut/localisation.h>
 
 namespace
 {
-LocalisedStrings emptyLocale("", true);
-
-inline bool isDefaultTheme(const jaut::ThemeManager::ThemePointer &theme) noexcept
+inline bool isDefaultTheme(const jaut::ThemePointer &theme) noexcept
 {
     return theme->getThemeMeta()->getName().removeCharacters(" ").equalsIgnoreCase("cossindefault");
 }
@@ -74,12 +76,14 @@ OptionPanelGeneral::PanelDefaults::PanelDefaults(OptionPanelGeneral &panel, jaut
     boxPanningLaw.addItem("Linear",     1);
     boxPanningLaw.addItem("Square",     2);
     boxPanningLaw.addItem("Sinusoidal", 3);
+    boxPanningLaw.addListener(this);
     addAndMakeVisible(boxPanningLaw);
 
     // FUTURE (stack, graph)
     boxProcessor.addItem("Solo",  1);
     //boxProcessor.addItem("Stack", 2);
     //boxProcessor.addItem("Graph", 3);
+    boxProcessor.addListener(this);
     addAndMakeVisible(boxProcessor);
 }
 
@@ -96,7 +100,13 @@ void OptionPanelGeneral::PanelDefaults::paint(Graphics &g)
 
 void OptionPanelGeneral::PanelDefaults::resized()
 {
-    boxPanningLaw.setBounds(0, 15, 200, 30);
+    boxPanningLaw.setBounds(0, 17, 200, 30);
+}
+
+//======================================================================================================================
+void OptionPanelGeneral::PanelDefaults::comboBoxChanged(ComboBox *comboBoxThatHasChanged)
+{
+    
 }
 #endif // PanelDefaults
 
@@ -154,13 +164,13 @@ void OptionPanelGeneral::resetDefaults(const jaut::Config &config)
 {
     const int panning_value = config.getProperty("panning", res::Cfg_Defaults).getValue();
 
-    if(std::is_in_ran)
+    if(jaut::is_in_range(panning_value, 0, 2))
     {
-
+        defaultsBox.boxPanningLaw.setSelectedId(panning_value + 1);
     }
     else
     {
-        defaultsBox.boxPanningLaw.setSelectedId(2);   
+        defaultsBox.boxPanningLaw.setSelectedId(2);
     }
 }
 
@@ -186,22 +196,40 @@ void OptionPanelGeneral::resetLangList(const File &langDirectory)
     DirectoryIterator iterator(langDirectory, false, "*.lang");
 
     languages.clear();
-    languages.emplace_back("en_GB", "Default (English - GB)");
+    languages.emplace_back("default", "Default");
 
     while(iterator.next())
     {
         const File language_file = iterator.getFile();
         const String file_name   = language_file.getFileNameWithoutExtension();
         auto lang_data           = jaut::Localisation::getLanguageFileData(language_file);
-
-        if(!(lang_data.first.equalsIgnoreCase("english") && lang_data.second.contains("gb", true))
-           && jaut::Localisation::isValidLanguageFile(language_file))
-        {
-            languages.emplace_back(file_name, lang_data.first + " - " + lang_data.second.joinIntoString(" "));
-        }
+        languages.emplace_back(file_name, lang_data.first + " - " + lang_data.second.joinIntoString(" "));
     }
 
+    Logger::getCurrentLogger()->writeToLog(langDirectory.getFullPathName());
+
     languageList.updateContent();
+}
+
+//======================================================================================================================
+int OptionPanelGeneral::getDefaultPanningMode() const noexcept
+{
+    return defaultsBox.boxPanningLaw.getSelectedId() - 1;
+}
+
+int OptionPanelGeneral::getDefaultProcessor() const noexcept
+{
+    return defaultsBox.boxProcessor.getSelectedId() - 1;
+}
+
+Rectangle<int> OptionPanelGeneral::getDefaultWindowSize() const noexcept
+{
+    return {800, 500};
+}
+
+String OptionPanelGeneral::getSelectedLanguage() const noexcept
+{
+    return currentLanguageIndex == 0 ? "default" : languages.at(currentLanguageIndex).first;
 }
 
 //======================================================================================================================
@@ -210,7 +238,7 @@ void OptionPanelGeneral::reloadLocale(const jaut::Localisation &locale)
     selectLangRow(locale.getLanguageFile());
 }
 
-void OptionPanelGeneral::reloadTheme(const jaut::ThemeManager::ThemePointer &theme)
+void OptionPanelGeneral::reloadTheme(const jaut::ThemePointer &theme)
 {
     font = theme->getThemeFont();
 }
@@ -269,28 +297,25 @@ void OptionPanelGeneral::listBoxItemDoubleClicked(int row, const MouseEvent&)
         return;
     }
 
-    const auto shared_data = SharedData::getInstance();
-    auto lock              = shared_data->setWriting();
+    jaut::Localisation new_locale(locale);
+    const String lang_name = languages.at(row).first;
 
-    auto property_language = shared_data->Configuration().getProperty("language");
-    const String lang_code = languages.at(row).first;
-
-    if(row == 0)
+    if(row == 0 || lang_name == "default")
     {
-        shared_data->Locale().setCurrentLanguage(emptyLocale);
-        property_language.setValue("en_GB");
-        shared_data->sendUpdate();
-        currentLanguageIndex = row;
+        new_locale.setCurrentLanguage(SharedData::getInstance()->getDefaultLocale());
+        editor.reloadLocale(new_locale);
+        editor.repaint();
+        currentLanguageIndex = 0;
     }
-    else if(shared_data->Locale().setCurrentLanguage(lang_code))
+    else if(new_locale.setCurrentLanguage(languages.at(row).first))
     {
-        property_language.setValue(lang_code);
-        shared_data->sendUpdate();
+        editor.reloadLocale(new_locale);
+        editor.repaint();
         currentLanguageIndex = row;
     }
     else
     {
-        resetLangList(shared_data->App().getDir("Lang").toFile());
+        resetLangList(locale.getRootDirectory());
         languageList.selectRow(lastSelected);
     }
 
@@ -325,7 +350,7 @@ OptionPanelThemes::ThemePanel::ThemePreview::ThemePreview(ThemePanel &panel)
 //======================================================================================================================
 void OptionPanelThemes::ThemePanel::ThemePreview::paint(Graphics &g)
 {
-    if(theme)
+    if(theme && theme->isValid())
     {
         const LookAndFeel &lf    = getLookAndFeel();
         const Image thumbnail    = theme->getThemeThumbnail();
@@ -383,9 +408,9 @@ void OptionPanelThemes::ThemePanel::ThemePreview::resized()
 }
 
 //======================================================================================================================
-void OptionPanelThemes::ThemePanel::ThemePreview::updateContent(const jaut::ThemeManager::ThemePointer &theme)
+void OptionPanelThemes::ThemePanel::ThemePreview::updateContent(const jaut::ThemePointer &theme)
 {
-    if(!theme || this->theme == theme)
+    if(!theme || !theme->isValid() || this->theme == theme)
     {
         return;
     }
@@ -447,6 +472,7 @@ void OptionPanelThemes::ThemePanel::ThemePreview::updateContent(const jaut::Them
     }
 
     labelNoPreview.setVisible(content.getNumChildComponents() < 1);
+
     const String website_url  = theme->getThemeMeta()->getWebsite();
     const String license_url  = theme->getThemeMeta()->getLicense().second;
     const String license_text = theme->getThemeMeta()->getLicense().first;
@@ -489,9 +515,9 @@ void OptionPanelThemes::ThemePanel::ThemePreview::updateContent(const jaut::Them
  * =================================== ThemePanel ===================================
  * ================================================================================== */
 #if(1) // ThemePanel
-OptionPanelThemes::ThemePanel::ThemePanel()
-    : selectedTheme(0), selectedRow(0),
-      previewBox(*this), themeList("", this)
+OptionPanelThemes::ThemePanel::ThemePanel(CossinAudioProcessorEditor &editor)
+    : editor(editor), selectedTheme(0), selectedRow(0), previewBox(*this),
+      themeList("", this)
 {
     themeList.setRowHeight(36);
     themeList.setColour(ListBox::outlineColourId, Colours::transparentBlack);
@@ -531,7 +557,7 @@ void OptionPanelThemes::ThemePanel::paintListBoxItem(int row, Graphics &g, int w
     const LookAndFeel &lf = getLookAndFeel();
     const auto theme      = themes.at(row);
 
-    if(theme)
+    if(theme && theme->isValid())
     {
         if(selected)
         {
@@ -576,7 +602,6 @@ void OptionPanelThemes::ThemePanel::listBoxItemClicked(int row, const MouseEvent
     {
         previewBox.updateContent(themes.at(row));
         changeButtonState();
-        repaint();
         selectedRow = row;
     }
 }
@@ -597,26 +622,17 @@ void OptionPanelThemes::ThemePanel::buttonClicked(Button*)
         return;
     }
 
-    MouseCursor::showWaitCursor();
-
+    if(themes.size() > selected_row)
     {
-        auto shared_data = SharedData::getInstance();
-        auto lock        = shared_data->setWriting();
+        MouseCursor::showWaitCursor();
 
-        const auto new_theme = themes.at(selected_row);
-
-        if(new_theme)
-        {
-            shared_data->Style().reset(new_theme);
-            shared_data->Configuration().getProperty("theme", res::Cfg_General).setValue(new_theme.getName());
-            shared_data->sendUpdate();
-            selectedTheme = selected_row;
-        }
-
+        editor.reloadTheme(themes.at(selected_row));
+        selectedTheme = selected_row;
         buttonApply.setEnabled(false);
-    }
+        editor.repaint();
 
-    MouseCursor::hideWaitCursor();
+        MouseCursor::hideWaitCursor();
+    }
 }
 
 void OptionPanelThemes::ThemePanel::changeButtonState()
@@ -635,7 +651,7 @@ void OptionPanelThemes::ThemePanel::changeButtonState()
  * ================================================================================== */
 #if (1) // OptionPanelThemes
 OptionPanelThemes::OptionPanelThemes(CossinAudioProcessorEditor &editor)
-    : editor(editor)
+    : editor(editor), themePanel(editor)
 {
     editor.addReloadListener(this);
     addAndMakeVisible(themePanel);
@@ -653,7 +669,7 @@ void OptionPanelThemes::resized()
 }
 
 //======================================================================================================================
-void OptionPanelThemes::selectThemeRow(const jaut::ThemeManager::ThemePointer &theme)
+void OptionPanelThemes::selectThemeRow(const jaut::ThemePointer &theme)
 {
     const auto iterator = std::find(themePanel.themes.begin(), themePanel.themes.end(), theme);
 
@@ -666,13 +682,16 @@ void OptionPanelThemes::selectThemeRow(const jaut::ThemeManager::ThemePointer &t
         themePanel.themeList.selectRow(std::distance(themePanel.themes.begin(), iterator));
     }
 
+    const int selected_row = themePanel.themeList.getSelectedRow();
+
     themePanel.previewBox.updateContent(theme);
-    themePanel.selectedRow = themePanel.themeList.getSelectedRow();
+    themePanel.selectedRow   = selected_row;
+    themePanel.selectedTheme = selected_row;
     themePanel.changeButtonState();
 }
 
-void OptionPanelThemes::resetThemeList(const jaut::ThemeManager::ThemePointer &defaultTheme,
-                                       const std::vector<jaut::ThemeManager::ThemePointer> &themes)
+void OptionPanelThemes::resetThemeList(const jaut::ThemePointer &defaultTheme,
+                                       const std::vector<jaut::ThemePointer> &themes)
 {
     themePanel.themes.clear();
     themePanel.themes.emplace_back(defaultTheme);
@@ -690,6 +709,12 @@ void OptionPanelThemes::resetThemeList(const jaut::ThemeManager::ThemePointer &d
 }
 
 //======================================================================================================================
+const jaut::ThemePointer &OptionPanelThemes::getSelectedTheme() const noexcept
+{
+    return themePanel.themes.at(themePanel.selectedTheme);
+}
+
+//======================================================================================================================
 void OptionPanelThemes::reloadLocale(const jaut::Localisation &locale)
 {
     themePanel.buttonApply.setButtonText(locale.translate("options.category.themes.apply"));
@@ -697,7 +722,7 @@ void OptionPanelThemes::reloadLocale(const jaut::Localisation &locale)
                                                  NotificationType::sendNotificationAsync);
 }
 
-void OptionPanelThemes::reloadTheme(const jaut::ThemeManager::ThemePointer &theme)
+void OptionPanelThemes::reloadTheme(const jaut::ThemePointer &theme)
 {
     const Colour colour_font = theme->getThemeColour(res::Col_Font);
 
@@ -718,8 +743,6 @@ void OptionPanelThemes::reloadTheme(const jaut::ThemeManager::ThemePointer &them
     {
         themePanel.selectedTheme = std::distance(themePanel.themes.begin(), iterator);
     }
-
-    repaint();
 }
 
 #endif // OptionPanelThemes

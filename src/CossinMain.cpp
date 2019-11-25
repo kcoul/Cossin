@@ -68,13 +68,13 @@ Cossin::Cossin()
     : session{Time::getCurrentTime(), Uuid()}
 {
     PluginHostType::jucePlugInClientCurrentWrapperType = AudioProcessor::wrapperType_Standalone;
-    auto sharedData (SharedData::getInstance());
+    auto sharedData = SharedData::getInstance();
 
     JT_NDEBUGGING(if(sharedData->Configuration().getProperty("logToFile", res::Cfg_Standalone).getValue()))
     {
-        logger.reset(createLoggerFromSession(sharedData->App().getDir("Logs")
-                                                              .getFile("session-" + session.id.toDashedString()
-                                                                     + ".log"),
+        logger.reset(createLoggerFromSession(sharedData->AppData().getDir("Logs")
+                                                                  .getFile("session-" + session.id.toDashedString()
+                                                                           + ".log"),
                                              session, getApplicationName(), getApplicationVersion()));
     }
     JT_NDEBUGGING(else
@@ -113,7 +113,6 @@ void Cossin::initialise(const String&)
 #if JUCE_STANDALONE_FILTER_WINDOW_USE_KIOSK_MODE
     Desktop::getInstance().setKioskModeComponent (mainWindow.get(), false);
 #endif
-
     mainWindow->setVisible(true);
 }
 
@@ -289,7 +288,7 @@ void CossinPluginWrapper::valueChanged(Value &value)
 //======================================================================================================================
 File CossinPluginWrapper::getLastFile() const
 {
-    const String defaultloc = sharedData->App().getDir("Data").getDir("Saves").toString(true);
+    const String defaultloc = sharedData->AppData().getDir("Data").getDir("Saves").toString(true);
     return File(cossinCache->getValue("lastStateFile", defaultloc));
 }
 
@@ -302,7 +301,7 @@ void CossinPluginWrapper::setLastFile(const File &file)
 bool CossinPluginWrapper::askUserToSaveState(const String &fileSuffix)
 {
 #if JUCE_MODAL_LOOPS_PERMITTED
-    const jaut::Localisation &locale = sharedData->Locale();
+    const jaut::Localisation &locale = sharedData->Localisation();
     FileChooser fc(locale.translate("state.chooser.save.title"), getLastFile(), getFilePatterns(fileSuffix));
 
     if (fc.browseForFileToSave(true))
@@ -340,7 +339,7 @@ bool CossinPluginWrapper::askUserToSaveState(const String &fileSuffix)
 bool CossinPluginWrapper::askUserToLoadState(const String &fileSuffix)
 {
 #if JUCE_MODAL_LOOPS_PERMITTED
-    const jaut::Localisation &locale = sharedData->Locale();
+    const jaut::Localisation &locale = sharedData->Localisation();
     FileChooser fc(locale.translate("state.chooser.load.title"), getLastFile(), getFilePatterns(fileSuffix));
 
     if (fc.browseForFileToOpen())
@@ -489,7 +488,7 @@ bool CossinPluginWrapper::reloadPluginCache()
             PropertiesFile::Options opts;
             opts.storageFormat = PropertiesFile::storeAsCompressedBinary;
             opts.processLock   = cacheLock.get();
-            cossinCache.reset(new PropertiesFile(sharedData->App().getFile(".cache"), opts));
+            cossinCache.reset(new PropertiesFile(sharedData->AppData().getFile(".cache"), opts));
             
             return true;
         }
@@ -513,7 +512,7 @@ bool CossinPluginWrapper::savePluginState(bool askToSave, bool askIfNotSuccessfu
     MemoryBlock data;
     processor->getStateInformation(data);
     const String base64 = data.toBase64Encoding();
-    const auto &locale  = sharedData->Locale();
+    const auto &locale  = sharedData->Localisation();
 
     if(base64 == lastLoadedState)
     {
@@ -573,7 +572,7 @@ bool CossinPluginWrapper::reloadPluginState(bool askToLoad, bool askIfNotSuccess
         return false;
     }
 
-    const auto &locale  = sharedData->Locale();
+    const auto &locale  = sharedData->Localisation();
     const String base64 = currentSaveFile.loadFileAsString();
     MemoryBlock data;
 

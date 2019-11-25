@@ -25,7 +25,9 @@
 
 #include "SharedData.h"
 
+#include "PluginEditor.h"
 #include "Resources.h"
+#include "ThemeFolder.h"
 #include <jaut/appdata.h>
 #include <jaut/imetareader.h>
 #include <jaut/ithemedefinition.h>
@@ -58,16 +60,10 @@ SharedData::SharedData() noexcept
     initialize();
 }
 
-SharedData::~SharedData()
-{
-    if(appConfig)
-    {
-        appConfig->save();
-    }
-}
+SharedData::~SharedData() {}
 
 //======================================================================================================================
-jaut::AppData &SharedData::App() const noexcept
+jaut::AppData &SharedData::AppData() const noexcept
 {
     return *appData;
 }
@@ -77,25 +73,20 @@ jaut::Config &SharedData::Configuration() const noexcept
     return *appConfig;
 }
 
-jaut::ThemeManager &SharedData::Themes() const noexcept
+jaut::ThemeManager &SharedData::ThemeManager() const noexcept
 {
     return *appThemes;
 }
 
-jaut::Localisation &SharedData::Locale() const noexcept
+jaut::Localisation &SharedData::Localisation() const noexcept
 {
     return *appLocale;
 }
 
-PluginStyle &SharedData::Style() noexcept
-{
-    return appStyle;
-}
-
 //======================================================================================================================
-const jaut::ThemeManager::ThemePointer SharedData::getDefaultTheme() const noexcept
+const jaut::ThemePointer &SharedData::getDefaultTheme() const noexcept
 {
-    return defaultTheme;
+    return *defaultTheme;
 }
 
 const jaut::Localisation &SharedData::getDefaultLocale() const noexcept
@@ -104,24 +95,13 @@ const jaut::Localisation &SharedData::getDefaultLocale() const noexcept
 }
 
 //======================================================================================================================
-std::shared_ptr<SharedData::SharedDataLock<true>> SharedData::setReading() const noexcept
+void SharedData::sendChangeToAllInstancesExcept(CossinAudioProcessorEditor *except) const
 {
-    return !JUCEApplicationBase::isStandaloneApp() ? std::make_shared<SharedDataLock<true>>(*this) : nullptr;
-}
-
-std::shared_ptr<SharedData::SharedDataLock<false>> SharedData::setWriting() const noexcept
-{
-    return !JUCEApplicationBase::isStandaloneApp() ? std::make_shared<SharedDataLock<false>>(*this) : nullptr;
+    sendActionMessage(except ? except->getInstanceId().toDashedString() : "");
 }
 
 //======================================================================================================================
-void SharedData::sendUpdate() const
-{
-    sendActionMessage(String());
-}
-
-//======================================================================================================================
-const SharedData::InitializationState &SharedData::getInitializationState() const noexcept
+SharedData::InitializationState SharedData::getInitializationState() const noexcept
 {
     return initState;
 }
@@ -136,21 +116,21 @@ void SharedData::initialize()
 
     rwLock.enterWrite();
 
-    // make default theme
-    MemoryInputStream theme_stream(Assets::theme_meta, Assets::theme_metaSize, false);
-    defaultTheme = jaut::ThemeManager::ThemePointer("default",
-                       new ThemeDefinition(new ThemeMeta(jaut::MetadataHelper::readMetaToNamedValueSet(theme_stream))));
+    initAppdata();
 
     // make default locale
     MemoryInputStream locale_stream(Assets::default_lang, Assets::default_langSize, false);
-    defaultLocale.reset(new jaut::Localisation(File(),
-                                               LocalisedStrings(locale_stream.readEntireStreamAsString(), true)));
+    LocalisedStrings locale_def(locale_stream.readEntireStreamAsString(), true);
+    defaultLocale.reset(new jaut::Localisation(appData->getDir("Lang").toFile(), locale_def));
 
-    initAppdata();
     initConfig();       // <- depends on appdata
     initLangs();        // <- depends on appdata and config
     initThemeManager(); // <- depends on appdata and config
-    initPluginStyle();  // <- depends on config and thememanager
+
+    // make default theme
+    MemoryInputStream theme_stream(Assets::theme_meta, Assets::theme_metaSize, false);
+    auto theme_def = new ThemeDefinition(new ThemeMeta(jaut::MetadataHelper::readMetaToNamedValueSet(theme_stream)));
+    defaultTheme.reset(new jaut::ThemePointer("default", theme_def));
 
     using jaut::MetadataHelper;
     MetadataHelper::setPlaceholder("name",    res::App_Name);
@@ -226,7 +206,7 @@ void SharedData::initConfig()
     property_theme = config->createProperty("theme", "default", res::Cfg_General);
     property_theme.setComment("Set this to the name of a theme folder in your themes directory.");
 
-    property_language = config->createProperty("language", "en_GB", res::Cfg_General);
+    property_language = config->createProperty("language", "default", res::Cfg_General);
     property_language.setComment("Set the language which the app should be displayed in.");
 
     //=================================: DEFAULTS
@@ -302,7 +282,7 @@ void SharedData::initLangs()
     jaut::Localisation *locale = new jaut::Localisation(appData->getDir("Lang").toFile(),
                                                         defaultLocale->getInternalLocalisation());
     
-    if(!language_name.equalsIgnoreCase("default") && !language_name.equalsIgnoreCase("en_gb"))
+    if(!language_name.equalsIgnoreCase("default"))
     {
         (void) locale->setCurrentLanguage(language_name);
     }
@@ -310,26 +290,15 @@ void SharedData::initLangs()
     appLocale.reset(locale);
 }
 
-void SharedData::initPluginStyle()
-{
-    jaut::ThemeManager::ThemePointer theme_to_apply = defaultTheme;
-
-    if(auto theme = appThemes->getThemePack(appConfig->getProperty("theme", res::Cfg_General).getValue()))
-    {
-        theme_to_apply = theme;
-    }
-
-    appStyle.reset(theme_to_apply);
-    Desktop::getInstance().setDefaultLookAndFeel(&appStyle);
-}
-
 void SharedData::initThemeManager()
 {
     jaut::ThemeManager::Options options;
     options.cacheThemes = true;
     options.themeMetaId = "theme.meta";
-    auto *thememanager(new jaut::ThemeManager(appData->getDir("Themes").toFile(), ::initializeThemePack,
-                       std::make_unique<ThemeMetaReader>(), options));
+    String theme_name   = appConfig->getProperty("theme").getValue().toString();
+    auto *thememanager (new jaut::ThemeManager(appData->getDir("Themes").toFile(), ::initializeThemePack,
+                        std::make_unique<ThemeMetaReader>(), options));
+    
     thememanager->reloadThemePacks();
     appThemes.reset(thememanager);
 }

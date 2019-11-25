@@ -47,8 +47,14 @@ public:
     void selectLangRow(const File&);
     void resetLangList(const File&);
 
+    //==================================================================================================================
+    int getDefaultPanningMode() const noexcept;
+    int getDefaultProcessor() const noexcept;
+    Rectangle<int> getDefaultWindowSize() const noexcept;
+    String getSelectedLanguage() const noexcept;
+
 private:
-    class PanelDefaults final : public Component
+    class PanelDefaults final : public Component, ComboBox::Listener
     {
     public:
         // General data
@@ -65,6 +71,9 @@ private:
         //==============================================================================================================
         void paint(Graphics&) override;
         void resized() override;
+
+        //==============================================================================================================
+        void comboBoxChanged(ComboBox*) override;
 
         JUCE_DECLARE_NON_COPYABLE(PanelDefaults)
     };
@@ -85,7 +94,7 @@ private:
 
     //==================================================================================================================
     void reloadLocale(const jaut::Localisation&) override;
-    void reloadTheme(const jaut::ThemeManager::ThemePointer&) override;
+    void reloadTheme(const jaut::ThemePointer&) override;
     void reloadConfig(const jaut::Config&) override;
 
     //==================================================================================================================
@@ -108,9 +117,12 @@ public:
     void resized() override;
 
     //==================================================================================================================
-    void selectThemeRow(const jaut::ThemeManager::ThemePointer&);
-    void resetThemeList(const jaut::ThemeManager::ThemePointer&, const std::vector<jaut::ThemeManager::ThemePointer>&);
+    void selectThemeRow(const jaut::ThemePointer&);
+    void resetThemeList(const jaut::ThemePointer&, const std::vector<jaut::ThemePointer>&);
 
+    //==================================================================================================================
+    const jaut::ThemePointer &getSelectedTheme() const noexcept;
+    
 private:
     class ThemePanel final : public Component, public ListBoxModel, TextButton::Listener
     {
@@ -119,7 +131,7 @@ private:
         {
         public:
             ThemePanel &panel;
-            jaut::ThemeManager::ThemePointer theme;
+            jaut::ThemePointer theme;
             ImageComponent screenshots[10];
             Viewport gallery;
             HyperlinkButton buttonWebsiteLink;
@@ -134,16 +146,17 @@ private:
             void resized() override;
             
             //==========================================================================================================
-            void updateContent(const jaut::ThemeManager::ThemePointer&);
+            void updateContent(const jaut::ThemePointer&);
 
             JUCE_DECLARE_NON_COPYABLE(ThemePreview)
         };
 
         //==============================================================================================================
         // General
+        CossinAudioProcessorEditor &editor;
         int selectedTheme;
         int selectedRow;
-        std::vector<jaut::ThemeManager::ThemePointer> themes;
+        std::vector<jaut::ThemePointer> themes;
         
         // Components
         TextButton buttonApply;
@@ -155,7 +168,7 @@ private:
         Font font;
 
         //==============================================================================================================
-        ThemePanel();
+        ThemePanel(CossinAudioProcessorEditor&);
 
         //==============================================================================================================
         void paint(Graphics&) override;
@@ -179,7 +192,7 @@ private:
 
     //==================================================================================================================
     void reloadLocale(const jaut::Localisation&) override;
-    void reloadTheme(const jaut::ThemeManager::ThemePointer&) override;
+    void reloadTheme(const jaut::ThemePointer&) override;
 
     JUCE_DECLARE_NON_COPYABLE(OptionPanelThemes)
 };

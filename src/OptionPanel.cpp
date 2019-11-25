@@ -25,12 +25,14 @@
 
 #include "OptionPanel.h"
 #include "PluginEditor.h"
+#include "PluginStyle.h"
 #include "Resources.h"
 #include "SharedData.h"
 #include <jaut/appdata.h>
 #include <jaut/config.h>
 #include <jaut/fontformat.h>
 #include <jaut/localisation.h>
+#include <jaut/thememanager.h>
 
 #if !JUCE_USE_CUSTOM_PLUGIN_STANDALONE_APP
 #include "juce_audio_plugin_client/Standalone/juce_StandaloneFilterWindow.h"
@@ -38,7 +40,7 @@
 
 namespace
 {
-inline bool isDefaultTheme(const jaut::ThemeManager::ThemePointer &theme) noexcept
+inline bool isDefaultTheme(const jaut::ThemePointer &theme) noexcept
 {
     return theme.getName().removeCharacters(" ").equalsIgnoreCase("cossindefault");
 }
@@ -101,9 +103,7 @@ OptionPanel::OptionPanel(CossinAudioProcessorEditor &cossin, jaut::Localisation 
     : cossin(cossin), closeCallback(nullptr), lastSelectedRow(0), bttClose("X"),
       optionContainer(*this), optionTabs("OptionTabs", this), locale(locale),
       optionsGeneral(cossin, locale), optionsThemes(cossin)
-{   
-    cossin.addReloadListener(this);
-
+{
     categories.add(res::Cfg_General);
     categories.add("themes");
     categories.add(res::Cfg_Optimization);
@@ -157,11 +157,6 @@ OptionPanel::OptionPanel(CossinAudioProcessorEditor &cossin, jaut::Localisation 
     linkWebsite.setButtonText("Website");
     linkWebsite.setFont(link_font, false, Justification::centredLeft);
     addAndMakeVisible(linkWebsite);
-}
-
-OptionPanel::~OptionPanel()
-{
-    cossin.removeReloadListener(this);
 }
 
 //======================================================================================================================
@@ -218,15 +213,16 @@ void OptionPanel::show()
 {
     {
         auto shared_data = SharedData::getInstance();
-        auto lock        = shared_data->setReading();
+        SharedData::ReadLock lock(*shared_data);
 
         // General tab
-        optionsGeneral.resetLangList(shared_data->App().getDir("Lang").toFile());
-        optionsGeneral.selectLangRow(shared_data->Locale().getLanguageFile());
+        optionsGeneral.resetLangList(shared_data->AppData().getDir("Lang").toFile());
+        optionsGeneral.selectLangRow(shared_data->Localisation().getLanguageFile());
+        optionsGeneral.resetDefaults(shared_data->Configuration());
 
         // Themes tab
-        optionsThemes.resetThemeList(shared_data->getDefaultTheme(), shared_data->Themes().getAllThemePacks());
-        optionsThemes.selectThemeRow(shared_data->Style().getTheme());
+        optionsThemes.resetThemeList(shared_data->getDefaultTheme(), shared_data->ThemeManager().getAllThemePacks());
+        optionsThemes.selectThemeRow(dynamic_cast<PluginStyle*>(&getLookAndFeel())->getTheme());
     }
 
     setVisible(true);
@@ -238,10 +234,43 @@ void OptionPanel::hide()
 
     {
         auto shared_data = SharedData::getInstance();
-        auto lock        = shared_data->setWriting();
+        SharedData::WriteLock lock(*shared_data);
+        
+        auto &config = shared_data->Configuration();
+        bool full_reload  = false;
 
-        shared_data->Configuration().save();
-        shared_data->sendUpdate();
+        // Defaults
+        const int  default_panning_law = optionsGeneral.getDefaultPanningMode();
+        const int  default_processor   = optionsGeneral.getDefaultProcessor();
+        const auto default_window_size = optionsGeneral.getDefaultWindowSize();
+
+        auto property_panning   = config.getProperty("panning",   res::Cfg_Defaults);
+        auto property_processor = config.getProperty("processor", res::Cfg_Defaults);
+        auto property_size      = config.getProperty("size",      res::Cfg_Defaults);
+
+        property_panning  .setValue(default_panning_law);
+        property_processor.setValue(default_processor);
+        property_size.getProperty("width") .setValue(default_window_size.getWidth());
+        property_size.getProperty("height").setValue(default_window_size.getHeight());
+
+
+        // Locale
+        const String lang_name = optionsGeneral.getSelectedLanguage();
+
+        shared_data->Localisation().setCurrentLanguage(locale);
+        config.getProperty("language").setValue(lang_name);
+
+
+        // Theme
+        const jaut::ThemePointer selected_theme = optionsThemes.getSelectedTheme();
+        const jaut::ThemePointer actual_theme   = shared_data->ThemeManager().getThemePack(selected_theme.getName());
+        const jaut::ThemePointer &final_theme   = ::isDefaultTheme(selected_theme) || !actual_theme.isValid()
+                                                  ? shared_data->getDefaultTheme() : actual_theme;
+        
+        config.getProperty("theme").setValue(::isDefaultTheme(final_theme) ? "default" : final_theme.getName());
+
+        config.save();
+        shared_data->sendChangeToAllInstancesExcept(full_reload ? nullptr : &cossin);
     }
 
     MouseCursor::hideWaitCursor();
@@ -349,14 +378,9 @@ void OptionPanel::listBoxItemClicked(int row, const MouseEvent &e)
 }
 
 //======================================================================================================================
-void OptionPanel::reloadConfig(const jaut::Config &config)
+void OptionPanel::reloadTheme(const jaut::ThemePointer &theme)
 {
-    
-}
-
-void OptionPanel::reloadTheme(const jaut::ThemeManager::ThemePointer &theme)
-{
-    const LookAndFeel &lf    = getLookAndFeel();
+    const LookAndFeel &lf = getLookAndFeel();
     const Colour colour_container_background   = theme->getThemeColour(res::Col_Container_Bg);
     const Colour colour_background_contrasting = colour_container_background.contrasting();
 
@@ -369,10 +393,5 @@ void OptionPanel::reloadTheme(const jaut::ThemeManager::ThemePointer &theme)
     linkWebsite.setColour(HyperlinkButton::textColourId, colour_background_contrasting);
 
     font = theme->getThemeFont();
-}
-
-void OptionPanel::reloadLocale(const jaut::Localisation &locale)
-{
-    
 }
 #endif // OptionPanel

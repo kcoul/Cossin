@@ -41,12 +41,18 @@ public:
     ~PluginStyle() override;
 
 protected:
-    //==================================================================================================================
     void drawRotarySlider(Graphics&, int, int, int, int, float, float, float, Slider&) override;
     void drawCornerResizer(Graphics&, int, int, bool, bool) override;
     void drawTooltip(Graphics&, const String&, int, int) override;
-    void drawButtonBackground(juce::Graphics&, juce::Button&, const juce::Colour&, bool, bool) override;
-    void drawButtonText(juce::Graphics&, juce::TextButton&, bool, bool) override;
+    void drawButtonBackground(Graphics&, Button&, const Colour&, bool, bool) override;
+    void drawButtonText(Graphics&, TextButton&, bool, bool) override;
+    void drawComboBox(Graphics&, int, int, bool, int, int, int, int, ComboBox&) override;
+
+    //==================================================================================================================
+    void drawPopupMenuBackground(Graphics&, int, int) override;
+    void drawPopupMenuItem(Graphics&, const Rectangle<int>&, bool, bool, bool, bool, bool, const String&,
+                           const String&, const Drawable*, const Colour*) override;
+    Font getPopupMenuFont() override;
 
     //==================================================================================================================
     void drawAlertBox(Graphics&, AlertWindow&, const Rectangle<int>&, TextLayout&) override;
@@ -58,23 +64,23 @@ protected:
     //==================================================================================================================
     int getOptionListLabelWidth(const String&) override;
     void drawOptionListOptionBox(Graphics&, Rectangle<int>, bool, bool, bool, bool, bool) override;
-    void drawOptionListOptionLabel(Graphics&, const String&, Rectangle<int>, bool, bool, bool,
-                                   bool, bool, bool) override;
+    void drawOptionListOptionLabel(Graphics&, const String&, Rectangle<int>, bool, bool, bool, bool,
+                                   bool, bool) override;
 
     //==================================================================================================================
-    void drawScrollbar(juce::Graphics&, juce::ScrollBar&, int, int, int, int, bool, int, int, bool, bool) override;
+    void drawScrollbar(Graphics&, ScrollBar&, int, int, int, int, bool, int, int, bool, bool) override;
 
 public:
     //==================================================================================================================
-    void reset(const jaut::ThemeManager::ThemePointer&) noexcept;
-    const jaut::ThemeManager::ThemePointer getTheme() const noexcept;
+    void reset(const jaut::ThemePointer&) noexcept;
+    const jaut::ThemePointer getTheme() const noexcept;
 
     //==================================================================================================================
     const Font &getFont() const noexcept;
     Font getFont(float, int = 0, float = 1.0f, float = 0.0f) const noexcept;
 
 private:
-    jaut::ThemeManager::ThemePointer theme;
+    jaut::ThemePointer theme;
     jaut::CharFormat formatter;
 
     Image imgCheckbox;

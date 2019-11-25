@@ -73,7 +73,7 @@ void ProcessorPanel::makeVisible(int index) noexcept
 }
 
 //======================================================================================================================
-void ProcessorPanel::reloadTheme(const jaut::ThemeManager::ThemePointer &theme) noexcept
+void ProcessorPanel::reloadTheme(const jaut::ThemePointer &theme)
 {
     guiProcFrame.reloadTheme(theme);
 }

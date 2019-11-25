@@ -28,12 +28,12 @@
 #include "JuceHeader.h"
 #include "OptionCategories.h"
 #include "ReloadListener.h"
-#include <jaut/thememanager.h>
 
 namespace jaut
 {
-    class Localisation;
     class Config;
+    class Localisation;
+    class ThemePointer;
 }
 
 class CossinAudioProcessorEditor;
@@ -44,7 +44,6 @@ class OptionPanel final : public Button::Listener, public Component, public List
 {
 public:
     OptionPanel(CossinAudioProcessorEditor&, jaut::Localisation&);
-    ~OptionPanel();
 
     //==================================================================================================================
     void paint(Graphics&) override;
@@ -122,7 +121,5 @@ private:
     void listBoxItemClicked(int, const MouseEvent&) override;
     
     //==================================================================================================================
-    void reloadConfig(const jaut::Config&) override;
-    void reloadTheme (const jaut::ThemeManager::ThemePointer&) override;
-    void reloadLocale(const jaut::Localisation&) override;
+    void reloadTheme(const jaut::ThemePointer&) override;
 };

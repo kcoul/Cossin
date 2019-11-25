@@ -27,30 +27,41 @@
 
 #include "JuceHeader.h"
 #include "OptionPanel.h"
+#include "PluginStyle.h"
 #include "ProcessorPanel.h"
 #include "ReloadListener.h"
 #include <jaut/localisation.h>
 #include <jaut/propertyattribute.h>
-#include <jaut/thememanager.h>
 
-inline constexpr int Flag_AnimationEffects     = 0;
-inline constexpr int Flag_AnimationComponents  = 1;
-inline constexpr int Flag_HardwareAcceleration = 2;
-inline constexpr int Flag_DefaultPanning       = 3;
-
-namespace jaut
-{
-    class Config;
-    class Localisation;
-}
-
-class CossinAudioProcessor;
-class ProcessorContainer;
-
+//======================================================================================================================
+// MACROS
 #if JUCE_OPENGL
   #define COSSIN_USE_OPENGL 1
 #endif
 
+//======================================================================================================================
+// CONSTANTS
+inline constexpr int Flag_AnimationEffects     = 0;
+inline constexpr int Flag_AnimationComponents  = 1;
+inline constexpr int Flag_HardwareAcceleration = 2;
+inline constexpr int Flag_DefaultPanning       = 3;
+inline constexpr int Flag_DefaultProcessor     = 4;
+inline constexpr int Flag_End                  = 7;
+
+//======================================================================================================================
+// FUNCTIONS
+inline PluginStyle &getPluginStyle(Component &component)
+{
+    return *dynamic_cast<PluginStyle*>(&component.getLookAndFeel());
+}
+
+//======================================================================================================================
+// FORWARD DECLERATIONS
+class CossinAudioProcessor;
+class ProcessorContainer;
+
+//======================================================================================================================
+// CLASSES
 class CossinAudioProcessorEditor : public AudioProcessorEditor, public ActionListener, Button::Listener,
                                    Slider::Listener, LookAndFeel_V4,
 #if COSSIN_USE_OPENGL
@@ -72,15 +83,12 @@ public:
         ColourFontId                = 0x2000108
     };
 
-    using ButtonAttachment = AudioProcessorValueTreeState::ButtonAttachment;
-    using SliderAttachment = AudioProcessorValueTreeState::SliderAttachment;
-
     CossinAudioProcessorEditor(CossinAudioProcessor&, juce::AudioProcessorValueTreeState&, jaut::PropertyMap&,
                                FFAU::LevelMeterSource&, ProcessorContainer&);
     ~CossinAudioProcessorEditor();
 
 private:
-    void initializeData(SharedData&);
+    void initializeData();
     void initializeComponents();
     void initializeWindow();
 
@@ -94,19 +102,25 @@ public:
 private:
     void paintBasicInterface(Graphics&) const;
 
-private:
-    void reloadConfig(SharedData&);
-    void reloadLocale(SharedData&);
-    void reloadTheme(SharedData&);
-
 public:
+    void reloadConfig(const jaut::Config&);
+    void reloadLocale(const jaut::Localisation&);
+    void reloadTheme (const jaut::ThemePointer&);
+
+    //==================================================================================================================
     bool getOption(int) const noexcept;
+    const Uuid &getInstanceId() const noexcept;
 
     //==================================================================================================================
     void addReloadListener(ReloadListener*);
     void removeReloadListener(ReloadListener*);
 
 private:
+    using t_ButtonAttachment = AudioProcessorValueTreeState::ButtonAttachment;
+    using t_SliderAttachment = AudioProcessorValueTreeState::SliderAttachment;
+    using p_SliderAttachment = std::unique_ptr<t_SliderAttachment>;
+    using p_ButtonAttachment = std::unique_ptr<t_ButtonAttachment>;
+
     class BackgroundBlur : public Component
     {
     public:
@@ -117,20 +131,23 @@ private:
     };
 
     //==================================================================================================================
-    // General data
-    bool initialized;
+    // General
     Logger                 &logger;
     CossinAudioProcessor   &processor;
     FFAU::LevelMeterSource &sourceMetre;
+    bool initialized;
+    Uuid instanceId;
     ListenerList<ReloadListener> listeners;
+    PluginStyle lookAndFeel;
 
-    // Update data
+    // Shared data
+    String lastLocale;
     String lastTheme;
     jaut::Localisation locale;
     std::atomic<bool> needsUpdate;
-    Array<var> options;
+    bool options[Flag_End + 1];
 
-    // Component data
+    // Components
     BackgroundBlur backgroundBlur;
     ToggleButton   buttonPanningLaw;
     DrawableButton buttonPanningLawSelection;
@@ -143,18 +160,18 @@ private:
     Slider sliderPanning;
     Slider sliderTabControl;
 
-    // Processor sync data
+    // Processor data
     jaut::PropertyAttribute atrPanningLaw;
     jaut::PropertyAttribute atrProcessor;
-    std::unique_ptr<SliderAttachment> attLevel;
-    std::unique_ptr<SliderAttachment> attMix;
-    std::unique_ptr<SliderAttachment> attPanning;
+    p_SliderAttachment attLevel;
+    p_SliderAttachment attMix;
+    p_SliderAttachment attPanning;
 
 #if COSSIN_USE_OPENGL
     OpenGLContext glContext;
 #endif
 
-    // Painting data
+    // Drawing
     Image imgBackground;
     Image imgHeader;
     Image imgLogo;

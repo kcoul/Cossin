@@ -26,7 +26,6 @@
 #pragma once
 
 #include "JuceHeader.h"
-#include <jaut/thememanager.h>
 
 #define GUI_FRAME_PROCESSOR_USE_TIMER_INSTEAD_OF_CALLBACK 1
 
@@ -34,6 +33,7 @@ namespace jaut
 {
     class DspUnitManager;
     class GuiDspUnitManager;
+    class ThemePointer;
 }
 
 class CossinAudioProcessorEditor;
@@ -59,7 +59,7 @@ public:
     void listBoxItemClicked(int, const MouseEvent&) override;
 
     //==================================================================================================================
-    void reloadTheme(const jaut::ThemeManager::ThemePointer&);
+    void reloadTheme(const jaut::ThemePointer&);
     
 private:
     class ScrollButton final : public Button, Button::Listener

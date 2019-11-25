@@ -32,6 +32,11 @@
 #include <jaut/appdata.h>
 #include <jaut/config.h>
 
+inline constexpr float Const_Pi                        = 3.14159f;
+inline constexpr float Const_LinearPanningCompensation = 2.0f;
+inline constexpr float Const_SquarePanningCompensation = 1.41421356238f;
+inline constexpr float Const_SinePanningCompensation   = 1.41421356238f;
+
 //=====================================================================================================================
 CossinAudioProcessor::CossinAudioProcessor()
      : AudioProcessor (BusesProperties().withInput("Input", AudioChannelSet::stereo(), true)
@@ -103,8 +108,6 @@ void CossinAudioProcessor::processBlock(AudioBuffer<float> &buffer, MidiBuffer &
         }
     }
 
-    //Logger::getCurrentLogger()->writeToLog("Current channels: " + String(buffer.getNumChannels()) + ";"
-    //                                       "Current samples: " + String(buffer.getNumSamples()));
     processorContainer.processBlock(buffer, midi);
     metreSource.measureBlock(buffer);
 }
@@ -166,7 +169,7 @@ void CossinAudioProcessor::setStateInformation(const void *data, int sizeInBytes
             JT_STANDALONE_ELSE
             (
                 // set gui data
-                windowBounds.setBounds(0, 0, state.getProperty("GuiWidth"), state.getProperty("GuiHeight"));
+                windowBounds.setBounds(0, 0, state.getProperty("GuiWidth", -1), state.getProperty("GuiHeight", -1));
             )
 
             // apply property data
@@ -197,23 +200,23 @@ void CossinAudioProcessor::initialization()
 {
     properties.addListener(this);
 
-    auto sharedData(SharedData::getInstance());
-    auto lock(sharedData->setReading());
+    auto sharedData = SharedData::getInstance();
+    SharedData::ReadLock lock(*sharedData);
 
     // default init properties
-    const jaut::Config &config      = sharedData->Configuration();
-    jaut::Config::Property propsize = config.getProperty("size",      res::Cfg_Defaults);
-    jaut::Config::Property proppang = config.getProperty("panning",   res::Cfg_Defaults);
-    jaut::Config::Property propproc = config.getProperty("processor", res::Cfg_Defaults);
+    const jaut::Config &config = sharedData->Configuration();
+    const jaut::Config::Property property_window_size = config.getProperty("size",      res::Cfg_Defaults);
+    const jaut::Config::Property property_panning     = config.getProperty("panning",   res::Cfg_Defaults);
+    const jaut::Config::Property property_processor   = config.getProperty("processor", res::Cfg_Defaults);
 
-    properties.createProperty("PanningLaw",        proppang.getValue());
-    properties.createProperty("SelectedProcessor", propproc.getValue());
+    properties.createProperty("PanningLaw",        property_panning.getValue());
+    properties.createProperty("SelectedProcessor", property_processor.getValue());
 
     JT_IS_STANDALONE({})
     JT_STANDALONE_ELSE
     (
-        windowBounds.setBounds(0, 0, propsize.getProperty("width") .getValue(),
-                                     propsize.getProperty("height").getValue());
+        windowBounds.setBounds(0, 0, property_window_size.getProperty("width") .getValue(),
+                                     property_window_size.getProperty("height").getValue());
     )
 }
 
@@ -253,27 +256,24 @@ void CossinAudioProcessor::makeParameters()
 
 float CossinAudioProcessor::calculatePanningGain(int channel) const noexcept
 {
-    const float panval   = parPanning->convertFrom0to1(parPanning->getValue());
-    const float pan      = panval / 2.0f + 0.5f;
-    const float xpan     = channel == 0 ? 1.0f - pan : pan;
-    const int panningLaw = properties.getProperty("PanningLaw");
-    float result         = 0;
+    const float panning_p   = parPanning->convertFrom0to1(parPanning->getValue()) / 2.0f + 0.5f;
+    const float channel_pan = channel == 0 ? 1.0f - panning_p : panning_p;
+    const int panning_mode  = properties.getProperty("PanningLaw");
+    float result            = 1.0f;
 
-    jassert(panningLaw >= 0 && panningLaw < 3); // there are only linear, square and sine panning
+    jassert(jaut::is_in_range(panning_mode, 0, 2)); // there are only linear, square and sine panning
 
-    switch (panningLaw)
+    if(panning_mode == 0) // linear
     {
-        case 0: // linear
-            result = xpan * F_LinearPanningCompensation;
-            break;
-        case 1: // square
-            result = std::sqrt(xpan) * F_SquarePanningCompensation;
-            break;
-        case 2: // sine
-            result = std::sin(xpan * (F_Pi / 2.0f)) * F_SinePanningCompensation;
-            break;
-        default:
-            return 1.0f;
+        result = channel_pan * Const_LinearPanningCompensation;
+    }
+    else if(panning_mode == 1) // square
+    {
+        result = std::sqrt(channel_pan) * Const_SquarePanningCompensation;
+    }
+    else if(panning_mode == 2) // sine
+    {
+        result = std::sin(channel_pan * (Const_Pi / 2.0f)) * Const_SinePanningCompensation;
     }
 
     JUCE_UNDENORMALISE(result)

@@ -27,17 +27,18 @@
 
 #include "JuceHeader.h"
 #include "GuiFrameProcessor.h"
-#include <jaut/thememanager.h>
+#include "ReloadListener.h"
 
 namespace jaut
 {
     class DspGui;
+    class ThemePointer;
 }
 
 class CossinAudioProcessorEditor;
 class ProcessorContainer;
 
-class ProcessorPanel final : public Component
+class ProcessorPanel final : public Component, public ReloadListener
 {   
 public:
     GuiFrameProcessor guiProcFrame;
@@ -53,7 +54,7 @@ public:
     void makeVisible(int) noexcept;
 
     //==================================================================================================================
-    void reloadTheme(const jaut::ThemeManager::ThemePointer&) noexcept;
+    void reloadTheme(const jaut::ThemePointer&) override;
 
 private:
     ProcessorContainer &container;

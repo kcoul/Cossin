@@ -31,12 +31,6 @@
 #include <jaut/dspunitmanager.h>
 #include <jaut/propertymap.h>
 
-constexpr float F_Skew_Factor               = 0.45f;
-constexpr float F_Pi                        = 3.14159f;
-constexpr float F_LinearPanningCompensation = 2.0f;
-constexpr float F_SquarePanningCompensation = 1.41421356238f;
-constexpr float F_SinePanningCompensation   = 1.41421356238f;
-
 class SharedData;
 
 class CossinAudioProcessor : public AudioProcessor, jaut::PropertyMap::Listener

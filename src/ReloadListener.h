@@ -25,17 +25,16 @@
 
 #pragma once
 
-#include <jaut/thememanager.h>
-
 namespace jaut
 {
     class Config;
     class Localisation;
+    class ThemePointer;
 }
 
 struct ReloadListener
 {
     virtual void reloadConfig(const jaut::Config&) {}
-    virtual void reloadTheme (const jaut::ThemeManager::ThemePointer&) {} 
+    virtual void reloadTheme (const jaut::ThemePointer&) {} 
     virtual void reloadLocale(const jaut::Localisation&) {}
 };

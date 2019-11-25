@@ -27,26 +27,106 @@
 
 #include "JuceHeader.h"
 
-#include "PluginStyle.h"
-#include "ThemeFolder.h"
-#include <jaut/config.h>
-#include <jaut/thememanager.h>
-
 namespace jaut
 {
     class AppData;
     class Config;
     class IThemeDefinition;
     class Localisation;
+    class ThemeManager;
+    class ThemePointer;
 }
+
+class CossinAudioProcessorEditor;
 
 class SharedData final : public ActionBroadcaster
 {
 public:
-    template<bool Mode>
-    class SharedDataLock;
+    enum LockPriority
+    {
+        HIGH,
+        LOW
+    };
 
-    enum InitializationState
+    class ReadLock final
+    {
+    public:
+        ReadLock(SharedData &sharedData, LockPriority priority = HIGH)
+            : sharedData(sharedData), lockWasSuccessful(true)
+        {
+            if(JUCEApplication::isStandaloneApp())
+            {
+                return;
+            }
+
+            if(priority == HIGH)
+            {
+                sharedData.rwLock.enterRead();
+            }
+            else
+            {
+                lockWasSuccessful = sharedData.rwLock.tryEnterRead();
+            }
+        }
+
+        ~ReadLock()
+        {
+            if(JUCEApplication::isStandaloneApp())
+            {
+                return;
+            }
+
+            if(lockWasSuccessful)
+            {
+                sharedData.rwLock.exitRead();
+            }
+        }
+
+    private:
+        SharedData &sharedData;
+        bool lockWasSuccessful;
+    };
+
+    class WriteLock final
+    {
+    public:
+        WriteLock(SharedData &sharedData, LockPriority priority = HIGH)
+            : sharedData(sharedData), lockWasSuccessful(true)
+        {
+            if(JUCEApplication::isStandaloneApp())
+            {
+                return;
+            }
+
+            if(priority == HIGH)
+            {
+                sharedData.rwLock.enterWrite();
+            }
+            else
+            {
+                lockWasSuccessful = sharedData.rwLock.tryEnterWrite();
+            }
+        }
+
+        ~WriteLock()
+        {
+            if(JUCEApplication::isStandaloneApp())
+            {
+                return;
+            }
+            
+            if(lockWasSuccessful)
+            {
+                sharedData.rwLock.exitWrite();
+            }
+        }
+
+    private:
+        SharedData &sharedData;
+        bool lockWasSuccessful;
+    };
+
+    enum InitializationState : int
     {
         CREATING,
         DONE
@@ -60,37 +140,35 @@ public:
     ~SharedData();
 
     //==================================================================================================================
-    jaut::AppData      &App()           const noexcept;
+    jaut::AppData      &AppData()       const noexcept;
     jaut::Config       &Configuration() const noexcept;
-    jaut::ThemeManager &Themes()        const noexcept;
-    jaut::Localisation &Locale()        const noexcept;
-    PluginStyle        &Style()               noexcept;
+    jaut::ThemeManager &ThemeManager()  const noexcept;
+    jaut::Localisation &Localisation()  const noexcept;
 
     //==================================================================================================================
-    const jaut::ThemeManager::ThemePointer getDefaultTheme() const noexcept;
+    const jaut::ThemePointer &getDefaultTheme()  const noexcept;
     const jaut::Localisation &getDefaultLocale() const noexcept;
 
     //==================================================================================================================
-    std::shared_ptr<SharedDataLock< true>> setReading() const noexcept;
-    std::shared_ptr<SharedDataLock<false>> setWriting() const noexcept;
+    void sendChangeToAllInstancesExcept(CossinAudioProcessorEditor* = nullptr) const;
 
     //==================================================================================================================
-    void sendUpdate() const;
-
-    //==================================================================================================================
-    const InitializationState &getInitializationState() const noexcept;
+    InitializationState getInitializationState() const noexcept;
 
 private:
-    template<bool>
-    friend class SharedDataLock;
+    friend class ReadLock;
 
-    std::unique_ptr<jaut::AppData> appData;
-    std::unique_ptr<jaut::Config> appConfig;
+    // Data
+    std::unique_ptr<jaut::AppData>      appData;
+    std::unique_ptr<jaut::Config>       appConfig;
     std::unique_ptr<jaut::ThemeManager> appThemes;
     std::unique_ptr<jaut::Localisation> appLocale;
-    PluginStyle appStyle;
-    jaut::ThemeManager::ThemePointer defaultTheme;
+
+    // Defaults
+    std::unique_ptr<jaut::ThemePointer> defaultTheme;
     std::unique_ptr<jaut::Localisation> defaultLocale;
+
+    // Misc
     mutable ReadWriteLock rwLock;
     InitializationState initState;
 
@@ -99,50 +177,5 @@ private:
     void initAppdata();
     void initConfig();
     void initLangs();
-    void initPluginStyle();
     void initThemeManager();
-};
-
-
-template<>
-class SharedData::SharedDataLock<true>
-{
-    friend class SharedData;
-public:
-    const SharedData &sharedData;
-
-    SharedDataLock(const SharedData &sharedData) noexcept
-        : sharedData(sharedData)
-    {
-        sharedData.rwLock.enterRead();
-    }
-
-    ~SharedDataLock() noexcept
-    {
-        sharedData.rwLock.exitRead();
-    }
-
-    JUCE_DECLARE_NON_COPYABLE(SharedDataLock)
-};
-
-template<>
-class SharedData::SharedDataLock<false>
-{
-    friend class SharedData;
-public:
-    SharedDataLock(const SharedData &sharedData) noexcept
-        : sharedData(sharedData)
-    {
-        sharedData.rwLock.enterWrite();
-    }
-
-    ~SharedDataLock()
-    {
-        sharedData.rwLock.exitWrite();
-    }
-
-private:
-    const SharedData &sharedData;
-
-    JUCE_DECLARE_NON_COPYABLE(SharedDataLock)
 };

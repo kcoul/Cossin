@@ -30,11 +30,9 @@
 #include <jaut/dspunitmanager.h>
 #include <jaut/guidspunitmanager.h>
 #include <jaut/ithemedefinition.h>
+#include <jaut/thememanager.h>
 
-namespace
-{
-constexpr bool Const_Debug = false;
-}
+inline constexpr bool Const_Debug = false;
 
 /* ==================================================================================
  * ================================== ScrollButton ==================================
@@ -112,7 +110,7 @@ void GuiFrameProcessor::paint(Graphics &g)
     g.fillRect(0, 0, 60, 6);
     g.fillRect(0, getHeight() - 6, 60, 6);
 
-    if constexpr(::Const_Debug)
+    if constexpr(Const_Debug)
     {
         g.fillRect(60, 0, getWidth() - 60, getHeight());
         g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourFontId));
@@ -140,7 +138,7 @@ void GuiFrameProcessor::resized()
 //======================================================================================================================
 int GuiFrameProcessor::getNumRows()
 {
-    if constexpr(::Const_Debug)
+    if constexpr(Const_Debug)
     {
         return 10;
     }
@@ -158,7 +156,7 @@ void GuiFrameProcessor::paintListBoxItem (int rowNumber, Graphics& g, int width,
     const jaut::DspUnit *unit;
     Array<String> names;
 
-    if constexpr(::Const_Debug)
+    if constexpr(Const_Debug)
     {
         names = Array<String>("Chorus", "Compressor", "Delay", "Distortion", "Equalizer",
                               "Filter", "Flanger", "Phaser", "Reverb", "Soundfield Imager");
@@ -175,7 +173,7 @@ void GuiFrameProcessor::paintListBoxItem (int rowNumber, Graphics& g, int width,
     g.setFont(font.withHeight(11.0f));
     g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourFontId));
 
-    if constexpr(::Const_Debug)
+    if constexpr(Const_Debug)
     {
         g.drawFittedText(names[rowNumber], 0, height / 2, width, height / 2, Justification::centred, 2, 1.0f);
     }
@@ -191,7 +189,7 @@ void GuiFrameProcessor::listBoxItemClicked (int row, const MouseEvent&)
 }
 
 //======================================================================================================================
-void GuiFrameProcessor::reloadTheme(const jaut::ThemeManager::ThemePointer &theme)
+void GuiFrameProcessor::reloadTheme(const jaut::ThemePointer &theme)
 {
     font       = theme->getThemeFont();
     imgEffects = theme->getImage(res::Png_Fx_Icon_x32);

@@ -27,13 +27,16 @@
 
 #include "PluginEditor.h"
 #include "Resources.h"
+#include "SharedData.h"
 
 //======================================================================================================================
 PluginStyle::PluginStyle() noexcept
     : MetreLookAndFeel(*this),
-      theme(nullptr),
+      theme(SharedData::getInstance()->getDefaultTheme()),
       formatter(jaut::CharFormat::Options{'&', Colours::transparentBlack})
-{}
+{
+    reset(theme);
+}
 
 PluginStyle::~PluginStyle()
 {}
@@ -46,13 +49,13 @@ void PluginStyle::drawRotarySlider(Graphics &g, int x, int y, int width, int hei
 
     if (sliderprops.contains("CSSize") || sliderprops.contains("CSType"))
     {
-        const bool isbigknob   = sliderprops["CSSize"].toString().equalsIgnoreCase("big");
-        const bool ishalfknob  = sliderprops["CSType"].toString().equalsIgnoreCase("half");
-        const Image &imgknob   = isbigknob ? imgKnobBig       : imgKnobSmall;
-        const Image &imgcursor = isbigknob ? imgKnobBigCursor : imgKnobSmallCursor;
+        const bool is_big_knob    = sliderprops["CSSize"].toString().equalsIgnoreCase("big");
+        const bool is_half_knob   = sliderprops["CSType"].toString().equalsIgnoreCase("half");
+        const Image &image_knob   = is_big_knob ? imgKnobBig       : imgKnobSmall;
+        const Image &image_cursor = is_big_knob ? imgKnobBigCursor : imgKnobSmallCursor;
         Path p;
 
-        if (ishalfknob)
+        if (is_half_knob)
         {
             const float startRad = 0.0f;
             const float endRad   = startRad + 2.38f * (sliderPosProportional * 2 - 1);
@@ -64,8 +67,8 @@ void PluginStyle::drawRotarySlider(Graphics &g, int x, int y, int width, int hei
                             -2.38f + (2.38f * 2 * sliderPosProportional), 0.85f);
         }
 
-        g.drawImageAt(imgknob, 0, 0);
-        g.drawImageTransformed(imgcursor, AffineTransform::rotation(-2.35f + (4.7f * sliderPosProportional),
+        g.drawImageAt(image_knob, 0, 0);
+        g.drawImageTransformed(image_cursor, AffineTransform::rotation(-2.35f + (4.7f * sliderPosProportional),
                                width / 2.0f, height / 2.0f));
 
         g.setColour(findColour(CossinAudioProcessorEditor::ColourComponentForegroundId));
@@ -80,36 +83,36 @@ void PluginStyle::drawRotarySlider(Graphics &g, int x, int y, int width, int hei
 
 void PluginStyle::drawCornerResizer(Graphics &g, int width, int height, bool, bool mouseDragging)
 {
-    const Rectangle<float> resizerrect(0.0f, 0.0f, width * 1.5f, height * 1.0f);
+    const Rectangle<float> rect_resize(0.0f, 0.0f, width * 1.5f, height * 1.0f);
 
     {
-        Graphics::ScopedSaveState sss(g);
+        Graphics::ScopedSaveState state(g);
 
         g.addTransform(AffineTransform::translation(0.0f, height + 0.8f));
         g.addTransform(AffineTransform::rotation(-0.785398f));
         g.setColour(findColour(CossinAudioProcessorEditor::ColourContainerBackgroundId));
-        g.fillRect(resizerrect);
+        g.fillRect(rect_resize);
     }
 
     g.addTransform(AffineTransform::translation(0.0f, height + 4.0f));
     g.addTransform(AffineTransform::rotation(-0.785398f));
     g.setColour(mouseDragging ? findColour(CossinAudioProcessorEditor::ColourComponentForegroundId)
                               : findColour(CossinAudioProcessorEditor::ColourComponentBackgroundId));
-    g.fillRect(resizerrect);
+    g.fillRect(rect_resize);
 }
 
 void PluginStyle::drawTooltip(Graphics &g, const String &text, int width, int height)
 {
-    const float tooltipfontsize = 13.0f;
-    const int tooltippadding    = 2;
+    const float tooltip_font_size = 13.0f;
+    const int tooltip_padding     = 2;
 
     g.fillAll(findColour(CossinAudioProcessorEditor::ColourTooltipBackgroundId));
     g.setColour(findColour(CossinAudioProcessorEditor::ColourTooltipBorderId));
     g.drawRect(0, 0, width, height);
 
-    g.setFont(font.withHeight(tooltipfontsize));
+    g.setFont(font.withHeight(tooltip_font_size));
     formatter.setColour(findColour(CossinAudioProcessorEditor::ColourTooltipFontId));
-    formatter.drawText(g, text, tooltippadding * 2, tooltippadding, width, height, Justification::topLeft);
+    formatter.drawText(g, text, tooltip_padding * 2, tooltip_padding, width, height, Justification::topLeft);
 }
 
 void PluginStyle::drawButtonBackground(juce::Graphics &g, juce::Button &button, const juce::Colour &backgroundColour,
@@ -142,13 +145,80 @@ void PluginStyle::drawButtonText(juce::Graphics &g, juce::TextButton &button, bo
     }
 }
 
+void PluginStyle::drawComboBox(juce::Graphics &g, int width, int height, bool isMouseButtonDown,
+                               int buttonX, int buttonY, int buttonW, int buttonH, juce::ComboBox &box)
+{
+    g.setColour(findColour(CossinAudioProcessorEditor::ColourContainerBackgroundId));
+    g.fillAll();
+
+    const Rectangle<int> button(buttonX, buttonY, buttonW, buttonH);
+    const Colour colour_background = isMouseButtonDown
+                                   ? findColour(CossinAudioProcessorEditor::ColourComponentForegroundId)
+                                   : findColour(CossinAudioProcessorEditor::ColourComponentBackgroundId);
+    g.setColour(colour_background);
+    g.fillRect(button.reduced(2));
+
+    const int triangle_padding = 11;
+    const int triangle_bottom  = buttonY + buttonH - triangle_padding;
+
+    g.setColour(isMouseButtonDown ? colour_background.contrasting()
+                                  : findColour(CossinAudioProcessorEditor::ColourFontId));
+    Path triangle_path;
+    triangle_path.addTriangle(buttonX + buttonW / 2, buttonY + triangle_padding,
+                              buttonX + buttonW - triangle_padding, triangle_bottom,
+                              buttonX + triangle_padding, triangle_bottom);
+    triangle_path.applyTransform(AffineTransform::verticalFlip(buttonH));
+    g.fillPath(triangle_path);
+}
+
+//======================================================================================================================
+void PluginStyle::drawPopupMenuBackground(juce::Graphics &g, int width, int height)
+{
+    g.setColour(findColour(CossinAudioProcessorEditor::ColourTooltipBackgroundId));
+    g.fillAll();
+
+    g.setColour(findColour(CossinAudioProcessorEditor::ColourTooltipBorderId));
+    g.drawRect(0, 0, width, height);
+}
+
+void PluginStyle::drawPopupMenuItem(juce::Graphics &g, const juce::Rectangle<int> &area, bool isSeparator,
+                                    bool isActive, bool isHighlighted, bool isTicked, bool hasSubMenu,
+                                    const juce::String &text, const juce::String &shortcutKeyText,
+                                    const juce::Drawable *icon, const juce::Colour *textColour)
+{
+    const bool active_and_selected = isHighlighted && isActive;
+    Colour colour_background       = Colours::transparentBlack;
+    Colour colour_font             = findColour(CossinAudioProcessorEditor::ColourTooltipFontId);
+
+    if(active_and_selected)
+    {
+        colour_background = findColour(CossinAudioProcessorEditor::ColourComponentBackgroundId);
+    }
+    else if(!isActive)
+    {
+        colour_font = colour_font.darker(0.5f);
+    }
+
+    g.setColour(colour_background);
+    g.fillRect(area.reduced(3, 1));
+
+    g.setColour(colour_font);
+    g.setFont(font);
+    g.drawText(text, area.withLeft(6), Justification::centredLeft);
+}
+
+Font PluginStyle::getPopupMenuFont()
+{
+    return font;
+}
+
 //======================================================================================================================
 void PluginStyle::drawAlertBox(Graphics &g, AlertWindow &window, const Rectangle<int> &textArea, TextLayout &layout)
 {
-    const int iconWidth         = 80;
+    const int icon_width        = 80;
     const Rectangle<int> bounds = window.getLocalBounds();
-    int iconSize                = jmin (iconWidth + 50, bounds.getHeight() + 20);
-    Rectangle<int> iconRect(iconSize / -10, iconSize / -10, iconSize, iconSize);
+    int icon_size               = jmin (icon_width + 50, bounds.getHeight() + 20);
+    Rectangle<int> rect_icon(icon_size / -10, icon_size / -10, icon_size, icon_size);
     Path icon;
     juce_wchar character;
     uint32 colour;
@@ -158,16 +228,16 @@ void PluginStyle::drawAlertBox(Graphics &g, AlertWindow &window, const Rectangle
 
     if (window.containsAnyExtraComponents() || window.getNumButtons() > 2)
     {
-        iconSize = jmin(iconSize, textArea.getHeight() + 50);
+        icon_size = jmin(icon_size, textArea.getHeight() + 50);
     }
 
     if (window.getAlertType() == AlertWindow::WarningIcon)
     {
         character = '!';
 
-        icon.addTriangle(iconRect.getX() + iconRect.getWidth() * 0.5f, (float)iconRect.getY(),
-                         static_cast<float>(iconRect.getRight()), static_cast<float>(iconRect.getBottom()),
-                         static_cast<float>(iconRect.getX()),     static_cast<float>(iconRect.getBottom()));
+        icon.addTriangle(rect_icon.getX() + rect_icon.getWidth() * 0.5f, (float)rect_icon.getY(),
+                         static_cast<float>(rect_icon.getRight()), static_cast<float>(rect_icon.getBottom()),
+                         static_cast<float>(rect_icon.getX()),     static_cast<float>(rect_icon.getBottom()));
 
         icon   = icon.createPathWithRoundedCorners (5.0f);
         colour = 0x66ff2a00;
@@ -176,19 +246,19 @@ void PluginStyle::drawAlertBox(Graphics &g, AlertWindow &window, const Rectangle
     {
         colour    = Colour(0xff6666b9).withAlpha(0.4f).getARGB();
         character = 'x';
-        icon.addEllipse(iconRect.toFloat());
+        icon.addEllipse(rect_icon.toFloat());
     }
     else
     {
         colour    = Colour(0xff00b0b9).withAlpha(0.4f).getARGB();
         character = window.getAlertType() == AlertWindow::InfoIcon ? 'i' : '?';
-        icon.addEllipse(iconRect.toFloat());
+        icon.addEllipse(rect_icon.toFloat());
     }
 
     GlyphArrangement ga;
-    ga.addFittedText({iconRect.getHeight() * 0.9f, Font::bold}, String::charToString(character),
-                      static_cast<float>(iconRect.getX()),     static_cast<float>(iconRect.getY()),
-                      static_cast<float>(iconRect.getWidth()), static_cast<float>(iconRect.getHeight()),
+    ga.addFittedText({rect_icon.getHeight() * 0.9f, Font::bold}, String::charToString(character),
+                      static_cast<float>(rect_icon.getX()),     static_cast<float>(rect_icon.getY()),
+                      static_cast<float>(rect_icon.getWidth()), static_cast<float>(rect_icon.getHeight()),
                       Justification::centred, false);
     
     ga.createPath(icon);
@@ -279,23 +349,18 @@ void PluginStyle::drawScrollbar(juce::Graphics &g, juce::ScrollBar &scrollBar, i
 }
 
 //======================================================================================================================
-void PluginStyle::reset(const jaut::ThemeManager::ThemePointer &theme) noexcept
+void PluginStyle::reset(const jaut::ThemePointer &theme) noexcept
 {
-    if(!theme || theme == this->theme)
-    {
-        return;
-    }
+    const Image image_check_box  = theme->getImage(res::Png_Check_Box);
+    const Image image_knob_small = theme->getImage(res::Png_Knob_Small);
+    const Image image_knob_big   = theme->getImage(res::Png_Knob_Big);
 
-    const Image imgcb = theme->getImage(res::Png_Check_Box);
-    const Image imgks = theme->getImage(res::Png_Knob_Small);
-    const Image imgkb = theme->getImage(res::Png_Knob_Big);
-
-    imgCheckbox        = imgcb.getClippedImage({0, 0, 16, 16});
-    imgCheckboxChecked = imgcb.getClippedImage({0, 16, 16, 16});
-    imgKnobBig         = imgkb.getClippedImage({0, 0, 60, 60});
-    imgKnobBigCursor   = imgkb.getClippedImage({60, 0, 60, 60});
-    imgKnobSmall       = imgks.getClippedImage({0, 0, 36, 36});
-    imgKnobSmallCursor = imgks.getClippedImage({36, 0, 36, 36});
+    imgCheckbox        = image_check_box .getClippedImage({0, 0, 16, 16});
+    imgCheckboxChecked = image_check_box .getClippedImage({0, 16, 16, 16});
+    imgKnobBig         = image_knob_big  .getClippedImage({0, 0, 60, 60});
+    imgKnobBigCursor   = image_knob_big  .getClippedImage({60, 0, 60, 60});
+    imgKnobSmall       = image_knob_small.getClippedImage({0, 0, 36, 36});
+    imgKnobSmallCursor = image_knob_small.getClippedImage({36, 0, 36, 36});
     imgSliderPeakMetre = theme->getImage(res::Png_Metre_H);
 
     setColour(CossinAudioProcessorEditor::ColourComponentBackgroundId, theme->getThemeColour(res::Col_Component_Bg));
@@ -358,7 +423,7 @@ void PluginStyle::reset(const jaut::ThemeManager::ThemePointer &theme) noexcept
     this->theme = theme;
 }
 
-const jaut::ThemeManager::ThemePointer PluginStyle::getTheme() const noexcept
+const jaut::ThemePointer PluginStyle::getTheme() const noexcept
 {
     return theme;
 }
