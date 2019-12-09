@@ -49,19 +49,23 @@ inline constexpr int Flag_DefaultProcessor     = 4;
 inline constexpr int Flag_End                  = 7;
 
 //======================================================================================================================
-// FUNCTIONS
-inline PluginStyle &getPluginStyle(Component &component)
-{
-    return *dynamic_cast<PluginStyle*>(&component.getLookAndFeel());
-}
-
-//======================================================================================================================
 // FORWARD DECLERATIONS
 class CossinAudioProcessor;
 class ProcessorContainer;
+class SharedData;
 
 //======================================================================================================================
 // CLASSES
+struct PluginSession final
+{
+    const Time startTime;
+    const Uuid id;
+
+    PluginSession() noexcept
+        : startTime(Time::getCurrentTime())
+    {}
+};
+
 class CossinAudioProcessorEditor : public AudioProcessorEditor, public ActionListener, Button::Listener,
                                    Slider::Listener, LookAndFeel_V4,
 #if COSSIN_USE_OPENGL
@@ -109,7 +113,7 @@ public:
 
     //==================================================================================================================
     bool getOption(int) const noexcept;
-    const Uuid &getInstanceId() const noexcept;
+    const PluginSession &getSession() const noexcept;
 
     //==================================================================================================================
     void addReloadListener(ReloadListener*);
@@ -132,11 +136,12 @@ private:
 
     //==================================================================================================================
     // General
-    Logger                 &logger;
+    PluginSession session;
+    SharedResourcePointer<SharedData> sharedData;
+    std::unique_ptr<Logger> logger;
     CossinAudioProcessor   &processor;
     FFAU::LevelMeterSource &sourceMetre;
     bool initialized;
-    Uuid instanceId;
     ListenerList<ReloadListener> listeners;
     PluginStyle lookAndFeel;
 
@@ -206,3 +211,48 @@ private:
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CossinAudioProcessorEditor)
 };
+
+//======================================================================================================================
+// Functions
+inline PluginStyle &getPluginStyle(Component &component)
+{
+    return *dynamic_cast<PluginStyle*>(&component.getLookAndFeel());
+}
+
+inline Logger *createDummyLogger()
+{
+    struct DummyLogger final : public Logger
+    {
+        DummyLogger() = default;
+        void logMessage(const String&) override {}
+    };
+    
+    return new DummyLogger;
+}
+
+inline FileLogger *createLoggerFromSession(const File &logFile, const PluginSession &session, const String &appName,
+                                           const String &appVersion)
+{
+    const String session_id  = session.id.toDashedString();
+    const String cpu_model   = !SystemStats::getCpuModel().isEmpty()  ? SystemStats::getCpuModel()  : "n/a";
+    const String cpu_vendor  = !SystemStats::getCpuVendor().isEmpty() ? " (" + SystemStats::getCpuVendor() + ")" : "";
+    const String gpu_model   = String((char*)(unsigned char*)glGetString(GL_VENDOR)) + " " + String((char*)(unsigned char*)glGetString(GL_RENDERER));
+    const String memory_size = String(SystemStats::getMemorySizeInMegabytes()) + "mb";
+
+    String logmsg;
+
+    logmsg << "                        --Program--                       " << newLine
+           << "App:        " << appName                                    << newLine
+           << "Version:    " << appVersion                                 << newLine
+           << "Session-ID: " << session_id                                 << newLine
+           << "**********************************************************" << newLine
+           << "                        --Machine--                       " << newLine
+           << "System:     " << SystemStats::getOperatingSystemName()      << newLine
+           << "Memory:     " << memory_size                                << newLine
+           << "CPU:        " << cpu_model << cpu_vendor                    << newLine
+           << "Graphics:   " << (gpu_model.containsNonWhitespaceChars()
+                                 ? gpu_model : "Unknown")                  << newLine
+           << "**********************************************************";
+
+    return new FileLogger(logFile, logmsg);
+}

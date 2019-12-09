@@ -65,27 +65,9 @@ Cossin *JUCE_CALLTYPE Cossin::getInstance() noexcept
 
 //======================================================================================================================
 Cossin::Cossin()
-    : session{Time::getCurrentTime(), Uuid()}
 {
     PluginHostType::jucePlugInClientCurrentWrapperType = AudioProcessor::wrapperType_Standalone;
-    auto sharedData = SharedData::getInstance();
-
-    JT_NDEBUGGING(if(sharedData->Configuration().getProperty("logToFile", res::Cfg_Standalone).getValue()))
-    {
-        logger.reset(createLoggerFromSession(sharedData->AppData().getDir("Logs")
-                                                                  .getFile("session-" + session.id.toDashedString()
-                                                                           + ".log"),
-                                             session, getApplicationName(), getApplicationVersion()));
-    }
-    JT_NDEBUGGING(else
-    {
-        logger.reset(createDummyLogger());
-    })
-
     jaut::JAUT_DISABLE_THREAD_DIST_EXPLICIT(true);
-    Logger::setCurrentLogger(logger.get());
-
-    logger->writeToLog("Starting Cossin standalone...");
 }
 
 Cossin::~Cossin()
@@ -94,9 +76,14 @@ Cossin::~Cossin()
 }
 
 //======================================================================================================================
-const PluginSession &Cossin::getSession() const noexcept
+const String Cossin::getApplicationName()
 {
-    return session;
+    return res::App_Name;
+}
+
+const String Cossin::getApplicationVersion()
+{
+    return res::App_Version;
 }
 
 //==================================================================================================================
@@ -111,7 +98,7 @@ void Cossin::initialise(const String&)
     mainWindow.reset(createWindow());
 
 #if JUCE_STANDALONE_FILTER_WINDOW_USE_KIOSK_MODE
-    Desktop::getInstance().setKioskModeComponent (mainWindow.get(), false);
+    Desktop::getInstance().setKioskModeComponent(mainWindow.get(), false);
 #endif
     mainWindow->setVisible(true);
 }
@@ -459,7 +446,7 @@ bool CossinPluginWrapper::reloadAudioDeviceState(bool enableAudioInput, const St
     {
         if(Cossin *cossin = Cossin::getInstance())
         {
-            Logger::getCurrentLogger()->writeToLog("An exception occured while trying to initialize the main"
+            Logger::getCurrentLogger()->writeToLog("An exception occurred while trying to initialize the main"
                                                    "audio device:\n" + result);
         }
         
@@ -777,11 +764,11 @@ CossinPluginWindow::CossinPluginWindow()
 #else
     setContentOwned(new MainContentComponent(*this), true);
     
-    auto sharedData(SharedData::getInstance());
+    auto shared_data (SharedData::getInstance());
 
     if (auto* cache = pluginHolder->cossinCache.get())
     {
-        const auto propsize = sharedData->Configuration().getProperty("size", res::Cfg_Defaults);
+        const auto propsize = shared_data->Configuration().getProperty("size", res::Cfg_Defaults);
         const int x         = cache->getIntValue("windowX", -100);
         const int y         = cache->getIntValue("windowY", -100);
         const int width     = cache->getIntValue("windowW", propsize.getProperty("width").getValue());

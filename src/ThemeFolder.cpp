@@ -260,7 +260,7 @@ const bool ThemeDefinition::isImageValid(const Image &image) const
 
 const bool ThemeDefinition::isValid() const
 {
-    return meta != nullptr;
+    return meta != nullptr && !meta->getName().isEmpty() && !meta->getVersion().isEmpty();
 }
 
 const bool ThemeDefinition::fileExists(const String &filePath) const

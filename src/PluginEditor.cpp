@@ -61,14 +61,12 @@ CossinAudioProcessorEditor::CossinAudioProcessorEditor(CossinAudioProcessor &p, 
                                                        jaut::PropertyMap &map, FFAU::LevelMeterSource &metreSource,
                                                        ProcessorContainer &processorContainer)
     : AudioProcessorEditor(&p),
-      logger(*Logger::getCurrentLogger()), processor(p), sourceMetre(metreSource), initialized(false),
-      locale(SharedData::getInstance()->getDefaultLocale()), needsUpdate(false),
-      buttonPanningLawSelection("ButtonPanningLawSelection", DrawableButton::ImageRaw),
+      processor(p), sourceMetre(metreSource), initialized(false), locale(sharedData->getDefaultLocale()),
+      needsUpdate(false), buttonPanningLawSelection("ButtonPanningLawSelection", DrawableButton::ImageRaw),
       buttonSettings("ButtonSettings", DrawableButton::ButtonStyle::ImageRaw),
       metreLevel(FFAU::LevelMeter::Horizontal), optionsPanel(*this, locale), processorPanel(*this, processorContainer),
       atrPanningLaw(map, "PanningLaw"), atrProcessor(map, "SelectedProcessor")
 {
-	logger.writeToLog("Initializing Cossin user interface...");
     addMouseListener(this, true);
 
 #if COSSIN_USE_OPENGL
@@ -97,6 +95,8 @@ CossinAudioProcessorEditor::CossinAudioProcessorEditor(CossinAudioProcessor &p, 
 
     initialized = true;
     resized();
+
+    logger->writeToLog("Done initializing Cossin.");
 }
 
 CossinAudioProcessorEditor::~CossinAudioProcessorEditor()
@@ -107,41 +107,52 @@ CossinAudioProcessorEditor::~CossinAudioProcessorEditor()
 #endif
     stopTimer();
     setLookAndFeel(nullptr);
-    SharedData::getInstance()->removeActionListener(this);
+    sharedData->removeActionListener(this);
+    Logger::setCurrentLogger(nullptr);
 }
 
 //======================================================================================================================
 void CossinAudioProcessorEditor::initializeData()
 {
-    auto shared_data = SharedData::getInstance();
-    shared_data->addActionListener(this);
+    sharedData->addActionListener(this);
+    SharedData::ReadLock lock(*sharedData);
 
-    SharedData::ReadLock lock(*shared_data);
+#if COSSIN_USE_OPENGL
+    const bool accelerated_by_hardware = sharedData->Configuration().getProperty("hardwareAcceleration",
+                                                                                 res::Cfg_Optimization).getValue();
 
-    reloadConfig(shared_data->Configuration());
-    reloadLocale(shared_data->Localisation());
+    options[2] = accelerated_by_hardware;
 
-    const String theme_id          = shared_data->Configuration().getProperty("theme").getValue().toString();
-    const jaut::ThemePointer theme = shared_data->ThemeManager().getThemePack(theme_id);
-
-    if(theme_id.trim().equalsIgnoreCase("default") || !theme.isValid())
+    if(accelerated_by_hardware)
     {
-        reloadTheme(shared_data->getDefaultTheme());
+        glContext.attachTo(*this);
     }
-    else
-    {
-        reloadTheme(theme);
-    }
+#endif
 
-    repaint();
+    JT_NDEBUGGING(if(shared_data->Configuration().getProperty("logToFile", res::Cfg_Standalone).getValue()))
+    {
+        logger.reset(createLoggerFromSession(sharedData->AppData().getDir("Logs")
+                                                                  .getFile("session-" + session.id.toDashedString()
+                                                                           + ".log"),
+                                             session, res::App_Name, res::App_Version));
+    }
+    JT_NDEBUGGING(else
+    {
+        logger.reset(createDummyLogger());
+    })
+
+    Logger::setCurrentLogger(logger.get());
+    logger->writeToLog("Initializing Cossin user interface...");
+
+    reloadConfig(sharedData->Configuration());
+    reloadLocale(sharedData->Localisation());
+    reloadTheme (sharedData->ThemeManager().getCurrentTheme());
 }
 
 void CossinAudioProcessorEditor::initializeComponents()
 {
     const Slider::SliderStyle style_rotary  = Slider::RotaryHorizontalVerticalDrag;
     const int current_processor             = static_cast<var>(atrProcessor);
-
-    logger.writeToLog("Setting up components...");
 
     // Level slider
     sliderLevel.setTextBoxStyle(Slider::TextEntryBoxPosition::NoTextBox, true, 0, 0);
@@ -228,8 +239,6 @@ void CossinAudioProcessorEditor::initializeWindow()
     int window_max_area      = 0;
     int window_max_width     = 0;
     int window_max_maxheight = 0;
-
-    logger.writeToLog("Initializing main control window...");
 
     for (auto display : Desktop::getInstance().getDisplays().displays)
     {
@@ -360,14 +369,15 @@ void CossinAudioProcessorEditor::paintBasicInterface(Graphics &g) const
                                     footer_middle + 50, footer_label_slider_small, 50, 31, Justification::centred);
 
     g.setFont(fontTheme.withHeight(12.0f));
-    g.drawText("L", footer_metre_channel_text_x, footer.getBottom() - 44.0f, 212.0f, 53.0f, Justification::left);
-    g.drawText("R", footer_metre_channel_text_x, footer.getBottom() - 27.0f, 212.0f, 53.0f, Justification::left);
+    g.drawText("L", footer_metre_channel_text_x, footer.getY() + 13, 10, 14, Justification::left);
+    g.drawText("R", footer_metre_channel_text_x, footer.getY() + 30, 10, 14, Justification::left);
 }
 
 //======================================================================================================================
 void CossinAudioProcessorEditor::reloadConfig(const jaut::Config &config)
 {
-    const bool accelerated_by_hardware = config.getProperty("hardwareAcceleration", res::Cfg_Optimization).getValue();
+    logger->writeToLog("==========================================================");
+    logger->writeToLog("Reloading config...");
     const auto property_animations     = config.getProperty("animations", res::Cfg_Optimization);
     const int  animation_mode          = property_animations.getProperty("mode").getValue();
     const bool animate_effects         = property_animations.getProperty("custom").getProperty("effects").getValue();
@@ -377,23 +387,8 @@ void CossinAudioProcessorEditor::reloadConfig(const jaut::Config &config)
 
     options[0] = animation_mode == 3 ||  animation_mode == 2 || (animation_mode == 1 && animate_effects);
     options[1] = animation_mode == 3 || (animation_mode == 1 &&  animate_components);
-    options[2] = accelerated_by_hardware;
     options[3] = default_panning_law;
     options[4] = default_processor;
-
-#if COSSIN_USE_OPENGL
-    if(accelerated_by_hardware)
-    {
-        if(!glContext.isAttached())
-        {
-            glContext.attachTo(*this);
-        }
-    }
-    else
-    {
-        glContext.detach();
-    }
-#endif
 
     if(!optionsPanel.isShowing())
     {
@@ -408,40 +403,41 @@ void CossinAudioProcessorEditor::reloadConfig(const jaut::Config &config)
     {
         listener.reloadConfig(config);
     });
+
+    logger->writeToLog("Config successfully reloaded.");
 }
 
 void CossinAudioProcessorEditor::reloadLocale(const jaut::Localisation &locale)
 {
+    logger->writeToLog("==========================================================");
     String locale_name = locale.getLanguageFile().getFullPathName().toLowerCase();
     locale_name        = locale_name.isEmpty() ? "default" : locale_name;
 
     if(lastLocale != locale_name)
     {
-        logger.writeToLog("Setting new language...");
-        logger.writeToLog("Loading localisation '" + locale.getLanguageFile().getFileNameWithoutExtension() + "'...");
-
         lastLocale = locale_name;
+        logger->writeToLog("Loading localisation '" + locale.getLanguageFile().getFileNameWithoutExtension() + "'...");
+
         this->locale.setCurrentLanguage(locale);
 
         listeners.call([&locale](ReloadListener &listener)
         {
             listener.reloadLocale(locale);
         });
-
-        logger.writeToLog("Language successfully set.");
     }
+
+    logger->writeToLog("Language successfully set.");
 }
 
 void CossinAudioProcessorEditor::reloadTheme(const jaut::ThemePointer &theme)
 {
-    const String theme_name = theme.getName();
+    logger->writeToLog("==========================================================");
+    const String theme_id = theme.getId();
 
-    if(lastTheme != theme_name)
+    if(lastTheme != theme_id)
     {
-        lastTheme = theme_name;
-
-        logger.writeToLog("Reloading resources...");
-        logger.writeToLog("Loading resources of theme pack '" + theme->getThemeMeta()->getName() + "'...");
+        lastTheme = theme_id;
+        logger->writeToLog("Loading resources of theme pack '" + theme->getThemeMeta()->getName() + "'...");
 
         imgBackground  = theme->getImage(res::Png_Cont_Back);
         imgHeader      = theme->getImage(res::Png_Head_Cover);
@@ -456,9 +452,9 @@ void CossinAudioProcessorEditor::reloadTheme(const jaut::ThemePointer &theme)
         {
             listener.reloadTheme(theme);
         });
-
-        logger.writeToLog("Resources successfully reloaded!");
     }
+
+    logger->writeToLog("Resources successfully reloaded.");
 }
 
 //======================================================================================================================
@@ -467,9 +463,9 @@ bool CossinAudioProcessorEditor::getOption(int flag) const noexcept
     return options[flag];
 }
 
-const Uuid &CossinAudioProcessorEditor::getInstanceId() const noexcept
+const PluginSession &CossinAudioProcessorEditor::getSession() const noexcept
 {
-    return instanceId;
+    return session;
 }
 
 //======================================================================================================================
@@ -664,7 +660,7 @@ void CossinAudioProcessorEditor::timerCallback()
 
 void CossinAudioProcessorEditor::actionListenerCallback(const String &exclusionId)
 {
-    if(exclusionId != instanceId.toDashedString())
+    if(exclusionId != session.id.toDashedString())
     {
         needsUpdate = true;
     }
@@ -675,18 +671,11 @@ void CossinAudioProcessorEditor::reloadAllData()
     MouseCursor::showWaitCursor();
 
     {
-        auto shared_data = SharedData::getInstance();
-        SharedData::ReadLock lock(*shared_data);
+        SharedData::ReadLock lock(*sharedData);
 
-        reloadConfig(shared_data->Configuration());
-        reloadLocale(shared_data->Localisation());
-
-        const String theme_id = shared_data->Configuration().getProperty("theme").getValue();
-        const jaut::ThemePointer actual_theme = shared_data->ThemeManager().getThemePack(theme_id);
-        const jaut::ThemePointer final_theme  = theme_id.equalsIgnoreCase("default") || !actual_theme.isValid()
-                                                 ? shared_data->getDefaultTheme() : actual_theme;
-
-        reloadTheme(final_theme);
+        reloadConfig(sharedData->Configuration());
+        reloadLocale(sharedData->Localisation());
+        reloadTheme (sharedData->ThemeManager().getCurrentTheme());
     }
 
     MouseCursor::hideWaitCursor();

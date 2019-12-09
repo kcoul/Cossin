@@ -40,7 +40,7 @@ namespace
 /**
     Main routine for initializing new theme packs!
  */
-jaut::IThemeDefinition *initializeThemePack(const File &file, jaut::IMetadata *meta)
+jaut::IThemeDefinition *initializeThemePack(const File &file, std::unique_ptr<jaut::IMetadata> meta)
 {
     std::unique_ptr<jaut::IThemeDefinition> theme(new ThemeFolder(file));
     return theme->isValid() ? theme.release() : nullptr;
@@ -55,7 +55,7 @@ SharedResourcePointer<SharedData> SharedData::getInstance()
 
 //======================================================================================================================
 SharedData::SharedData() noexcept
-    : initState(InitializationState::CREATING)
+    : initialized(false)
 {
     initialize();
 }
@@ -86,7 +86,7 @@ jaut::Localisation &SharedData::Localisation() const noexcept
 //======================================================================================================================
 const jaut::ThemePointer &SharedData::getDefaultTheme() const noexcept
 {
-    return *defaultTheme;
+    return defaultTheme;
 }
 
 const jaut::Localisation &SharedData::getDefaultLocale() const noexcept
@@ -97,40 +97,18 @@ const jaut::Localisation &SharedData::getDefaultLocale() const noexcept
 //======================================================================================================================
 void SharedData::sendChangeToAllInstancesExcept(CossinAudioProcessorEditor *except) const
 {
-    sendActionMessage(except ? except->getInstanceId().toDashedString() : "");
-}
-
-//======================================================================================================================
-SharedData::InitializationState SharedData::getInitializationState() const noexcept
-{
-    return initState;
+    sendActionMessage(except ? except->getSession().id.toDashedString() : "");
 }
 
 //======================================================================================================================
 void SharedData::initialize()
 {
-    if (initState != InitializationState::CREATING)
+    if(initialized)
     {
         return;
     }
-
-    rwLock.enterWrite();
-
-    initAppdata();
-
-    // make default locale
-    MemoryInputStream locale_stream(Assets::default_lang, Assets::default_langSize, false);
-    LocalisedStrings locale_def(locale_stream.readEntireStreamAsString(), true);
-    defaultLocale.reset(new jaut::Localisation(appData->getDir("Lang").toFile(), locale_def));
-
-    initConfig();       // <- depends on appdata
-    initLangs();        // <- depends on appdata and config
-    initThemeManager(); // <- depends on appdata and config
-
-    // make default theme
-    MemoryInputStream theme_stream(Assets::theme_meta, Assets::theme_metaSize, false);
-    auto theme_def = new ThemeDefinition(new ThemeMeta(jaut::MetadataHelper::readMetaToNamedValueSet(theme_stream)));
-    defaultTheme.reset(new jaut::ThemePointer("default", theme_def));
+    
+    initialized = true;
 
     using jaut::MetadataHelper;
     MetadataHelper::setPlaceholder("name",    res::App_Name);
@@ -141,9 +119,11 @@ void SharedData::initialize()
     MetadataHelper::setPlaceholder("website", res::App_Website);
     MetadataHelper::setPlaceholder("license_url", "https://www.gnu.org/licenses/gpl-3.0.de.html");
 
-    initState = InitializationState::DONE;
-
-    rwLock.exitWrite();
+    initAppdata();
+    initConfig();       // <- depends on appdata
+    initDefaults();     // <- depends on appdata
+    initLangs();        // <- depends on appdata and config
+    initThemeManager(); // <- depends on appdata and config
 }
 
 void SharedData::initAppdata()
@@ -165,13 +145,14 @@ void SharedData::initConfig()
 {
     // init wrapper
     jaut::Config::Options options;
-    options.autoSave      = false;
-    options.configNotice  = "This is the ES Cossin config file.\n"
-                            "Make sure you know what you are doing while you edit these settings by hand!\n"
-                            "To adopt the new settings you need to close all instances of Cossin or the DAW\n"
-                            "if Cossin is currently used in an active session!";
-    options.fileName      = "config.yaml";
-    options.processSynced = true;
+    options.autoSave        = false;
+    options.configNotice    = "This is the ES Cossin config file.\n"
+                              "Make sure you know what you are doing while you edit these settings by hand!\n"
+                              "To adopt the new settings you need to close all instances of Cossin or the DAW\n"
+                              "if Cossin is currently used in an active session!";
+    options.fileName        = "config.yaml";
+    options.processSynced   = true;
+    options.defaultCategory = "general";
 
     const File config_root = appData->toFile();
     const File config_file = config_root.getChildFile(options.fileName);
@@ -185,13 +166,12 @@ void SharedData::initConfig()
 
     // DEFAULTS
     jaut::Config::Property property_initial_size; // the initial size the plugin window should have when new instantiated
-    jaut::Config::Property property_panning;     // the default panning function
-    jaut::Config::Property property_processor;   // the default processor type to be shown when a new instance was created
+    jaut::Config::Property property_panning;      // the default panning function
+    jaut::Config::Property property_processor;    // the default processor type to be shown when a new instance was created
 
     // OPTIMIZATION
     jaut::Config::Property property_hardware_acceleration; // determines whether opengl should be used to draw or not
-    //jaut::Config::Property property_memory_save_mode;     // the value whether memory mode should be used or not
-    jaut::Config::Property property_animations;           // animation properties
+    jaut::Config::Property property_animations;            // animation properties
     jaut::Config::Property property_animations_custom;     // custom animations settings
 
     // STANDALONE
@@ -199,14 +179,14 @@ void SharedData::initConfig()
     jaut::Config::Property property_sample_rate; // determines the sample rate
     jaut::Config::Property property_io_device;   // determines the input and output devices
     jaut::Config::Property property_mute_input;  // determines whether input should be muted due to possible feedback loops
-    jaut::Config::Property property_device_type;    // determines the type of device to use
-    jaut::Config::Property property_log_to_file;  // determines whether logging should be enabled or not
+    jaut::Config::Property property_device_type; // determines the type of device to use
+    jaut::Config::Property property_log_to_file; // determines whether logging should be enabled or not
 
     //=================================: GENERAL
-    property_theme = config->createProperty("theme", "default", res::Cfg_General);
+    property_theme = config->createProperty("theme", "default");
     property_theme.setComment("Set this to the name of a theme folder in your themes directory.");
 
-    property_language = config->createProperty("language", "default", res::Cfg_General);
+    property_language = config->createProperty("language", "default");
     property_language.setComment("Set the language which the app should be displayed in.");
 
     //=================================: DEFAULTS
@@ -228,12 +208,6 @@ void SharedData::initConfig()
     property_hardware_acceleration.setComment("Sets whether rendering should be hardware or software aided.\n"
                                               "In case weird problems arise, like glitches or lag, "
                                               "it is better to turn this off!");
-
-    /*
-        property_memory_save_mode = config->createProperty("memorySaveMode", false, res::Cfg_Optimization);
-        property_memory_save_mode.setComment("Sets whether memory save mode should be used or not.\n"
-                                             "Read the plugin docs for more information!");
-    */
     
     property_animations = config->createProperty("animations", var(), res::Cfg_Optimization);
     property_animations.setComment("Change how the plugin should be animated or\nif it shouldn't be animated at all");
@@ -271,9 +245,22 @@ void SharedData::initConfig()
     {
         (void) config_file.create();
     }
-
+    
     (void) config->save();
     appConfig.reset(config);
+}
+
+void SharedData::initDefaults()
+{
+    // make default locale
+    MemoryInputStream locale_stream(Assets::default_lang, Assets::default_langSize, false);
+    LocalisedStrings  locale_def(locale_stream.readEntireStreamAsString(), true);
+    defaultLocale.reset(new jaut::Localisation(appData->getDir("Lang").toFile(), locale_def));
+
+    // make default theme
+    MemoryInputStream theme_stream(Assets::theme_meta, Assets::theme_metaSize, false);
+    auto theme_def = new ThemeDefinition(new ThemeMeta(jaut::MetadataHelper::readMetaToNamedValueSet(theme_stream)));
+    defaultTheme   = jaut::ThemePointer("default", theme_def);
 }
 
 void SharedData::initLangs()
@@ -284,7 +271,10 @@ void SharedData::initLangs()
     
     if(!language_name.equalsIgnoreCase("default"))
     {
-        (void) locale->setCurrentLanguage(language_name);
+        if(!locale->setCurrentLanguage(language_name))
+        {
+            Logger::getCurrentLogger()->writeToLog("Language '" + language_name + "' is not valid, keeping default.");
+        }
     }
 
     appLocale.reset(locale);
@@ -293,12 +283,23 @@ void SharedData::initLangs()
 void SharedData::initThemeManager()
 {
     jaut::ThemeManager::Options options;
-    options.cacheThemes = true;
-    options.themeMetaId = "theme.meta";
-    String theme_name   = appConfig->getProperty("theme").getValue().toString();
+    options.cacheThemes  = true;
+    options.themeMetaId  = "theme.meta";
+    options.higherVersionShouldOverrideLower = true;
+    options.defaultTheme = defaultTheme;
+    String theme_name    = appConfig->getProperty("theme").toString();
     auto *thememanager (new jaut::ThemeManager(appData->getDir("Themes").toFile(), ::initializeThemePack,
                         std::make_unique<ThemeMetaReader>(), options));
     
-    thememanager->reloadThemePacks();
+    thememanager->reloadThemes();
+
+    if(!theme_name.equalsIgnoreCase("default"))
+    {
+        if(!thememanager->setCurrentTheme(theme_name))
+        {
+            Logger::getCurrentLogger()->writeToLog("Theme '" + theme_name + "' is not valid, keeping default.");
+        }
+    }
+
     appThemes.reset(thememanager);
 }

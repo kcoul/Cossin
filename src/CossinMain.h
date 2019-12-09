@@ -44,12 +44,6 @@ namespace jaut
 
 class SharedData;
 
-struct PluginSession final
-{
-    const Time startTime;
-    const Uuid id;
-};
-
 class CossinPluginWrapper final : private AudioIODeviceCallback, private Value::Listener, private Timer
 {
 public:
@@ -211,13 +205,10 @@ public:
     ~Cossin();
 
     //==================================================================================================================
-    const String getApplicationName() override { return JucePlugin_Name; }
-    const String getApplicationVersion() override { return JucePlugin_VersionString; }
+    const String getApplicationName() override;
+    const String getApplicationVersion() override;
     bool moreThanOneInstanceAllowed() override { return true; }
     void anotherInstanceStarted(const String&) override {}
-
-    //==================================================================================================================
-    const PluginSession &getSession() const noexcept;
 
     //==================================================================================================================
     const bool isInputMuted() const noexcept;
@@ -233,44 +224,6 @@ public:
     CossinPluginWindow *createWindow();
 
 private:
-    PluginSession session;
     std::unique_ptr<Logger> logger;
     std::unique_ptr<CossinPluginWindow> mainWindow;
 };
-
-inline Logger *createDummyLogger()
-{
-    struct DummyLogger final : public Logger
-    {
-        DummyLogger() = default;
-        void logMessage(const String&) override {}
-    };
-    
-    return new DummyLogger;
-}
-
-inline FileLogger *createLoggerFromSession(const File &logFile, const PluginSession &session, const String &appName,
-                                           const String &appVersion)
-{
-    const String sessionid = session.id.toDashedString();
-    const String cpumodel  = !SystemStats::getCpuModel().isEmpty()  ? SystemStats::getCpuModel()  : "n/a";
-    const String cpuvendor = !SystemStats::getCpuVendor().isEmpty() ? " (" + SystemStats::getCpuVendor() + ")" : "";
-    const String gpumodel  = String((char*)glGetString(GL_VENDOR)) + " " + String((char*)glGetString(GL_RENDERER));
-    const String memorysz  = String(SystemStats::getMemorySizeInMegabytes()) + "mb";
-
-    String logmsg;
-
-    logmsg << "                        --Program--                       " << newLine
-           << "App:        " << appName                                    << newLine
-           << "Version:    " << appVersion                                 << newLine
-           << "Session-ID: " << sessionid                                  << newLine
-           << "**********************************************************" << newLine
-           << "                        --Machine--                       " << newLine
-           << "System:     " << SystemStats::getOperatingSystemName()      << newLine
-           << "Memory:     " << memorysz                                   << newLine
-           << "CPU:        " << cpumodel << cpuvendor                      << newLine
-           << "Graphics:   " << (!gpumodel.isEmpty() ? gpumodel : "n/a")   << newLine
-           << "**********************************************************";
-
-    return new FileLogger(logFile, logmsg);
-}

@@ -1,7 +1,7 @@
 {
-	"name": "{name} Default",
+	"name": "Cossin Default",
 	"description": "The default skin for {name}.",
-	"version": "{version}",
+	"version": "1.0.0",
 	"author": "{author}",
 	"license": {
 		"type": "{license}",

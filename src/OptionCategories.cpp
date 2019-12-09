@@ -37,11 +37,6 @@
 
 namespace
 {
-inline bool isDefaultTheme(const jaut::ThemePointer &theme) noexcept
-{
-    return theme->getThemeMeta()->getName().removeCharacters(" ").equalsIgnoreCase("cossindefault");
-}
-
 inline constexpr int getAuthorPosY(float maxLineWidth, int descriptionLength) noexcept
 {
     return 16 * std::min(static_cast<int>(std::ceil(static_cast<float>(descriptionLength) / maxLineWidth)), 3);
@@ -425,7 +420,7 @@ void OptionPanelThemes::ThemePanel::ThemePreview::updateContent(const jaut::Them
 
     content.removeAllChildren();
 
-    if(!::isDefaultTheme(theme))
+    if(theme.getId() != "default")
     {
         const StringArray screenshot_names = theme->getThemeMeta()->getScreenshots();
         int counter = 0;
@@ -506,6 +501,8 @@ void OptionPanelThemes::ThemePanel::ThemePreview::updateContent(const jaut::Them
         buttonLicenseLink.setURL(String());
         buttonLicenseLink.setVisible(false);
     }
+
+    repaint();
 }
 #endif // ThemePreview
 
@@ -673,7 +670,7 @@ void OptionPanelThemes::selectThemeRow(const jaut::ThemePointer &theme)
 {
     const auto iterator = std::find(themePanel.themes.begin(), themePanel.themes.end(), theme);
 
-    if(::isDefaultTheme(theme) || iterator == themePanel.themes.end())
+    if(theme.getId() == "default" || iterator == themePanel.themes.end())
     {
         themePanel.themeList.selectRow(0);
     }
@@ -690,20 +687,9 @@ void OptionPanelThemes::selectThemeRow(const jaut::ThemePointer &theme)
     themePanel.changeButtonState();
 }
 
-void OptionPanelThemes::resetThemeList(const jaut::ThemePointer &defaultTheme,
-                                       const std::vector<jaut::ThemePointer> &themes)
+void OptionPanelThemes::resetThemeList(const std::vector<jaut::ThemePointer> &themes)
 {
-    themePanel.themes.clear();
-    themePanel.themes.emplace_back(defaultTheme);
-
-    for(auto theme : themes)
-    {
-        if(!::isDefaultTheme(theme))
-        {
-            themePanel.themes.emplace_back(theme);
-        }
-    }
-
+    themePanel.themes = themes;
     themePanel.themeList.updateContent();
     repaint();
 }

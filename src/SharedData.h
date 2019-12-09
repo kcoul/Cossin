@@ -26,6 +26,7 @@
 #pragma once
 
 #include "JuceHeader.h"
+#include <jaut/thememanager.h>
 
 namespace jaut
 {
@@ -45,16 +46,18 @@ public:
     enum LockPriority
     {
         HIGH,
-        LOW
+        LOW,
+        NONE
     };
 
     class ReadLock final
     {
     public:
         ReadLock(SharedData &sharedData, LockPriority priority = HIGH)
-            : sharedData(sharedData), lockWasSuccessful(true)
+            : sharedData(sharedData),
+              lockWasSuccessful(priority == HIGH)
         {
-            if(JUCEApplication::isStandaloneApp())
+            if(JUCEApplication::isStandaloneApp() || priority == NONE)
             {
                 return;
             }
@@ -91,9 +94,10 @@ public:
     {
     public:
         WriteLock(SharedData &sharedData, LockPriority priority = HIGH)
-            : sharedData(sharedData), lockWasSuccessful(true)
+            : sharedData(sharedData),
+              lockWasSuccessful(priority == HIGH)
         {
-            if(JUCEApplication::isStandaloneApp())
+            if(JUCEApplication::isStandaloneApp() || priority == NONE)
             {
                 return;
             }
@@ -125,12 +129,6 @@ public:
         SharedData &sharedData;
         bool lockWasSuccessful;
     };
-
-    enum InitializationState : int
-    {
-        CREATING,
-        DONE
-    };
     
     //==================================================================================================================
     static SharedResourcePointer<SharedData> getInstance();
@@ -152,9 +150,6 @@ public:
     //==================================================================================================================
     void sendChangeToAllInstancesExcept(CossinAudioProcessorEditor* = nullptr) const;
 
-    //==================================================================================================================
-    InitializationState getInitializationState() const noexcept;
-
 private:
     friend class ReadLock;
 
@@ -165,17 +160,20 @@ private:
     std::unique_ptr<jaut::Localisation> appLocale;
 
     // Defaults
-    std::unique_ptr<jaut::ThemePointer> defaultTheme;
+    jaut::ThemePointer defaultTheme;
     std::unique_ptr<jaut::Localisation> defaultLocale;
 
     // Misc
     mutable ReadWriteLock rwLock;
-    InitializationState initState;
+    bool initialized;
 
     //==================================================================================================================
     void initialize();
     void initAppdata();
     void initConfig();
+    void initDefaults();
     void initLangs();
     void initThemeManager();
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SharedData)
 };

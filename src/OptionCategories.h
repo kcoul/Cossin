@@ -118,7 +118,7 @@ public:
 
     //==================================================================================================================
     void selectThemeRow(const jaut::ThemePointer&);
-    void resetThemeList(const jaut::ThemePointer&, const std::vector<jaut::ThemePointer>&);
+    void resetThemeList(const std::vector<jaut::ThemePointer>&);
 
     //==================================================================================================================
     const jaut::ThemePointer &getSelectedTheme() const noexcept;

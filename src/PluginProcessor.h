@@ -74,6 +74,7 @@ public:
     Rectangle<int> &getWindowSize() noexcept;
 
 private:
+    SharedResourcePointer<SharedData> sharedData;
     std::unique_ptr<jaut::ScopedATCD> atcd;
     RangedAudioParameter *parGain;
     RangedAudioParameter *parPanning;

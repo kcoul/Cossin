@@ -38,14 +38,6 @@
 #include "juce_audio_plugin_client/Standalone/juce_StandaloneFilterWindow.h"
 #endif
 
-namespace
-{
-inline bool isDefaultTheme(const jaut::ThemePointer &theme) noexcept
-{
-    return theme.getName().removeCharacters(" ").equalsIgnoreCase("cossindefault");
-}
-}
-
 
 
 /* ==================================================================================
@@ -216,13 +208,13 @@ void OptionPanel::show()
         SharedData::ReadLock lock(*shared_data);
 
         // General tab
-        optionsGeneral.resetLangList(shared_data->AppData().getDir("Lang").toFile());
+        optionsGeneral.resetLangList(shared_data->Localisation().getRootDirectory());
         optionsGeneral.selectLangRow(shared_data->Localisation().getLanguageFile());
         optionsGeneral.resetDefaults(shared_data->Configuration());
 
         // Themes tab
-        optionsThemes.resetThemeList(shared_data->getDefaultTheme(), shared_data->ThemeManager().getAllThemePacks());
-        optionsThemes.selectThemeRow(dynamic_cast<PluginStyle*>(&getLookAndFeel())->getTheme());
+        optionsThemes.resetThemeList(shared_data->ThemeManager().getAllThemes());
+        optionsThemes.selectThemeRow(shared_data->ThemeManager().getCurrentTheme());
     }
 
     setVisible(true);
@@ -237,40 +229,46 @@ void OptionPanel::hide()
         SharedData::WriteLock lock(*shared_data);
         
         auto &config = shared_data->Configuration();
-        bool full_reload  = false;
+        bool needs_full_reload = false;
 
         // Defaults
-        const int  default_panning_law = optionsGeneral.getDefaultPanningMode();
-        const int  default_processor   = optionsGeneral.getDefaultProcessor();
-        const auto default_window_size = optionsGeneral.getDefaultWindowSize();
+        {
+            auto property_panning   = config.getProperty("panning",   res::Cfg_Defaults);
+            auto property_processor = config.getProperty("processor", res::Cfg_Defaults);
+            auto property_size      = config.getProperty("size",      res::Cfg_Defaults);
 
-        auto property_panning   = config.getProperty("panning",   res::Cfg_Defaults);
-        auto property_processor = config.getProperty("processor", res::Cfg_Defaults);
-        auto property_size      = config.getProperty("size",      res::Cfg_Defaults);
+            property_panning  .setValue(optionsGeneral.getDefaultPanningMode());
+            property_processor.setValue(optionsGeneral.getDefaultProcessor());
 
-        property_panning  .setValue(default_panning_law);
-        property_processor.setValue(default_processor);
-        property_size.getProperty("width") .setValue(default_window_size.getWidth());
-        property_size.getProperty("height").setValue(default_window_size.getHeight());
-
+            const auto default_window_size = optionsGeneral.getDefaultWindowSize();
+            property_size.getProperty("width") .setValue(default_window_size.getWidth());
+            property_size.getProperty("height").setValue(default_window_size.getHeight());
+        }
 
         // Locale
-        const String lang_name = optionsGeneral.getSelectedLanguage();
+        {
+            const String selected_language = optionsGeneral.getSelectedLanguage();
 
-        shared_data->Localisation().setCurrentLanguage(locale);
-        config.getProperty("language").setValue(lang_name);
-
+            shared_data->Localisation().setCurrentLanguage(locale);
+            config.getProperty("language").setValue(selected_language);
+        }
 
         // Theme
-        const jaut::ThemePointer selected_theme = optionsThemes.getSelectedTheme();
-        const jaut::ThemePointer actual_theme   = shared_data->ThemeManager().getThemePack(selected_theme.getName());
-        const jaut::ThemePointer &final_theme   = ::isDefaultTheme(selected_theme) || !actual_theme.isValid()
-                                                  ? shared_data->getDefaultTheme() : actual_theme;
-        
-        config.getProperty("theme").setValue(::isDefaultTheme(final_theme) ? "default" : final_theme.getName());
+        {
+            const String selected_theme_id = optionsThemes.getSelectedTheme().getId();
+            
+            if(shared_data->ThemeManager().setCurrentTheme(selected_theme_id))
+            {
+                config.getProperty("theme").setValue(selected_theme_id);
+            }
+            else
+            {
+                needs_full_reload = true;
+            }
+        }
 
         config.save();
-        shared_data->sendChangeToAllInstancesExcept(full_reload ? nullptr : &cossin);
+        shared_data->sendChangeToAllInstancesExcept(needs_full_reload ? nullptr : &cossin);
     }
 
     MouseCursor::hideWaitCursor();

@@ -199,8 +199,6 @@ Rectangle<int> &CossinAudioProcessor::getWindowSize() noexcept
 void CossinAudioProcessor::initialization()
 {
     properties.addListener(this);
-
-    auto sharedData = SharedData::getInstance();
     SharedData::ReadLock lock(*sharedData);
 
     // default init properties
