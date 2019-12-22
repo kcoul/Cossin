@@ -340,3 +340,4 @@ logs/
 .cproject
 .project
 *.kdev4
+plugin_state*.xml
