@@ -27,27 +27,22 @@
 
 #include "JuceHeader.h"
 #include "OptionCategories.h"
-#include "ReloadListener.h"
-
-namespace jaut
-{
-    class Config;
-    class Localisation;
-    class ThemePointer;
-}
-
-class CossinAudioProcessorEditor;
-class SharedData;
 
 class OptionPanel final : public Button::Listener, public Component, public ListBoxModel, public ReloadListener,
-                          LookAndFeel_V4
+                          private LookAndFeel_V4
 {
 public:
+    std::function<bool(const String&)> onIntercept;
+
     OptionPanel(CossinAudioProcessorEditor&, jaut::Localisation&);
+    ~OptionPanel();
 
     //==================================================================================================================
     void paint(Graphics&) override;
     void resized() override;
+
+    //==================================================================================================================
+    void addOptionCategory(const String&, OptionCategory&);
 
     //==================================================================================================================
     void show();
@@ -60,16 +55,20 @@ private:
     class OptionsContainer final : public Component
     {
     public:
-        OptionsContainer(OptionPanel &optionPanel);
+        OptionsContainer(OptionPanel&);
 
         //==============================================================================================================
         void resized() override;
 
         //==============================================================================================================
-        void addOptionPanel(Component &component);
-        void showPanel(int lastIndex, int newIndex, bool animate);
+        void addOptionPanel(OptionCategory&);
+        void showPanel(int, int, bool);
+
+        //==============================================================================================================
+        const std::vector<OptionCategory*> &getCategories() const noexcept;
 
     private:
+        std::vector<OptionCategory*> categories;
         Component contentComponent;
         OptionPanel &parent;
     };
@@ -78,7 +77,7 @@ private:
 
     //==================================================================================================================
     // General
-    CossinAudioProcessorEditor &cossin;
+    CossinAudioProcessorEditor &editor;
     std::function<void(Button*)> closeCallback;
     int lastSelectedRow;
     Array<String> categories;
@@ -88,9 +87,9 @@ private:
     OptionsContainer optionContainer;
     OptionPanelGeneral optionsGeneral;
     OptionPanelThemes optionsThemes;
-    //OptionPanelOptimization optionsOptimization;
+    OptionPanelPerformance optionsPerformance;
     //OptionPanelAccount optionsAccount;
-    //OptionPanelStandalone optionsStandalone;
+    OptionPanelStandalone optionsStandalone;
     ListBox optionTabs;
     HyperlinkButton linkDiscord;
     HyperlinkButton linkTumblr;

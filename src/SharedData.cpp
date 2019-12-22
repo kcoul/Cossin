@@ -171,6 +171,9 @@ void SharedData::initConfig()
 
     // OPTIMIZATION
     jaut::Config::Property property_hardware_acceleration; // determines whether opengl should be used to draw or not
+    jaut::Config::Property property_multisampling;         // OpenGL MSAA multisampling
+    jaut::Config::Property property_texture_smoothing;     // OpenGL texture scaling resolution
+    jaut::Config::Property property_vsync;                 // OpenGL front and back buffer swapping synchronisation
     jaut::Config::Property property_animations;            // animation properties
     jaut::Config::Property property_animations_custom;     // custom animations settings
 
@@ -184,69 +187,93 @@ void SharedData::initConfig()
 
     //=================================: GENERAL
     property_theme = config->createProperty("theme", "default");
-    property_theme.setComment("Set this to the name of a theme folder in your themes directory.");
+    property_theme.setComment("This is the name of the current selected theme.\n"
+                              "If the theme could not be found the default theme will be used instead.");
 
     property_language = config->createProperty("language", "default");
-    property_language.setComment("Set the language which the app should be displayed in.");
+    property_language.setComment("This is the language file that should be used.\n"
+                                 "If the language could not be found, the default one will be used.");
 
     //=================================: DEFAULTS
     property_initial_size = config->createProperty("size", var(), res::Cfg_Defaults);
-    property_initial_size.setComment("Set this to the initial size the plugin window should have when "
-                                     "it's newly instantiated.");
+    property_initial_size.setComment("This is the size the plugin window should have when a new\n"
+                                     "session was started.");
     (void) property_initial_size.createProperty("width", 800);
     (void) property_initial_size.createProperty("height", 500);
 
     property_panning = config->createProperty("panning", 1, res::Cfg_Defaults);
-    property_panning.setComment("Set this to the default panning function. (0 = linear, 1 = square, 2 = sine)");
+    property_panning.setComment("This is the default panning function which should be used when a new\n"
+                                "session was started.");
 
     property_processor = config->createProperty("processor", 0, res::Cfg_Defaults);
-    property_processor.setComment("Set this to the default processor which should be initially shown when opening a new"
-                                  " instance of Cossin. (0 = solo, 1 = stack)");
+    property_processor.setComment("This is the default processor category which should be used when a new\n"
+                                  "session was started.");
 
     //=================================: OPTIMIZATION
     property_hardware_acceleration = config->createProperty("hardwareAcceleration", true, res::Cfg_Optimization);
-    property_hardware_acceleration.setComment("Sets whether rendering should be hardware or software aided.\n"
-                                              "In case weird problems arise, like glitches or lag, "
-                                              "it is better to turn this off!");
+    property_hardware_acceleration.setComment("Determines whether rendering should be hardware or software aided.\n"
+                                              "In case weird problems arise, like glitches or lags,\n"
+                                              "it is better to turn this off. (needs restart)");
     
+    property_multisampling = config->createProperty("useMultisampling", false, res::Cfg_Optimization);
+    property_multisampling.setComment("Determines whether OpenGL should use multisampling to improve textures or not.\n"
+                                      "Be aware that not every device may support this and/or may suffer a massive\n"
+                                      "performance hit when enabled. (needs restart)");
+
+    property_texture_smoothing = config->createProperty("textureSmoothing", true, res::Cfg_Optimization);
+    property_texture_smoothing.setComment("Determines whether textures should be smoothed out or not.\n"
+                                          "This is true by default, but if you encounter problems with the "
+                                          "visual appearance\n"
+                                          "or stronger performance hits, turn this off. (needs restart)");
+
+    property_vsync = config->createProperty("enableVSync", true, res::Cfg_Optimization);
+    property_vsync.setComment("Determines whether your GPU's and monitor's refresh rate should be synched or not.\n"
+                              "Note that this may not be supported by your hardware or may affect "
+                              "performance. (needs restart)");
+
     property_animations = config->createProperty("animations", var(), res::Cfg_Optimization);
-    property_animations.setComment("Change how the plugin should be animated or\nif it shouldn't be animated at all");
-    property_animations.createProperty("mode", 3).setComment("The animation mode.\n"
-                                                             "(3 = All, 2 = Effects only, 1 = Custom, 0 = None)");
+    property_animations.setComment("Turn on/off specific or all animations.");
+    property_animations.createProperty("mode", 3).setComment("The level of activated animations:\n"
+                                                             "All:     Activate all animations\n"
+                                                             "Reduced: Activate only crucial animations\n"
+                                                             "Custom:  Activate only custom set animations\n"
+                                                             "None:    Deactivate all animations");
     property_animations_custom = property_animations.createProperty("custom", var());
-    property_animations_custom.createProperty("components", true).setComment("Animate components like: "
-                                                                             "Smooth panel change.");
-    property_animations_custom.createProperty("effects", true).setComment("Animate effect's visuals like: "
-                                                                          "Smooth EQ points moving.");
+    property_animations_custom.createProperty("components", true);
+    property_animations_custom.createProperty("effects", true);
     
     //=================================: STANDALONE
     property_buffer_size = config->createProperty("bufferSize", 512, res::Cfg_Standalone);
-    property_buffer_size.setComment("Sets the buffer size for the standalone Cossin app.");
-    property_sample_rate = config->createProperty("sampleRate", 44100.0, res::Cfg_Standalone);
-    property_sample_rate.setComment("Sets the sample rate for the standalone Cossin app.");
+    property_buffer_size.setComment("Determines the buffer size.");
+    property_sample_rate = config->createProperty("sampleRate", 44100.0f, res::Cfg_Standalone);
+    property_sample_rate.setComment("Determines the sample rate.");
     property_io_device   = config->createProperty("devices", var(), res::Cfg_Standalone);
-    property_io_device.setComment("Sets the input/output device that should be used in the standalone Cossin app.");
+    property_io_device.setComment("Determines the input/output devices.");
     property_io_device.createProperty("input", "default");
     property_io_device.createProperty("output", "default");
     property_mute_input  = config->createProperty("muteInput", true, res::Cfg_Standalone);
-    property_mute_input.setComment("Sets whether input should be muted or not."
+    property_mute_input.setComment("Determines whether input should be muted or not.\n"
                                    "This is due to a possible feedback loop!");
     property_device_type = config->createProperty("deviceType", "default", res::Cfg_Standalone);
-    property_device_type.setComment("Sets what type of device to use.");
+    property_device_type.setComment("Determines what type of device to use.");
     property_log_to_file = config->createProperty("logToFile", false, res::Cfg_Standalone);
-    property_log_to_file.setComment("Sets if the logger should be enabled and should output to a log file.\n"
+    property_log_to_file.setComment("Determines if the logger should be enabled and should output to a log file.\n"
                                     "This should only be used for debugging reasons as it could impact performance!");
 
-    if (config_file.exists())
+    Logger::getCurrentLogger()->writeToLog("1 Hardware acceleration is:" + var(property_hardware_acceleration.getValue()).toString());
+
+    if(!config->load())
     {
-        (void) config->load();
+        // If there is a problem with config saving, we've got a problem!
+        jassert(config_file.create().wasOk());
     }
-    else
-    {
-        (void) config_file.create();
-    }
+
+    Logger::getCurrentLogger()->writeToLog("2 Hardware acceleration is:" + var(property_hardware_acceleration.getValue()).toString());
     
     (void) config->save();
+
+    Logger::getCurrentLogger()->writeToLog("3 Hardware acceleration is:" + var(property_hardware_acceleration.getValue()).toString());
+
     appConfig.reset(config);
 }
 
@@ -283,11 +310,12 @@ void SharedData::initLangs()
 void SharedData::initThemeManager()
 {
     jaut::ThemeManager::Options options;
-    options.cacheThemes  = true;
-    options.themeMetaId  = "theme.meta";
-    options.higherVersionShouldOverrideLower = true;
-    options.defaultTheme = defaultTheme;
-    String theme_name    = appConfig->getProperty("theme").toString();
+    options.cacheThemes        = true;
+    options.themeMetaId        = "theme.meta";
+    options.duplicateBehaviour = jaut::ThemeManager::Options::KeepLatest;
+    options.defaultTheme       = defaultTheme;
+    
+    String theme_name = appConfig->getProperty("theme").toString();
     auto *thememanager (new jaut::ThemeManager(appData->getDir("Themes").toFile(), ::initializeThemePack,
                         std::make_unique<ThemeMetaReader>(), options));
     

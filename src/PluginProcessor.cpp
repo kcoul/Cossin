@@ -39,8 +39,9 @@ inline constexpr float Const_SinePanningCompensation   = 1.41421356238f;
 
 //=====================================================================================================================
 CossinAudioProcessor::CossinAudioProcessor()
-     : AudioProcessor (BusesProperties().withInput("Input", AudioChannelSet::stereo(), true)
-                                        .withOutput("Output", AudioChannelSet::stereo(), true)),
+     : AudioProcessor (BusesProperties().withInput ("Input",     AudioChannelSet::stereo())
+                                        .withInput ("Sidechain", AudioChannelSet::stereo(), false)
+                                        .withOutput("Output",    AudioChannelSet::stereo())),
        atcd(JT_IS_STANDALONE_INLINE(nullptr, new jaut::ScopedATCD)),
        parameters(*this, nullptr),
        previousGain{0.0f, 0.0f},
@@ -76,12 +77,11 @@ void CossinAudioProcessor::releaseResources()
     processorContainer.releaseResources();
 }
 
-bool CossinAudioProcessor::isBusesLayoutSupported (const BusesLayout &layouts) const
+bool CossinAudioProcessor::isBusesLayoutSupported(const BusesLayout &layouts) const
 {
-
-    if ((layouts.getMainOutputChannelSet() != AudioChannelSet::mono()
-        && layouts.getMainOutputChannelSet() != AudioChannelSet::stereo())
-        || layouts.getMainOutputChannelSet() == AudioChannelSet::disabled())
+    if((  layouts.getMainOutputChannelSet() != AudioChannelSet::mono()
+       && layouts.getMainOutputChannelSet() != AudioChannelSet::stereo())
+       || layouts.getMainOutputChannelSet() == AudioChannelSet::disabled())
     {
         return false;
     }
@@ -95,16 +95,16 @@ void CossinAudioProcessor::processBlock(AudioBuffer<float> &buffer, MidiBuffer &
 
     for (auto i = 0; i < buffer.getNumChannels(); ++i)
     {
-        float currentGain = parGain->getValue() * calculatePanningGain(i);
+        float current_gain = parGain->getValue() * calculatePanningGain(i);
         
-        if (currentGain == previousGain[i])
+        if (current_gain == previousGain[i])
         {
-            buffer.applyGain(i, 0, buffer.getNumSamples(), currentGain);
+            buffer.applyGain(i, 0, buffer.getNumSamples(), current_gain);
         }
         else
         {
-            buffer.applyGainRamp(i, 0, buffer.getNumSamples(), previousGain[i], currentGain);
-            previousGain[i] = currentGain;
+            buffer.applyGainRamp(i, 0, buffer.getNumSamples(), previousGain[i], current_gain);
+            previousGain[i] = current_gain;
         }
     }
 

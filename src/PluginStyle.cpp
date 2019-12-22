@@ -35,6 +35,7 @@ PluginStyle::PluginStyle() noexcept
       theme(SharedData::getInstance()->getDefaultTheme()),
       formatter(jaut::CharFormat::Options{'&', Colours::transparentBlack})
 {
+    formatter.setLookAndFeel(this);
     reset(theme);
 }
 
@@ -148,27 +149,52 @@ void PluginStyle::drawButtonText(juce::Graphics &g, juce::TextButton &button, bo
 void PluginStyle::drawComboBox(juce::Graphics &g, int width, int height, bool isMouseButtonDown,
                                int buttonX, int buttonY, int buttonW, int buttonH, juce::ComboBox &box)
 {
-    g.setColour(findColour(CossinAudioProcessorEditor::ColourContainerBackgroundId));
+    const Colour colour_container_background = findColour(ComboBox::backgroundColourId);
+    const Colour colour_button_background    = findColour(ComboBox::buttonColourId);
+
+    g.setColour(colour_container_background);
     g.fillAll();
 
     const Rectangle<int> button(buttonX, buttonY, buttonW, buttonH);
-    const Colour colour_background = isMouseButtonDown
-                                   ? findColour(CossinAudioProcessorEditor::ColourComponentForegroundId)
-                                   : findColour(CossinAudioProcessorEditor::ColourComponentBackgroundId);
-    g.setColour(colour_background);
-    g.fillRect(button.reduced(2));
 
     const int triangle_padding = 11;
     const int triangle_bottom  = buttonY + buttonH - triangle_padding;
 
-    g.setColour(isMouseButtonDown ? colour_background.contrasting()
-                                  : findColour(CossinAudioProcessorEditor::ColourFontId));
     Path triangle_path;
-    triangle_path.addTriangle(buttonX + buttonW / 2, buttonY + triangle_padding,
+    triangle_path.addTriangle(buttonX + buttonW / 2.0f, buttonY + triangle_padding,
                               buttonX + buttonW - triangle_padding, triangle_bottom,
                               buttonX + triangle_padding, triangle_bottom);
     triangle_path.applyTransform(AffineTransform::verticalFlip(buttonH));
+
+    g.setColour(box.isPopupActive() ? findColour(CossinAudioProcessorEditor::ColourComponentForegroundId)
+                                    : colour_button_background);
     g.fillPath(triangle_path);
+}
+
+void PluginStyle::drawToggleButton(juce::Graphics &g, juce::ToggleButton &button, bool isMouseOver, bool)
+{
+    if(!button.isEnabled())
+    {
+        g.setOpacity(0.3f);
+    }
+
+    const int button_y = button.getHeight() / 2 - 8;
+
+    g.drawImageAt(imgCheckbox, 0, button_y);
+
+    if(button.getToggleState())
+    {
+        g.drawImageAt(imgCheckboxTick, 0, button_y);
+    }
+    else if(!button.getToggleState() && isMouseOver && button.isEnabled())
+    {
+        g.setOpacity(0.3f);
+        g.drawImageAt(imgCheckboxTick, 0, button_y);
+    }
+
+    g.setColour(button.findColour(ToggleButton::textColourId));
+    g.setFont(font);
+    g.drawFittedText(button.getButtonText(), button.getLocalBounds().withX(23), Justification::centredLeft, 10);
 }
 
 //======================================================================================================================
@@ -303,19 +329,21 @@ int PluginStyle::getOptionListLabelWidth(const String &label)
 void PluginStyle::drawOptionListOptionBox(Graphics &g, Rectangle<int> bounds, bool isCheckBox, bool checked,
                                           bool enabled, bool isMouseOver, bool isMouseDown)
 {
-    const Image &box = checked ? imgCheckboxChecked : imgCheckbox;
-    g.drawImageAt(box, 0, 0);
-
-    if(!checked && isMouseOver && enabled)
+    if(!enabled)
     {
         g.setOpacity(0.3f);
-        g.drawImageAt(imgCheckboxChecked, 0, 0);
     }
-    else if(!enabled)
+
+    g.drawImageAt(imgCheckbox, 0, 0);
+
+    if(checked)
     {
-        g.setOpacity(1.0f);
-        g.setColour(findColour(CossinAudioProcessorEditor::ColourContainerBackgroundId).withAlpha(0.3f));
-        g.fillRect(bounds);
+        g.drawImageAt(imgCheckboxTick, 0, 0);
+    }
+    else if(!checked && isMouseOver && enabled)
+    {
+        g.setOpacity(0.3f);
+        g.drawImageAt(imgCheckboxTick, 0, 0);
     }
 }
 
@@ -356,48 +384,75 @@ void PluginStyle::reset(const jaut::ThemePointer &theme) noexcept
     const Image image_knob_big   = theme->getImage(res::Png_Knob_Big);
 
     imgCheckbox        = image_check_box .getClippedImage({0, 0, 16, 16});
-    imgCheckboxChecked = image_check_box .getClippedImage({0, 16, 16, 16});
+    imgCheckboxTick    = image_check_box .getClippedImage({0, 16, 16, 16});
     imgKnobBig         = image_knob_big  .getClippedImage({0, 0, 60, 60});
     imgKnobBigCursor   = image_knob_big  .getClippedImage({60, 0, 60, 60});
     imgKnobSmall       = image_knob_small.getClippedImage({0, 0, 36, 36});
     imgKnobSmallCursor = image_knob_small.getClippedImage({36, 0, 36, 36});
     imgSliderPeakMetre = theme->getImage(res::Png_Metre_H);
 
-    setColour(CossinAudioProcessorEditor::ColourComponentBackgroundId, theme->getThemeColour(res::Col_Component_Bg));
-    setColour(CossinAudioProcessorEditor::ColourComponentForegroundId, theme->getThemeColour(res::Col_Component_Fg));
-    setColour(CossinAudioProcessorEditor::ColourContainerBackgroundId, theme->getThemeColour(res::Col_Container_Bg));
-    setColour(CossinAudioProcessorEditor::ColourContainerForegroundId, theme->getThemeColour(res::Col_Container_Fg));
+    const Colour colour_font                 = theme->getThemeColour(res::Col_Font);
+    const Colour colour_component_background = theme->getThemeColour(res::Col_Component_Bg);
+    const Colour colour_component_foreground = theme->getThemeColour(res::Col_Component_Fg);
+    const Colour colour_container_background = theme->getThemeColour(res::Col_Container_Bg);
+    const Colour colour_container_foreground = theme->getThemeColour(res::Col_Container_Fg);
+
+    setColour(CossinAudioProcessorEditor::ColourFontId,                colour_font);
+    setColour(CossinAudioProcessorEditor::ColourComponentBackgroundId, colour_component_background);
+    setColour(CossinAudioProcessorEditor::ColourComponentForegroundId, colour_component_foreground);
+    setColour(CossinAudioProcessorEditor::ColourContainerBackgroundId, colour_container_background);
+    setColour(CossinAudioProcessorEditor::ColourContainerForegroundId, colour_container_foreground);
     setColour(CossinAudioProcessorEditor::ColourHeaderBackgroundId,    theme->getThemeColour(res::Col_Header_Bg));
-    setColour(CossinAudioProcessorEditor::ColourTooltipBorderId,       theme->getThemeColour(res::Col_Tooltip_Border));
     setColour(CossinAudioProcessorEditor::ColourTooltipBackgroundId,   theme->getThemeColour(res::Col_Tooltip_Bg));
     setColour(CossinAudioProcessorEditor::ColourTooltipFontId,         theme->getThemeColour(res::Col_Tooltip_Font));
-    setColour(CossinAudioProcessorEditor::ColourFontId,                theme->getThemeColour(res::Col_Font));
+    setColour(CossinAudioProcessorEditor::ColourTooltipBorderId,       theme->getThemeColour(res::Col_Tooltip_Border));
 
     //override look and feel colours
     // juce::AlertWindow
-    setColour(AlertWindow::textColourId, theme->getThemeColour(res::Col_Font));
+    setColour(AlertWindow::textColourId, colour_font);
+
+    // juce::ComboBox
+    setColour(ComboBox::textColourId,       colour_font);
+    setColour(ComboBox::arrowColourId,      colour_font);
+    setColour(ComboBox::backgroundColourId, colour_container_background);
+    setColour(ComboBox::buttonColourId,     colour_component_background);
+
+    // juce::Label
+    setColour(Label::textColourId,    colour_font);
+    setColour(Label::outlineColourId, Colours::transparentBlack);
+
+    // juce::ListBox
+    setColour(ListBox::textColourId,       colour_font);
+    setColour(ListBox::backgroundColourId, colour_container_background);
+    setColour(ListBox::outlineColourId,    Colours::transparentBlack);
+
+    // juce::TextEditor
+    setColour(TextEditor::textColourId,           colour_font);
+    setColour(TextEditor::backgroundColourId,     colour_container_background);
+    setColour(TextEditor::focusedOutlineColourId, colour_component_foreground);
+    setColour(TextEditor::outlineColourId,        Colours::transparentBlack);
 
     // FFAU::LevelMeter
-    setColour(FFAU::LevelMeter::lmTextColour,             theme->getThemeColour(res::Col_Font));
-    setColour(FFAU::LevelMeter::lmTextClipColour,         Colours::transparentBlack);
-    setColour(FFAU::LevelMeter::lmTextDeactiveColour,     theme->getThemeColour(res::Col_Container_Fg));
-    setColour(FFAU::LevelMeter::lmTicksColour,            juce::Colours::orange);
-    setColour(FFAU::LevelMeter::lmOutlineColour,          juce::Colours::orange);
-    setColour(FFAU::LevelMeter::lmBackgroundColour,       Colours::transparentBlack);
-    setColour(FFAU::LevelMeter::lmBackgroundClipColour,   juce::Colours::red);
-    setColour(FFAU::LevelMeter::lmMeterForegroundColour,  juce::Colours::green);
+    setColour(FFAU::LevelMeter::lmTextColour,             colour_font);
+    setColour(FFAU::LevelMeter::lmTextDeactiveColour,     colour_container_foreground);
+    setColour(FFAU::LevelMeter::lmMeterBackgroundColour,  colour_container_background);
+    setColour(FFAU::LevelMeter::lmMeterGradientLowColour, colour_component_background);
+    setColour(FFAU::LevelMeter::lmMeterGradientMidColour, colour_component_background);
+    setColour(FFAU::LevelMeter::lmMeterGradientMaxColour, colour_component_foreground);
+    setColour(FFAU::LevelMeter::lmBackgroundClipColour,   Colours::red);
+    setColour(FFAU::LevelMeter::lmMeterForegroundColour,  Colours::green);
+    setColour(FFAU::LevelMeter::lmMeterMaxWarnColour,     Colours::orange);
+    setColour(FFAU::LevelMeter::lmTicksColour,            Colours::orange);
+    setColour(FFAU::LevelMeter::lmOutlineColour,          Colours::orange);
+    setColour(FFAU::LevelMeter::lmMeterReductionColour,   Colours::orange);
+    setColour(FFAU::LevelMeter::lmMeterMaxOverColour,     Colours::darkred);
+    setColour(FFAU::LevelMeter::lmMeterMaxNormalColour,   Colours::lightgrey);
     setColour(FFAU::LevelMeter::lmMeterOutlineColour,     Colours::transparentBlack);
-    setColour(FFAU::LevelMeter::lmMeterBackgroundColour,  theme->getThemeColour(res::Col_Container_Bg));
-    setColour(FFAU::LevelMeter::lmMeterMaxNormalColour,   juce::Colours::lightgrey);
-    setColour(FFAU::LevelMeter::lmMeterMaxWarnColour,     juce::Colours::orange);
-    setColour(FFAU::LevelMeter::lmMeterMaxOverColour,     juce::Colours::darkred);
-    setColour(FFAU::LevelMeter::lmMeterGradientLowColour, theme->getThemeColour(res::Col_Component_Bg));
-    setColour(FFAU::LevelMeter::lmMeterGradientMidColour, theme->getThemeColour(res::Col_Component_Bg));
-    setColour(FFAU::LevelMeter::lmMeterGradientMaxColour, theme->getThemeColour(res::Col_Component_Fg));
-    setColour(FFAU::LevelMeter::lmMeterReductionColour,   juce::Colours::orange);
+    setColour(FFAU::LevelMeter::lmBackgroundColour,       Colours::transparentBlack);
+    setColour(FFAU::LevelMeter::lmTextClipColour,         Colours::transparentBlack);
 
     // jaut::OptionList
-    setColour(jaut::OptionList::ColourOptionLabelId, theme->getThemeColour(res::Col_Font));
+    setColour(jaut::OptionList::ColourOptionLabelId, colour_font);
 
     // jaut::CharFormat
     setColour(jaut::CharFormat::ColourFormat0Id, theme->getThemeColour(res::Col_Format_0));

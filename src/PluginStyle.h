@@ -47,6 +47,7 @@ protected:
     void drawButtonBackground(Graphics&, Button&, const Colour&, bool, bool) override;
     void drawButtonText(Graphics&, TextButton&, bool, bool) override;
     void drawComboBox(Graphics&, int, int, bool, int, int, int, int, ComboBox&) override;
+    void drawToggleButton(juce::Graphics&, juce::ToggleButton&, bool, bool) override;
 
     //==================================================================================================================
     void drawPopupMenuBackground(Graphics&, int, int) override;
@@ -84,7 +85,7 @@ private:
     jaut::CharFormat formatter;
 
     Image imgCheckbox;
-    Image imgCheckboxChecked;
+    Image imgCheckboxTick;
     Image imgKnobBig;
     Image imgKnobBigCursor;
     Image imgKnobSmall;

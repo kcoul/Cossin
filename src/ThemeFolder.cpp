@@ -59,7 +59,8 @@ const String ThemeMeta::getAuthor() const
 
 const StringArray ThemeMeta::getAuthors() const
 {
-    return StringArray(*metaData["authors"].getArray());
+    var array_authors = metaData["authors"];
+    return *array_authors.getArray();
 }
 
 const String ThemeMeta::getDescription() const

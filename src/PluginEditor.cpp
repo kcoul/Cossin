@@ -34,6 +34,7 @@
 #include <jaut/fontformat.h>
 #include <jaut/thememanager.h>
 
+#pragma region Namespace
 namespace
 {
 inline constexpr int Const_Window_Default_Width  = 800;
@@ -54,18 +55,19 @@ inline String getLocaleName(const jaut::Localisation &locale)
          + locale.getInternalLocalisation().getCountryCodes().joinIntoString("-");
 }
 }
+#pragma endregion Namespace
 
-
-
+#pragma region CossinAudioProcessorEditor
 CossinAudioProcessorEditor::CossinAudioProcessorEditor(CossinAudioProcessor &p, AudioProcessorValueTreeState &vts,
                                                        jaut::PropertyMap &map, FFAU::LevelMeterSource &metreSource,
                                                        ProcessorContainer &processorContainer)
     : AudioProcessorEditor(&p),
-      processor(p), sourceMetre(metreSource), initialized(false), locale(sharedData->getDefaultLocale()),
-      needsUpdate(false), buttonPanningLawSelection("ButtonPanningLawSelection", DrawableButton::ImageRaw),
-      buttonSettings("ButtonSettings", DrawableButton::ButtonStyle::ImageRaw),
-      metreLevel(FFAU::LevelMeter::Horizontal), optionsPanel(*this, locale), processorPanel(*this, processorContainer),
-      atrPanningLaw(map, "PanningLaw"), atrProcessor(map, "SelectedProcessor")
+      processor(p), sourceMetre(metreSource), initialized(false), tooltipServer(this),
+      locale(sharedData->getDefaultLocale()), needsUpdate(false),
+      buttonPanningLawSelection("ButtonPanningLawSelection", DrawableButton::ImageRaw),
+      buttonSettings("ButtonSettings", DrawableButton::ButtonStyle::ImageRaw), metreLevel(FFAU::LevelMeter::Horizontal),
+      optionsPanel(*this, locale), processorPanel(*this, processorContainer), atrPanningLaw(map, "PanningLaw"),
+      atrProcessor(map, "SelectedProcessor")
 {
     addMouseListener(this, true);
 
@@ -114,17 +116,32 @@ CossinAudioProcessorEditor::~CossinAudioProcessorEditor()
 //======================================================================================================================
 void CossinAudioProcessorEditor::initializeData()
 {
+    if(initialized)
+    {
+        return;
+    }
+    
     sharedData->addActionListener(this);
     SharedData::ReadLock lock(*sharedData);
 
 #if COSSIN_USE_OPENGL
-    const bool accelerated_by_hardware = sharedData->Configuration().getProperty("hardwareAcceleration",
-                                                                                 res::Cfg_Optimization).getValue();
+    const bool accelerated_by_hardware      = sharedData->Configuration().getProperty("hardwareAcceleration",
+                                                                                      res::Cfg_Optimization).getValue();
+    const bool gl_multisampling_enabled     = sharedData->Configuration().getProperty("useMultisampling",
+                                                                                      res::Cfg_Optimization).getValue();
+    const bool gl_texture_smoothing_enabled = sharedData->Configuration().getProperty("textureSmoothing",
+                                                                                      res::Cfg_Optimization).getValue();
 
-    options[2] = accelerated_by_hardware;
+    options[Flag_HardwareAcceleration] = accelerated_by_hardware;
+    options[Flag_GlMultisampling]      = gl_multisampling_enabled;
+    options[Flag_GlTextureSmoothing]   = gl_texture_smoothing_enabled;
 
     if(accelerated_by_hardware)
     {
+        glContext.setMultisamplingEnabled(gl_multisampling_enabled);
+        glContext.setTextureMagnificationFilter(static_cast<OpenGLContext::TextureMagnificationFilter>
+                                               (static_cast<int>(gl_texture_smoothing_enabled)));
+
         glContext.attachTo(*this);
     }
 #endif
@@ -378,17 +395,25 @@ void CossinAudioProcessorEditor::reloadConfig(const jaut::Config &config)
 {
     logger->writeToLog("==========================================================");
     logger->writeToLog("Reloading config...");
-    const auto property_animations     = config.getProperty("animations", res::Cfg_Optimization);
-    const int  animation_mode          = property_animations.getProperty("mode").getValue();
-    const bool animate_effects         = property_animations.getProperty("custom").getProperty("effects").getValue();
-    const bool animate_components      = property_animations.getProperty("custom").getProperty("components").getValue();
-    const int  default_panning_law     = config.getProperty("panning", res::Cfg_Defaults).getValue();
-    const int  default_processor       = config.getProperty("processor", res::Cfg_Defaults).getValue();
 
-    options[0] = animation_mode == 3 ||  animation_mode == 2 || (animation_mode == 1 && animate_effects);
-    options[1] = animation_mode == 3 || (animation_mode == 1 &&  animate_components);
-    options[3] = default_panning_law;
-    options[4] = default_processor;
+    const int default_panning_law  = config.getProperty("panning", res::Cfg_Defaults).getValue();
+    const int default_processor    = config.getProperty("processor", res::Cfg_Defaults).getValue();
+
+    const auto property_animations = config.getProperty("animations", res::Cfg_Optimization);
+    const int  animation_mode      = property_animations.getProperty("mode").getValue();
+    const bool animate_effects     = property_animations.getProperty("custom").getProperty("effects").getValue();
+    const bool animate_components  = property_animations.getProperty("custom").getProperty("components").getValue();
+
+    if(!jaut::is_in_range(animation_mode, 0, 3) || animation_mode == 3)
+    {
+        options[Flag_AnimationEffects]    = true;
+        options[Flag_AnimationComponents] = true;
+    }
+    else
+    {
+        options[Flag_AnimationEffects]    = animation_mode == 2 || (animation_mode == 1 && animate_effects);
+        options[Flag_AnimationComponents] = animation_mode == 1 && animate_components;
+    }
 
     if(!optionsPanel.isShowing())
     {
@@ -452,6 +477,8 @@ void CossinAudioProcessorEditor::reloadTheme(const jaut::ThemePointer &theme)
         {
             listener.reloadTheme(theme);
         });
+
+        sendLookAndFeelChange();
     }
 
     logger->writeToLog("Resources successfully reloaded.");
@@ -460,7 +487,22 @@ void CossinAudioProcessorEditor::reloadTheme(const jaut::ThemePointer &theme)
 //======================================================================================================================
 bool CossinAudioProcessorEditor::getOption(int flag) const noexcept
 {
-    return options[flag];
+    const bool flag_is_valid = flag >= 0 && flag < Flag_Num;
+    jassert(flag_is_valid);
+
+    return flag_is_valid ? options[flag] : false;
+}
+
+void CossinAudioProcessorEditor::setOption(int flag, bool value) noexcept
+{    
+    if(flag >= 0 && flag < Flag_Num)
+    {
+        options[flag] = value;
+    }
+    else
+    {
+        jassertfalse;
+    }
 }
 
 const PluginSession &CossinAudioProcessorEditor::getSession() const noexcept
@@ -617,7 +659,7 @@ void CossinAudioProcessorEditor::drawDrawableButton(Graphics &g, DrawableButton 
         g.setColour(colout_container_background);
         g.drawRect(0, 1, 1, button.getHeight() - 2);
 
-        for (int i = 0; i < 3; ++i)
+        for (int i = 0; i < res::Pan_Modes_Num; ++i)
         {
             g.drawImage(imgPanningLaw, 15 * i + 2, 3, 10, 10, i * 10, 0, 10, 10);
         }
@@ -692,3 +734,4 @@ void CossinAudioProcessorEditor::renderOpenGL()
 void CossinAudioProcessorEditor::openGLContextClosing()
 {}
 #endif
+#pragma endregion CossinAudioProcessorEditor

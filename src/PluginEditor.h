@@ -30,23 +30,23 @@
 #include "PluginStyle.h"
 #include "ProcessorPanel.h"
 #include "ReloadListener.h"
+#include "Resources.h"
 #include <jaut/localisation.h>
 #include <jaut/propertyattribute.h>
-
-//======================================================================================================================
-// MACROS
-#if JUCE_OPENGL
-  #define COSSIN_USE_OPENGL 1
-#endif
 
 //======================================================================================================================
 // CONSTANTS
 inline constexpr int Flag_AnimationEffects     = 0;
 inline constexpr int Flag_AnimationComponents  = 1;
+#if COSSIN_USE_OPENGL
 inline constexpr int Flag_HardwareAcceleration = 2;
-inline constexpr int Flag_DefaultPanning       = 3;
-inline constexpr int Flag_DefaultProcessor     = 4;
-inline constexpr int Flag_End                  = 7;
+inline constexpr int Flag_GlMultisampling      = 3;
+inline constexpr int Flag_GlTextureSmoothing   = 4;
+inline constexpr int Flag_End                  = 4;
+#else
+inline constexpr int Flag_End                  = 1;
+#endif
+inline constexpr int Flag_Num                  = Flag_End + 1;
 
 //======================================================================================================================
 // FORWARD DECLERATIONS
@@ -66,8 +66,8 @@ struct PluginSession final
     {}
 };
 
-class CossinAudioProcessorEditor : public AudioProcessorEditor, public ActionListener, Button::Listener,
-                                   Slider::Listener, LookAndFeel_V4,
+class CossinAudioProcessorEditor : public AudioProcessorEditor, public ActionListener, private Button::Listener,
+                                   private Slider::Listener, private LookAndFeel_V4,
 #if COSSIN_USE_OPENGL
                                    public OpenGLRenderer,
 #endif
@@ -113,6 +113,7 @@ public:
 
     //==================================================================================================================
     bool getOption(int) const noexcept;
+    void setOption(int, bool) noexcept;
     const PluginSession &getSession() const noexcept;
 
     //==================================================================================================================
@@ -144,13 +145,14 @@ private:
     bool initialized;
     ListenerList<ReloadListener> listeners;
     PluginStyle lookAndFeel;
+    TooltipWindow tooltipServer;
 
     // Shared data
     String lastLocale;
     String lastTheme;
     jaut::Localisation locale;
     std::atomic<bool> needsUpdate;
-    bool options[Flag_End + 1];
+    bool options[Flag_Num] = { false };
 
     // Components
     BackgroundBlur backgroundBlur;

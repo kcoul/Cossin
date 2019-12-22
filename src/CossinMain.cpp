@@ -388,20 +388,6 @@ void CossinPluginWrapper::stopPlaying()
 //======================================================================================================================
 bool CossinPluginWrapper::saveAudioDeviceState()
 {
-    std::unique_ptr<XmlElement> xml(deviceManager.createStateXml());
-    auto &config = sharedData->Configuration();
-    auto propdev = config.getProperty("devices", res::Cfg_Standalone);
-
-    propdev.getProperty("output").setValue(xml->getStringAttribute("audioOutputDeviceName"));
-    propdev.getProperty("input") .setValue(xml->getStringAttribute("audioInputDeviceName"));
-    config .getProperty("deviceType", res::Cfg_Standalone).setValue(xml->getStringAttribute("deviceType"));
-    config .getProperty("sampleRate", res::Cfg_Standalone).setValue(xml->getStringAttribute("audioDeviceRate"));
-    config .getProperty("bufferSize", res::Cfg_Standalone).setValue(xml->getStringAttribute("audioDeviceBufferSize"));
-
-#if !(JUCE_IOS || JUCE_ANDROID)
-    config.getProperty("muteInput", res::Cfg_Standalone).setValue(static_cast<bool>(shouldMuteInput.getValue()));
-#endif
-
     return true;
 }
 
@@ -648,7 +634,7 @@ Image CossinPluginWrapper::getIAAHostIcon(int size)
 #endif
 
 //======================================================================================================================
-inline CossinPluginWrapper *CossinPluginWrapper::getInstance()
+CossinPluginWrapper *CossinPluginWrapper::getInstance()
 {
 #if JucePlugin_Enable_IAA || JucePlugin_Build_Standalone
     if (PluginHostType::getPluginLoadedAs() == AudioProcessor::wrapperType_Standalone)
@@ -729,7 +715,7 @@ void CossinPluginWrapper::timerCallback()
 
         for (auto &newDevice : newMidiDevices)
         {
-            if (! lastMidiDevices.contains(newDevice))
+            if (!lastMidiDevices.contains(newDevice))
             {
                 deviceManager.setMidiInputDeviceEnabled(newDevice.identifier, true);
             }

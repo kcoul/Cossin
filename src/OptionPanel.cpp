@@ -35,15 +35,13 @@
 #include <jaut/thememanager.h>
 
 #if !JUCE_USE_CUSTOM_PLUGIN_STANDALONE_APP
-#include "juce_audio_plugin_client/Standalone/juce_StandaloneFilterWindow.h"
+  #include "juce_audio_plugin_client/Standalone/juce_StandaloneFilterWindow.h"
 #endif
 
-
-
+#pragma region OptionsContainer
 /* ==================================================================================
  * ================================ OptionsContainer ================================
  * ================================================================================== */
-#if (1) // OptionsContainer
 OptionPanel::OptionsContainer::OptionsContainer(OptionPanel &optionPanel)
     : parent(optionPanel)
 {
@@ -64,10 +62,11 @@ void OptionPanel::OptionsContainer::resized()
 }
 
 //======================================================================================================================
-void OptionPanel::OptionsContainer::addOptionPanel(Component &component)
+void OptionPanel::OptionsContainer::addOptionPanel(OptionCategory &category)
 {
-    component.setBounds(0, getHeight() * contentComponent.getNumChildComponents(), getWidth(), getHeight());
-    contentComponent.addAndMakeVisible(component);
+    category.setBounds(0, getHeight() * contentComponent.getNumChildComponents(), getWidth(), getHeight());
+    categories.emplace_back(&category);
+    contentComponent.addAndMakeVisible(category);
 }
 
 void OptionPanel::OptionsContainer::showPanel(int lastIndex, int newIndex, bool animate)
@@ -83,25 +82,26 @@ void OptionPanel::OptionsContainer::showPanel(int lastIndex, int newIndex, bool 
         contentComponent.setTopLeftPosition(bounds_final.getPosition());
     }
 }
-#endif // OptionsContainer
+
+//======================================================================================================================
+const std::vector<OptionCategory*> &OptionPanel::OptionsContainer::getCategories() const noexcept
+{
+    return categories;
+}
+#pragma endregion OptionsContainer
 
 
 
+#pragma region OptionPanel
 /* ==================================================================================
  * ================================== OptionPanel ===================================
  * ================================================================================== */
-#if (1) // OptionPanel
-OptionPanel::OptionPanel(CossinAudioProcessorEditor &cossin, jaut::Localisation &locale)
-    : cossin(cossin), closeCallback(nullptr), lastSelectedRow(0), bttClose("X"),
+OptionPanel::OptionPanel(CossinAudioProcessorEditor &editor, jaut::Localisation &locale)
+    : editor(editor), closeCallback(nullptr), lastSelectedRow(0), bttClose("X"),
       optionContainer(*this), optionTabs("OptionTabs", this), locale(locale),
-      optionsGeneral(cossin, locale), optionsThemes(cossin)
+      optionsGeneral(editor, locale), optionsThemes(editor, locale),
+      optionsPerformance(editor, locale), optionsStandalone(editor, locale)
 {
-    categories.add(res::Cfg_General);
-    categories.add("themes");
-    categories.add(res::Cfg_Optimization);
-    categories.add("account");
-    categories.add(res::Cfg_Standalone);
-
     // About resources
     imgCossinAbout   = ImageCache::getFromMemory(Assets::png011_png,         Assets::png011_pngSize);
     imgSocialDiscord = ImageCache::getFromMemory(Assets::social_discord_png, Assets::social_discord_pngSize);
@@ -110,15 +110,37 @@ OptionPanel::OptionPanel(CossinAudioProcessorEditor &cossin, jaut::Localisation 
     imgSocialWebsite = ImageCache::getFromMemory(Assets::social_web_png,     Assets::social_web_pngSize);
 
     // TODO option categories
-    optionContainer.addOptionPanel(optionsGeneral);
-    optionContainer.addOptionPanel(optionsThemes);
-    //optionContainer.addOptionPanel(optionsOptimization);
-    //optionContainer.addOptionPanel(optionsAccount);
-    //optionContainer.addOptionPanel(optionsStandalone);
+    addOptionCategory(res::Cfg_General,      optionsGeneral);
+    addOptionCategory("themes",              optionsThemes);
+    addOptionCategory(res::Cfg_Optimization, optionsPerformance);
+    //addOptionCategory(res::Cfg_Account,      optionsAccount);
+
+    if(JUCEApplicationBase::isStandaloneApp())
+    {
+        addOptionCategory(res::Cfg_Standalone, optionsStandalone);
+
+#if !JUCE_USE_CUSTOM_PLUGIN_STANDALONE_APP
+        this->onIntercept = [this](const String &categoryName)
+        {
+            if(categoryName == res::Cfg_Standalone)
+            {
+                StandalonePluginHolder::getInstance()->showAudioSettingsDialog();
+                return false;
+            }
+            
+            return true;
+        };
+#endif
+    }
+    
     addAndMakeVisible(optionContainer);
 
+    for(auto *category : optionContainer.getCategories())
+    {
+        editor.addReloadListener(category);
+    }
+
     optionTabs.setRowHeight(30);
-    optionTabs.setColour(ListBox::outlineColourId, Colours::transparentBlack);
     optionTabs.selectRow(0);
     optionTabs.updateContent();
     addAndMakeVisible(optionTabs);
@@ -149,6 +171,14 @@ OptionPanel::OptionPanel(CossinAudioProcessorEditor &cossin, jaut::Localisation 
     linkWebsite.setButtonText("Website");
     linkWebsite.setFont(link_font, false, Justification::centredLeft);
     addAndMakeVisible(linkWebsite);
+}
+
+OptionPanel::~OptionPanel()
+{
+    for(auto *category : optionContainer.getCategories())
+    {
+        editor.removeReloadListener(category);
+    }
 }
 
 //======================================================================================================================
@@ -201,22 +231,31 @@ void OptionPanel::resized()
 }
 
 //======================================================================================================================
+void OptionPanel::addOptionCategory(const String &name, OptionCategory &category)
+{
+    const String category_id = name.removeCharacters(" ").toLowerCase();
+
+    category.setName(category_id);
+    categories.add(category_id);
+    optionContainer.addOptionPanel(category);
+}
+
+//======================================================================================================================
 void OptionPanel::show()
 {
+    MouseCursor::showWaitCursor();
+
     {
         auto shared_data = SharedData::getInstance();
         SharedData::ReadLock lock(*shared_data);
 
-        // General tab
-        optionsGeneral.resetLangList(shared_data->Localisation().getRootDirectory());
-        optionsGeneral.selectLangRow(shared_data->Localisation().getLanguageFile());
-        optionsGeneral.resetDefaults(shared_data->Configuration());
-
-        // Themes tab
-        optionsThemes.resetThemeList(shared_data->ThemeManager().getAllThemes());
-        optionsThemes.selectThemeRow(shared_data->ThemeManager().getCurrentTheme());
+        for(auto *category : optionContainer.getCategories())
+        {
+            category->loadState(*shared_data);
+        }
     }
 
+    MouseCursor::hideWaitCursor();
     setVisible(true);
 }
 
@@ -228,47 +267,18 @@ void OptionPanel::hide()
         auto shared_data = SharedData::getInstance();
         SharedData::WriteLock lock(*shared_data);
         
-        auto &config = shared_data->Configuration();
         bool needs_full_reload = false;
 
-        // Defaults
+        for(auto *category : optionContainer.getCategories())
         {
-            auto property_panning   = config.getProperty("panning",   res::Cfg_Defaults);
-            auto property_processor = config.getProperty("processor", res::Cfg_Defaults);
-            auto property_size      = config.getProperty("size",      res::Cfg_Defaults);
-
-            property_panning  .setValue(optionsGeneral.getDefaultPanningMode());
-            property_processor.setValue(optionsGeneral.getDefaultProcessor());
-
-            const auto default_window_size = optionsGeneral.getDefaultWindowSize();
-            property_size.getProperty("width") .setValue(default_window_size.getWidth());
-            property_size.getProperty("height").setValue(default_window_size.getHeight());
-        }
-
-        // Locale
-        {
-            const String selected_language = optionsGeneral.getSelectedLanguage();
-
-            shared_data->Localisation().setCurrentLanguage(locale);
-            config.getProperty("language").setValue(selected_language);
-        }
-
-        // Theme
-        {
-            const String selected_theme_id = optionsThemes.getSelectedTheme().getId();
-            
-            if(shared_data->ThemeManager().setCurrentTheme(selected_theme_id))
-            {
-                config.getProperty("theme").setValue(selected_theme_id);
-            }
-            else
+            if(!category->saveState(*shared_data))
             {
                 needs_full_reload = true;
             }
         }
 
-        config.save();
-        shared_data->sendChangeToAllInstancesExcept(needs_full_reload ? nullptr : &cossin);
+        shared_data->Configuration().save();
+        shared_data->sendChangeToAllInstancesExcept(needs_full_reload ? nullptr : &editor);
     }
 
     MouseCursor::hideWaitCursor();
@@ -321,21 +331,6 @@ void OptionPanel::paintListBoxItem(int rowNumber, Graphics &g, int width, int he
 
     g.setFont(font);
     g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourFontId));
-
-    JT_IS_STANDALONE({})
-    JT_STANDALONE_ELSE
-    (
-        if(category_name.equalsIgnoreCase("standalone") && !JUCEApplicationBase::isStandaloneApp())
-        {
-            g.setOpacity(0.3f);
-        }
-    )
-
-    if(category_name.equalsIgnoreCase("account"))
-    {
-        g.setOpacity(0.3f);
-    }
-
     g.drawText(locale.translate("options.category." + category_name), 10, 0, width - 10, height,
                Justification::centredLeft);
 }
@@ -348,42 +343,21 @@ void OptionPanel::listBoxItemClicked(int row, const MouseEvent &e)
     }
 
     const String &category_name = categories.getReference(row);
-
-    JT_IS_STANDALONE({})
-    JT_STANDALONE_ELSE
-    (
-        if(category_name.equalsIgnoreCase("standalone"))
-        {
-#if !JUCE_USE_CUSTOM_PLUGIN_STANDALONE_APP
-            if(JUCEApplicationBase::isStandaloneApp())
-            {
-                StandalonePluginHolder::getInstance()->showAudioSettingsDialog();
-            }
-#endif
-            optionTabs.selectRow(lastSelectedRow);
-            return;
-        }
-    )
-
-    if(category_name.equalsIgnoreCase("account"))
+    
+    if(onIntercept && !onIntercept(category_name))
     {
         optionTabs.selectRow(lastSelectedRow);
         return;
     }
 
-    optionContainer.showPanel(lastSelectedRow, row, cossin.getOption(Flag_AnimationComponents));
+    optionContainer.showPanel(lastSelectedRow, row, editor.getOption(Flag_AnimationComponents));
     lastSelectedRow = row;
 }
 
 //======================================================================================================================
 void OptionPanel::reloadTheme(const jaut::ThemePointer &theme)
 {
-    const LookAndFeel &lf = getLookAndFeel();
-    const Colour colour_container_background   = theme->getThemeColour(res::Col_Container_Bg);
-    const Colour colour_background_contrasting = colour_container_background.contrasting();
-
-    optionTabs.setColour(ListBox::backgroundColourId, colour_container_background);
-    optionTabs.setColour(ListBox::textColourId,       theme->getThemeColour(res::Col_Font));
+    const Colour colour_background_contrasting = theme->getThemeColour(res::Col_Container_Bg).contrasting();
 
     linkDiscord.setColour(HyperlinkButton::textColourId, colour_background_contrasting);
     linkTumblr .setColour(HyperlinkButton::textColourId, colour_background_contrasting);
@@ -392,4 +366,4 @@ void OptionPanel::reloadTheme(const jaut::ThemePointer &theme)
 
     font = theme->getThemeFont();
 }
-#endif // OptionPanel
+#pragma endregion OptionPanel
