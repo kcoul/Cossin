@@ -22,4 +22,4 @@ It supports a wide range of effects and audio manipulation features.
 - **Yaml-cpp**: https://github.com/jbeder/yaml-cpp
 -----------------------------------------------
 For more information join the Discord:
-https://invite.gg/elandasunshine
+https://discord.io/elandasunshine
