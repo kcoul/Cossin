@@ -48,6 +48,8 @@ protected:
     void drawButtonText(Graphics&, TextButton&, bool, bool) override;
     void drawComboBox(Graphics&, int, int, bool, int, int, int, int, ComboBox&) override;
     void drawToggleButton(juce::Graphics&, juce::ToggleButton&, bool, bool) override;
+    void drawBubble(juce::Graphics&, juce::BubbleComponent&, const juce::Point<float>&,
+                    const juce::Rectangle<float>&) override;
 
     //==================================================================================================================
     void drawPopupMenuBackground(Graphics&, int, int) override;

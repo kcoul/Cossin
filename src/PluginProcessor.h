@@ -27,23 +27,26 @@
 
 #include "JuceHeader.h"
 
-#include "ProcessorContainer.h"
 #include <jaut/dspunitmanager.h>
 #include <jaut/propertymap.h>
+#include <jaut/config.h>
+#include <jaut/audioprocessorrack.h>
+
+inline constexpr int Const_NumChannels = 2;
 
 class SharedData;
 
-class CossinAudioProcessor : public AudioProcessor, jaut::PropertyMap::Listener
+class CossinAudioProcessor : public AudioProcessor
 {
 public:
     CossinAudioProcessor();
     ~CossinAudioProcessor();
 
     //==================================================================================================================
-    void prepareToPlay (double sampleRate, int samplesPerBlock) override;
+    void prepareToPlay(double, int) override;
     void releaseResources() override;
-    bool isBusesLayoutSupported (const BusesLayout &layouts) const override;
-    void processBlock (AudioBuffer<float>&, MidiBuffer&) override;
+    bool isBusesLayoutSupported(const BusesLayout&) const override;
+    void processBlock(AudioBuffer<float>&, MidiBuffer&) override;
 
     //==================================================================================================================
     AudioProcessorEditor* createEditor() override;
@@ -51,23 +54,23 @@ public:
 
     //==================================================================================================================
     const String getName() const override;
-#if(1) //unused
-    bool acceptsMidi() const override;
-    bool producesMidi() const override;
-    bool isMidiEffect() const override;
-    double getTailLengthSeconds() const override;
+#pragma region Unused
+    bool   acceptsMidi() const override  { return false; }
+    bool   producesMidi() const override { return false; }
+    bool   isMidiEffect() const override { return false; }
+    double getTailLengthSeconds() const override { return 0; }
 
     //==================================================================================================================
-    int getNumPrograms() override;
-    int getCurrentProgram() override;
-    void setCurrentProgram (int index) override;
-    const String getProgramName (int index) override;
-    void changeProgramName (int index, const String &newName) override;
-#endif //unused
+    int  getNumPrograms() override    { return 0; }
+    int  getCurrentProgram() override { return 0; }
+    void setCurrentProgram(int) override {}
+    void changeProgramName(int, const String&) override {}
+    const String getProgramName(int) override { return String(); }
+#pragma endregion Unused
 
     //==================================================================================================================
-    void getStateInformation (MemoryBlock &destData) override;
-    void setStateInformation (const void *data, int sizeInBytes) override;
+    void getStateInformation (MemoryBlock&) override;
+    void setStateInformation (const void*, int) override;
 
     //==================================================================================================================
     // GUI FUNCTIONS
@@ -76,25 +79,27 @@ public:
 private:
     SharedResourcePointer<SharedData> sharedData;
     std::unique_ptr<jaut::ScopedATCD> atcd;
+
+    AudioProcessorValueTreeState parameters;
+    jaut::PropertyMap            properties;
+    UndoManager                  undoManager;
+
     RangedAudioParameter *parGain;
     RangedAudioParameter *parPanning;
-    FFAU::LevelMeterSource metreSource;
-    jaut::PropertyMap properties;
-    AudioProcessorValueTreeState parameters;
-    UndoManager undoer;
-    float previousGain[2];
-    ProcessorContainer processorContainer;
+
+    FFAU::LevelMeterSource   metreSource;
+    jaut::AudioProcessorRack topUnitRack;
+
+    float previousGain[Const_NumChannels];
 
     //==================================================================================================================
     // GUI DATA (only data which is solely considered while loading and saving)
     Rectangle<int> windowBounds;
 
     //==================================================================================================================
-    void initialization();
-    void makeParameters();
-    float calculatePanningGain(int channel) const noexcept;
-    void onValueChanged(const String &name, var oldValue, var newValue) override;
-    void onPropertyAdded(const String &name, var value) override {}
+    void   initialize();
+    void   makeParameters();
+    float calculatePanningGain(int) const noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CossinAudioProcessor)
 

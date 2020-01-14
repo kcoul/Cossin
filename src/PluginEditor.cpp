@@ -30,6 +30,7 @@
 #include "Resources.h"
 #include "SharedData.h"
 #include <jaut/appdata.h>
+#include <jaut/audioprocessorrack.h>
 #include <jaut/config.h>
 #include <jaut/fontformat.h>
 #include <jaut/thememanager.h>
@@ -37,15 +38,13 @@
 #pragma region Namespace
 namespace
 {
-inline constexpr int Const_Window_Default_Width  = 800;
-inline constexpr int Const_Window_Default_Height = 500;
-inline constexpr int Const_Height_Header = 65;
-inline constexpr int Const_Height_Footer = 77;
-inline constexpr int Const_Panel_Margin  = 2;
+inline constexpr int Const_HeightHeader = 65;
+inline constexpr int Const_HeightFooter = 77;
+inline constexpr int Const_PanelMargin  = 2;
 
-inline constexpr int Const_Height_Body(int height) noexcept
+inline constexpr int constHeightBody(int height) noexcept
 {
-    return height - Const_Height_Header - Const_Height_Footer - Const_Panel_Margin * 2;
+    return height - Const_HeightHeader - Const_HeightFooter - Const_PanelMargin * 2;
 }
 
 //======================================================================================================================
@@ -60,14 +59,14 @@ inline String getLocaleName(const jaut::Localisation &locale)
 #pragma region CossinAudioProcessorEditor
 CossinAudioProcessorEditor::CossinAudioProcessorEditor(CossinAudioProcessor &p, AudioProcessorValueTreeState &vts,
                                                        jaut::PropertyMap &map, FFAU::LevelMeterSource &metreSource,
-                                                       ProcessorContainer &processorContainer)
+                                                       jaut::AudioProcessorRack &rack)
     : AudioProcessorEditor(&p),
       processor(p), sourceMetre(metreSource), initialized(false), tooltipServer(this),
       locale(sharedData->getDefaultLocale()), needsUpdate(false),
       buttonPanningLawSelection("ButtonPanningLawSelection", DrawableButton::ImageRaw),
       buttonSettings("ButtonSettings", DrawableButton::ButtonStyle::ImageRaw), metreLevel(FFAU::LevelMeter::Horizontal),
-      optionsPanel(*this, locale), processorPanel(*this, processorContainer), atrPanningLaw(map, "PanningLaw"),
-      atrProcessor(map, "SelectedProcessor")
+      optionsPanel(*this, locale), topUnitRackGui(rack, locale),
+      atrPanningLaw(map, "PanningLaw"), atrProcessor(map, "SelectedProcessor")
 {
     addMouseListener(this, true);
 
@@ -141,12 +140,11 @@ void CossinAudioProcessorEditor::initializeData()
         glContext.setMultisamplingEnabled(gl_multisampling_enabled);
         glContext.setTextureMagnificationFilter(static_cast<OpenGLContext::TextureMagnificationFilter>
                                                (static_cast<int>(gl_texture_smoothing_enabled)));
-
         glContext.attachTo(*this);
     }
 #endif
 
-    JT_NDEBUGGING(if(shared_data->Configuration().getProperty("logToFile", res::Cfg_Standalone).getValue()))
+    JT_NDEBUGGING(if(sharedData->Configuration().getProperty("logToFile", res::Cfg_Standalone).getValue()))
     {
         logger.reset(createLoggerFromSession(sharedData->AppData().getDir("Logs")
                                                                   .getFile("session-" + session.id.toDashedString()
@@ -173,6 +171,7 @@ void CossinAudioProcessorEditor::initializeComponents()
 
     // Level slider
     sliderLevel.setTextBoxStyle(Slider::TextEntryBoxPosition::NoTextBox, true, 0, 0);
+    sliderLevel.setPopupDisplayEnabled(true, true, this, -1);
     sliderLevel.setSliderStyle(style_rotary);
     sliderLevel.addMouseListener(this, true);
     sliderLevel.getProperties().set("CSSize", "small");
@@ -181,6 +180,7 @@ void CossinAudioProcessorEditor::initializeComponents()
 
     // Mix slider
     sliderMix.setTextBoxStyle(Slider::TextEntryBoxPosition::NoTextBox, true, 0, 0);
+    sliderMix.setPopupDisplayEnabled(true, true, this, -1);
     sliderMix.setSliderStyle(style_rotary);
     sliderMix.addMouseListener(this, true);
     sliderMix.getProperties().set("CSSize", "big");
@@ -189,6 +189,7 @@ void CossinAudioProcessorEditor::initializeComponents()
 
     // Panning slider
     sliderPanning.setTextBoxStyle(Slider::TextEntryBoxPosition::NoTextBox, true, 0, 0);
+    sliderPanning.setPopupDisplayEnabled(true, true, this, -1);
     sliderPanning.setSliderStyle(style_rotary);
     sliderPanning.addMouseListener(this, true);
     sliderPanning.getProperties().set("CSSize", "small");
@@ -226,11 +227,6 @@ void CossinAudioProcessorEditor::initializeComponents()
     buttonPanningLawSelection.addListener(this);
     addChildComponent(buttonPanningLawSelection);
 
-    // Processor panel
-    processorPanel.makeVisible(current_processor);
-    addReloadListener(&processorPanel);
-    addAndMakeVisible(processorPanel);
-
     // Background blur
     backgroundBlur.setAlpha(0.5f * !static_cast<bool>(options[Flag_AnimationComponents]));
     addChildComponent(backgroundBlur);
@@ -239,12 +235,15 @@ void CossinAudioProcessorEditor::initializeComponents()
     optionsPanel.setCloseButtonCallback([this](Button *button) { buttonClicked(button); });
     addReloadListener(&optionsPanel);
     addChildComponent(optionsPanel);
+    
+    addReloadListener(&topUnitRackGui);
+    addChildComponent(topUnitRackGui);
 }
 
 void CossinAudioProcessorEditor::initializeWindow()
 {
-    int window_width  = Const_Window_Default_Width;
-    int window_height = Const_Window_Default_Height;
+    int window_width  = Const_WindowDefaultWidth;
+    int window_height = Const_WindowDefaultHeight;
 
     JT_IS_STANDALONE({})
     JT_STANDALONE_ELSE
@@ -271,7 +270,7 @@ void CossinAudioProcessorEditor::initializeWindow()
     }
 
     setResizable(true, !canSelfResize());
-    setResizeLimits(Const_Window_Default_Width, Const_Window_Default_Height, window_max_width, window_max_maxheight);
+    setResizeLimits(Const_WindowDefaultWidth, Const_WindowDefaultHeight, window_max_width, window_max_maxheight);
     setSize(window_width, window_height);
 }
 
@@ -289,23 +288,22 @@ void CossinAudioProcessorEditor::resized()
         return;
     }
 
-    const Rectangle<int> header(0, 0, getWidth(), ::Const_Height_Header);
-    const Rectangle<int> body(0, ::Const_Height_Header + ::Const_Panel_Margin,
-                              getWidth(), ::Const_Height_Body(getHeight()));
-    const Rectangle<int> footer(0, getHeight() - ::Const_Height_Footer, getWidth(), ::Const_Height_Footer);
+    const Rectangle<int> header(0, 0, getWidth(), ::Const_HeightHeader);
+    const Rectangle<int> body(0, ::Const_HeightHeader + ::Const_PanelMargin,
+                              getWidth(), ::constHeightBody(getHeight()));
+    const Rectangle<int> footer(0, getHeight() - ::Const_HeightFooter, getWidth(), ::Const_HeightFooter);
 
     // Header
     const int header_tab_setting_w = 34;
     const int header_tab_setting_x = header.getRight() - header_tab_setting_w;
     const int header_process_w     = 102;
-    const int header_tab_process_w = processorPanel.getNumChildComponents() * header_process_w;
+    const int header_tab_process_w = topUnitRackGui.getProcessorCount() * header_process_w;
     const int header_tab_process_x = header_tab_setting_x - header_tab_process_w;
 
     sliderTabControl.setBounds(header_tab_process_x, header.getY(), header_tab_process_w, header.getHeight());
     buttonSettings  .setBounds(header_tab_setting_x, header.getY(), header_tab_setting_w, header.getHeight());
 
     // Body
-    processorPanel.setBounds(body.getX(), body.getY(), body.getWidth(), body.getHeight());
     backgroundBlur.setBounds(body.getX(), body.getY(), body.getWidth(), body.getHeight());
     
     // Footer
@@ -323,11 +321,11 @@ void CossinAudioProcessorEditor::resized()
 
     // Pop-ups and everything else that doesn't necessarily has to fit into grid (these stand by their own)
     const int options_x = optionsPanel.isShowing() ? getWidth() / 2 - 400
-                                                   : (options[Flag_AnimationComponents] ? -::Const_Window_Default_Width
-                                                                  : getWidth() / 2 - ::Const_Window_Default_Width / 2);
-    const int options_h = ::Const_Height_Body(::Const_Window_Default_Height);
+                                                   : (options[Flag_AnimationComponents] ? -::Const_WindowDefaultWidth
+                                                                  : getWidth() / 2 - ::Const_WindowDefaultWidth / 2);
+    const int options_h = ::constHeightBody(::Const_WindowDefaultHeight);
 
-    optionsPanel.setBounds(options_x, body.getCentreY() - options_h / 2, ::Const_Window_Default_Width, options_h);
+    optionsPanel.setBounds(options_x, body.getCentreY() - options_h / 2, ::Const_WindowDefaultWidth, options_h);
 
     JT_IS_STANDALONE({})
     JT_STANDALONE_ELSE
@@ -347,10 +345,9 @@ void CossinAudioProcessorEditor::paintBasicInterface(Graphics &g) const
 {
     const LookAndFeel &lf = getLookAndFeel();
 
-    const Rectangle<int> header(0, 0, getWidth(), ::Const_Height_Header);
-    const Rectangle<int> body(0, ::Const_Height_Header + ::Const_Panel_Margin,
-                              getWidth(), ::Const_Height_Body(getHeight()));
-    const Rectangle<int> footer(0, getHeight() - ::Const_Height_Footer, getWidth(), ::Const_Height_Footer);
+    const Rectangle header(0, 0, getWidth(), ::Const_HeightHeader);
+    const Rectangle body(0, ::Const_HeightHeader + ::Const_PanelMargin, getWidth(), ::constHeightBody(getHeight()));
+    const Rectangle footer(0, getHeight() - ::Const_HeightFooter, getWidth(), ::Const_HeightFooter);
 
     const Colour colour_font = lf.findColour(ColourFontId);
 
@@ -404,7 +401,7 @@ void CossinAudioProcessorEditor::reloadConfig(const jaut::Config &config)
     const bool animate_effects     = property_animations.getProperty("custom").getProperty("effects").getValue();
     const bool animate_components  = property_animations.getProperty("custom").getProperty("components").getValue();
 
-    if(!jaut::is_in_range(animation_mode, 0, 3) || animation_mode == 3)
+    if(!jaut::fit_a(animation_mode, 0, 3) || animation_mode == 3)
     {
         options[Flag_AnimationEffects]    = true;
         options[Flag_AnimationComponents] = true;
@@ -420,8 +417,8 @@ void CossinAudioProcessorEditor::reloadConfig(const jaut::Config &config)
         const bool should_animate = static_cast<bool>(options[Flag_AnimationComponents]);
 
         backgroundBlur.setAlpha(0.5f * !should_animate);
-        optionsPanel.setTopLeftPosition(should_animate ? -Const_Window_Default_Width
-                                        : getWidth() / 2 - (Const_Window_Default_Width / 2), optionsPanel.getY());
+        optionsPanel.setTopLeftPosition(should_animate ? -Const_WindowDefaultWidth
+                                        : getWidth() / 2 - (Const_WindowDefaultWidth / 2), optionsPanel.getY());
     }
 
     listeners.call([&config](ReloadListener &listener)
@@ -561,8 +558,8 @@ void CossinAudioProcessorEditor::buttonClicked(Button *button)
         {
             if(options[Flag_AnimationComponents])
             {
-                const int panel_width  = ::Const_Window_Default_Width;
-                const int panel_height = ::Const_Height_Body(::Const_Window_Default_Height);
+                const int panel_width  = ::Const_WindowDefaultWidth;
+                const int panel_height = ::constHeightBody(::Const_WindowDefaultHeight);
 
                 ComponentAnimator &animator = Desktop::getInstance().getAnimator();
                 animator.animateComponent(&backgroundBlur, backgroundBlur.getBounds(), 0.0f, 200, true, 0, 2);
@@ -583,8 +580,8 @@ void CossinAudioProcessorEditor::buttonClicked(Button *button)
 
             if(options[Flag_AnimationComponents])
             {
-                const int panel_width  = ::Const_Window_Default_Width;
-                const int panel_height = ::Const_Height_Body(::Const_Window_Default_Height);
+                const int panel_width  = ::Const_WindowDefaultWidth;
+                const int panel_height = ::constHeightBody(::Const_WindowDefaultHeight);
 
                 ComponentAnimator &animator = Desktop::getInstance().getAnimator();
                 animator.animateComponent(&backgroundBlur, backgroundBlur.getBounds(), 0.5f, 200, true, 2, 0);
@@ -604,22 +601,13 @@ void CossinAudioProcessorEditor::sliderDragEnded(Slider *slider)
     {
         if(optionsPanel.isShowing())
         {
-            buttonClicked(&buttonSettings); // this is meant for hiding the settings pane when the tabcontrol was used
+            buttonClicked(&buttonSettings); // this is meant for hiding the settings pane when the tab control was used
         }
 
-        const int processor_count   = processorPanel.getNumChildComponents();
-        const int processor_index   = jmin(JT_FIX(slider->getValue() / (1.0f / processor_count)), processor_count - 1);
-        const bool change_processor = ModifierKeys::getCurrentModifiers().isCtrlDown();
+        const int processor_count = topUnitRackGui.getProcessorCount();
+        const int processor_index = jmin(JT_FIX(slider->getValue() / (1.0f / processor_count)), processor_count - 1);
 
-        if(!processorPanel.getChildComponent(processor_index)->isVisible())
-        {
-            processorPanel.makeVisible(processor_index);
-        }
-
-        if(change_processor && atrProcessor != processor_index)
-        {
-            atrProcessor = processor_index;
-        }
+        topUnitRackGui.setGui(processor_index, ModifierKeys::getCurrentModifiers().isCtrlDown());
     }
 }
 
@@ -678,7 +666,7 @@ void CossinAudioProcessorEditor::drawLinearSlider(Graphics &g, int width, int he
     if (&slider == &sliderTabControl)
     {
         const Rectangle dest(slider.getLocalBounds());
-        const int processor_count = processorPanel.getNumChildComponents();
+        const int processor_count = topUnitRackGui.getProcessorCount();
         const int processor_index = jmin(JT_FIX(sliderPos / (1.0f / processor_count)), processor_count - 1);
         const Image image_tabs    = imgTabControl.getClippedImage(dest.withTop(dest.getHeight() * processor_index));
 
@@ -695,8 +683,8 @@ void CossinAudioProcessorEditor::timerCallback()
 {
     if(needsUpdate)
     {
-        reloadAllData();
         needsUpdate = false;
+        reloadAllData();
     }
 }
 

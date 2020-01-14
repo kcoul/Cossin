@@ -197,6 +197,19 @@ void PluginStyle::drawToggleButton(juce::Graphics &g, juce::ToggleButton &button
     g.drawFittedText(button.getButtonText(), button.getLocalBounds().withX(23), Justification::centredLeft, 10);
 }
 
+void PluginStyle::drawBubble(juce::Graphics &g, juce::BubbleComponent &comp, const juce::Point<float> &tip,
+                             const juce::Rectangle<float> &body)
+{
+    Path p;
+    p.addBubble(body.reduced(0.5f), body.getUnion(Rectangle<float>(tip.x, tip.y, 1.0f, 1.0f)), {}, 0.0f, 0.0f);
+
+    g.setColour(comp.findColour(CossinAudioProcessorEditor::ColourTooltipBackgroundId));
+    g.fillPath(p);
+
+    g.setColour(comp.findColour(CossinAudioProcessorEditor::ColourTooltipBorderId));
+    g.strokePath(p, PathStrokeType(1.0f));
+}
+
 //======================================================================================================================
 void PluginStyle::drawPopupMenuBackground(juce::Graphics &g, int width, int height)
 {

@@ -17,8 +17,8 @@
     ===============================================================
     
     @author Elanda (elanda@elandasunshine.xyz)
-    @file   ProcessorPanel.h
-    @date   18, October 2019
+    @file   EffectModules.h
+    @date   24, December 2019
     
     ===============================================================
  */
@@ -26,37 +26,46 @@
 #pragma once
 
 #include "JuceHeader.h"
-#include "GuiFrameProcessor.h"
-#include "ReloadListener.h"
+#include <jaut/dspgui.h>
+#include <jaut/sfxunit.h>
 
-namespace jaut
+class EffectModule : public jaut::SfxUnit
 {
-    class DspGui;
-    class ThemePointer;
-}
-
-class CossinAudioProcessorEditor;
-class ProcessorContainer;
-
-class ProcessorPanel final : public Component, public ReloadListener
-{   
 public:
-    GuiFrameProcessor guiProcFrame;
+    EffectModule(DspUnit &unit, AudioProcessorValueTreeState &vts, UndoManager *undoManager = nullptr)
+        : SfxUnit(unit, vts, undoManager)
+    {}
 
     //==================================================================================================================
-    ProcessorPanel(CossinAudioProcessorEditor&, ProcessorContainer&) noexcept;
-    ~ProcessorPanel();
+    virtual Rectangle<int> getIconCoordinates() const = 0;
+    virtual Colour getColour() const = 0;
+};
+
+class EffectEqualizer final : public EffectModule
+{
+public:
+    EffectEqualizer(DspUnit&, AudioProcessorValueTreeState&, UndoManager*);
 
     //==================================================================================================================
-    void resized() override;
+    const String getName() const override { return "Equalizer"; }
+    bool hasEditor() const override { return true; }
 
     //==================================================================================================================
-    void makeVisible(int) noexcept;
+    void processEffect(int index, AudioBuffer<float> &buffer,  MidiBuffer &midiBuffer) override;
+    void processEffect(int index, AudioBuffer<double> &buffer, MidiBuffer &midiBuffer) override;
+    void beginPlayback(int index, double sampleRate, int bufferSize) override;
+    void finishPlayback(int index) override;
 
     //==================================================================================================================
-    void reloadTheme(const jaut::ThemePointer&) override;
+    std::vector<SfxParameter> createParameters() const override;
+    int getMaxInstances() const override { return 5; }
+    DataContext *getNewContext() const override;
+
+    //==================================================================================================================
+    int getMaxBands() const noexcept { return 30; }
+    Rectangle<int> getIconCoordinates() const override { return {128, 0, 32, 32}; }
+    Colour getColour() const override { return Colour(255, 123, 59); }
 
 private:
-    ProcessorContainer &container;
-    std::vector<std::unique_ptr<jaut::DspGui>> guis;
+    jaut::DspGui *getGuiType() override;
 };

@@ -18,6 +18,12 @@ countries: GB
 "control.slider.master.pan"   = "Pan"
 
 
+# Frame Rack
+"frame_rack.not_active" = "This frame is not active currently."
+"frame_rack.activate"   = "Activate"
+"frame_rack.switch"     = "Switch"
+
+
 # Options
 "options.category.account" = "Account"
 # ------------------------

@@ -152,22 +152,22 @@ OptionPanel::OptionPanel(CossinAudioProcessorEditor &editor, jaut::Localisation 
 
     const Font link_font = Font().withHeight(14.0f);
 
-    linkDiscord.setURL(URL("https://discord.io/ElandaSunshine"));
+    linkDiscord.setURL(URL::createWithoutParsing("https://discord.io/ElandaSunshine"));
     linkDiscord.setButtonText("Discord");
     linkDiscord.setFont(link_font, false, Justification::centredLeft);
     addAndMakeVisible(linkDiscord);
 
-    linkTumblr.setURL(URL("https://blog." + String(res::App_Website)));
+    linkTumblr.setURL(URL::createWithoutParsing("https://blog." + String(res::App_Website)));
     linkTumblr.setButtonText("ES Blog");
     linkTumblr.setFont(link_font, false, Justification::centredLeft);
     addAndMakeVisible(linkTumblr);
 
-    linkTwitter.setURL(URL("https://twitter.com/elandaofficial"));
+    linkTwitter.setURL(URL::createWithoutParsing("https://twitter.com/elandaofficial"));
     linkTwitter.setButtonText("Twitter");
     linkTwitter.setFont(link_font, false, Justification::centredLeft);
     addAndMakeVisible(linkTwitter);
 
-    linkWebsite.setURL(URL("https://www." + String(res::App_Website)));
+    linkWebsite.setURL(URL::createWithoutParsing("https://www." + String(res::App_Website)));
     linkWebsite.setButtonText("Website");
     linkWebsite.setFont(link_font, false, Justification::centredLeft);
     addAndMakeVisible(linkWebsite);

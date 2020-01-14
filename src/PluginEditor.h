@@ -28,9 +28,10 @@
 #include "JuceHeader.h"
 #include "OptionPanel.h"
 #include "PluginStyle.h"
-#include "ProcessorPanel.h"
 #include "ReloadListener.h"
 #include "Resources.h"
+#include "TopUnitRackGui.h"
+
 #include <jaut/localisation.h>
 #include <jaut/propertyattribute.h>
 
@@ -48,10 +49,17 @@ inline constexpr int Flag_End                  = 1;
 #endif
 inline constexpr int Flag_Num                  = Flag_End + 1;
 
+inline constexpr int Const_WindowDefaultWidth  = 800;
+inline constexpr int Const_WindowDefaultHeight = 500;
+
 //======================================================================================================================
 // FORWARD DECLERATIONS
+namespace jaut
+{
+class AudioProcessorRack;
+}
+
 class CossinAudioProcessor;
-class ProcessorContainer;
 class SharedData;
 
 //======================================================================================================================
@@ -88,7 +96,7 @@ public:
     };
 
     CossinAudioProcessorEditor(CossinAudioProcessor&, juce::AudioProcessorValueTreeState&, jaut::PropertyMap&,
-                               FFAU::LevelMeterSource&, ProcessorContainer&);
+                               FFAU::LevelMeterSource&, jaut::AudioProcessorRack&);
     ~CossinAudioProcessorEditor();
 
 private:
@@ -160,12 +168,12 @@ private:
     DrawableButton buttonPanningLawSelection;
     DrawableButton buttonSettings;
     FFAU::LevelMeter metreLevel;
-    OptionPanel      optionsPanel;
-    ProcessorPanel   processorPanel;
+    OptionPanel optionsPanel;
     Slider sliderLevel;
     Slider sliderMix;
     Slider sliderPanning;
     Slider sliderTabControl;
+    TopUnitRackGui topUnitRackGui;
 
     // Processor data
     jaut::PropertyAttribute atrPanningLaw;
@@ -216,7 +224,7 @@ private:
 
 //======================================================================================================================
 // Functions
-inline PluginStyle &getPluginStyle(Component &component)
+inline PluginStyle &getPluginStyle(const Component &component)
 {
     return *dynamic_cast<PluginStyle*>(&component.getLookAndFeel());
 }

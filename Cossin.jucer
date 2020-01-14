@@ -54,10 +54,13 @@
       </GROUP>
       <FILE id="Twbp0G" name="CossinMain.cpp" compile="1" resource="0" file="src/CossinMain.cpp"/>
       <FILE id="p8JOZV" name="CossinMain.h" compile="0" resource="0" file="src/CossinMain.h"/>
-      <FILE id="G9I2PR" name="GuiFrameProcessor.cpp" compile="1" resource="0"
-            file="src/GuiFrameProcessor.cpp"/>
-      <FILE id="fZZK8m" name="GuiFrameProcessor.h" compile="0" resource="0"
-            file="src/GuiFrameProcessor.h"/>
+      <FILE id="QuS0jb" name="EffectModuleGuis.cpp" compile="1" resource="0"
+            file="src/EffectModuleGuis.cpp"/>
+      <FILE id="KPBX2T" name="EffectModuleGuis.h" compile="0" resource="0"
+            file="src/EffectModuleGuis.h"/>
+      <FILE id="u9Phmc" name="EffectModules.cpp" compile="1" resource="0"
+            file="src/EffectModules.cpp"/>
+      <FILE id="Bcinyq" name="EffectModules.h" compile="0" resource="0" file="src/EffectModules.h"/>
       <FILE id="KG5toP" name="MetreLookAndFeel.cpp" compile="1" resource="0"
             file="src/MetreLookAndFeel.cpp"/>
       <FILE id="I9RyBS" name="MetreLookAndFeel.h" compile="0" resource="0"
@@ -77,14 +80,6 @@
             file="src/PluginProcessor.h"/>
       <FILE id="agnQFL" name="PluginStyle.cpp" compile="1" resource="0" file="src/PluginStyle.cpp"/>
       <FILE id="kv2woJ" name="PluginStyle.h" compile="0" resource="0" file="src/PluginStyle.h"/>
-      <FILE id="Rjm41E" name="ProcessorContainer.cpp" compile="1" resource="0"
-            file="src/ProcessorContainer.cpp"/>
-      <FILE id="hxcCuB" name="ProcessorContainer.h" compile="0" resource="0"
-            file="src/ProcessorContainer.h"/>
-      <FILE id="LuvPeR" name="ProcessorPanel.cpp" compile="1" resource="0"
-            file="src/ProcessorPanel.cpp"/>
-      <FILE id="W9H3bu" name="ProcessorPanel.h" compile="0" resource="0"
-            file="src/ProcessorPanel.h"/>
       <FILE id="KkjZv9" name="ReloadListener.h" compile="0" resource="1"
             file="src/ReloadListener.h"/>
       <FILE id="FWf9Bq" name="Resources.h" compile="0" resource="0" file="src/Resources.h"/>
@@ -92,6 +87,10 @@
       <FILE id="bx1VgI" name="SharedData.h" compile="0" resource="0" file="src/SharedData.h"/>
       <FILE id="QNAuSb" name="ThemeFolder.cpp" compile="1" resource="0" file="src/ThemeFolder.cpp"/>
       <FILE id="HCyvBi" name="ThemeFolder.h" compile="0" resource="0" file="src/ThemeFolder.h"/>
+      <FILE id="cumkkZ" name="TopUnitRackGui.cpp" compile="1" resource="0"
+            file="src/TopUnitRackGui.cpp"/>
+      <FILE id="WWA6ea" name="TopUnitRackGui.h" compile="0" resource="0"
+            file="src/TopUnitRackGui.h"/>
     </GROUP>
     <GROUP id="{D41DFCDD-0C88-4698-54ED-58502DE93337}" name="yaml-cpp">
       <GROUP id="{462567A6-D3A6-C646-3C3E-472650D57C61}" name="src">
@@ -172,6 +171,8 @@
             <FILE id="YuS4fP" name="configparser.h" compile="0" resource="0" file="externals/jaut/include/jaut/impl/configparser.h"/>
           </GROUP>
           <FILE id="Y4T2Cl" name="appdata.h" compile="0" resource="0" file="externals/jaut/include/jaut/appdata.h"/>
+          <FILE id="AJ9mSH" name="audioprocessorrack.h" compile="0" resource="0"
+                file="externals/jaut/include/jaut/audioprocessorrack.h"/>
           <FILE id="e8AyHQ" name="componentoptionlist.h" compile="0" resource="0"
                 file="externals/jaut/include/jaut/componentoptionlist.h"/>
           <FILE id="L8XfU9" name="config.h" compile="0" resource="0" file="externals/jaut/include/jaut/config.h"/>
@@ -201,11 +202,14 @@
           <FILE id="S2XN9C" name="propertyattribute.h" compile="0" resource="0"
                 file="externals/jaut/include/jaut/propertyattribute.h"/>
           <FILE id="s21ytD" name="propertymap.h" compile="0" resource="0" file="externals/jaut/include/jaut/propertymap.h"/>
+          <FILE id="HrRNG0" name="sfxunit.h" compile="0" resource="0" file="externals/jaut/include/jaut/sfxunit.h"/>
           <FILE id="E0NRMM" name="thememanager.h" compile="0" resource="0" file="externals/jaut/include/jaut/thememanager.h"/>
         </GROUP>
       </GROUP>
       <GROUP id="{92A7C1ED-2C6B-2989-CE37-12D5389C1103}" name="src">
         <FILE id="xKsqlz" name="appdata.cpp" compile="1" resource="0" file="externals/jaut/src/appdata.cpp"/>
+        <FILE id="HAUZkN" name="audioprocessorrack.cpp" compile="1" resource="0"
+              file="externals/jaut/src/audioprocessorrack.cpp"/>
         <FILE id="DW7WzW" name="componentoptionlist.cpp" compile="1" resource="0"
               file="externals/jaut/src/componentoptionlist.cpp"/>
         <FILE id="Osy4fJ" name="config.cpp" compile="1" resource="0" file="externals/jaut/src/config.cpp"/>
@@ -236,6 +240,7 @@
         <FILE id="B7yfpk" name="propertyattribute.cpp" compile="1" resource="0"
               file="externals/jaut/src/propertyattribute.cpp"/>
         <FILE id="OZtBUE" name="propertymap.cpp" compile="1" resource="0" file="externals/jaut/src/propertymap.cpp"/>
+        <FILE id="pX5S5X" name="sfxunit.cpp" compile="1" resource="0" file="externals/jaut/src/sfxunit.cpp"/>
         <FILE id="b8Y1eF" name="thememanager.cpp" compile="1" resource="0"
               file="externals/jaut/src/thememanager.cpp"/>
       </GROUP>

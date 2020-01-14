@@ -328,7 +328,7 @@ void OptionPanelGeneral::PanelDefaults::comboBoxChanged(ComboBox *box)
 
     if(box->getSelectedId() == 1)
     {
-        resolution = ::Resolution::getResolutionFromSize(800, 500);
+        resolution = ::Resolution::getResolutionFromSize(Const_WindowDefaultWidth, Const_WindowDefaultHeight);
     }
     else if(box->getSelectedItemIndex() == box->getNumItems() - 2)
     {
@@ -518,18 +518,18 @@ void OptionPanelGeneral::reloadConfig(const jaut::Config &config)
 {
     const int panning_value     = config.getProperty("panning",   res::Cfg_Defaults).getValue();
     const int processor_value   = config.getProperty("processor", res::Cfg_Defaults).getValue();
-    const int max_panning_modes = defaultsBox.boxPanningLaw.getNumItems() - 1;
-    const int max_processors    = defaultsBox.boxProcessor.getNumItems()  - 1;
+    const int max_panning_modes = defaultsBox.boxPanningLaw.getNumItems();
+    const int max_processors    = defaultsBox.boxProcessor.getNumItems();
     ComboBox &box_pan           = defaultsBox.boxPanningLaw;
     ComboBox &box_proc          = defaultsBox.boxProcessor;
 
-    box_pan .setSelectedId(jaut::is_in_range(panning_value, 0, max_panning_modes) ? panning_value   + 1 : 2);
-    box_proc.setSelectedId(jaut::is_in_range(processor_value, 0, max_processors)  ? processor_value + 1 : 1);
+    box_pan .setSelectedId(jaut::fit_s(panning_value, 0, max_panning_modes) ? panning_value   + 1 : 2);
+    box_proc.setSelectedId(jaut::fit_s(processor_value, 0, max_processors)  ? processor_value + 1 : 1);
 
     // size box
     const auto property_size = config.getProperty("size", res::Cfg_Defaults);
-    const int window_width   = std::max<int>(property_size.getProperty("width") .getValue(), 800);
-    const int window_height  = std::max<int>(property_size.getProperty("height").getValue(), 500);
+    const int window_width   = std::max<int>(property_size.getProperty("width") .getValue(), Const_WindowDefaultWidth);
+    const int window_height  = std::max<int>(property_size.getProperty("height").getValue(), Const_WindowDefaultHeight);
     const auto resolution    = ::Resolution::getResolutionFromSize(window_width, window_height);
     ComboBox &box_size       = defaultsBox.boxSize;
 
@@ -544,7 +544,7 @@ void OptionPanelGeneral::reloadConfig(const jaut::Config &config)
             }
         }
     }
-    else if(window_width == 800 && window_height == 500)
+    else if(window_width == Const_WindowDefaultWidth && window_height == Const_WindowDefaultHeight)
     {
         box_size.setSelectedId(1);
     }
@@ -1213,7 +1213,7 @@ void OptionPanelPerformance::reloadConfig(const jaut::Config &config)
     const auto property_custom     = property_animations.getProperty("custom");
     const int  animation_mode      = property_animations.getProperty("mode").getValue();
 
-    boxAnimationMode.setSelectedId(jaut::is_in_range(animation_mode, 0, 3) ? animation_mode + 1 : 4);
+    boxAnimationMode.setSelectedId(jaut::fit_a(animation_mode, 0, 3) ? animation_mode + 1 : 4);
 
     tickControls.setToggleState(property_custom.getProperty("components").getValue(),
                                 NotificationType::sendNotification);
@@ -1698,8 +1698,8 @@ bool OptionPanelStandalone::saveState(SharedData &sharedData) const
 
     const int buffer_size = xml->getStringAttribute("audioDeviceBufferSize").getIntValue();
     config.getProperty("bufferSize", res::Cfg_Standalone).setValue(buffer_size == 0 ? 512 : buffer_size);
-    config.getProperty("muteInput",  res::Cfg_Standalone).setValue(plugin.getMuteInputValue().getValue());
-    
+    config.getProperty("muteInput",  res::Cfg_Standalone).setValue(tickMuteInput.getToggleState());
+
     return true;
 }
 

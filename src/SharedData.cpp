@@ -184,6 +184,7 @@ void SharedData::initConfig()
     jaut::Config::Property property_mute_input;  // determines whether input should be muted due to possible feedback loops
     jaut::Config::Property property_device_type; // determines the type of device to use
     jaut::Config::Property property_log_to_file; // determines whether logging should be enabled or not
+    jaut::Config::Property property_double_precision; // determines whether samples should be processed with double precision
 
     //=================================: GENERAL
     property_theme = config->createProperty("theme", "default");
@@ -247,11 +248,11 @@ void SharedData::initConfig()
     property_buffer_size.setComment("Determines the buffer size.");
     property_sample_rate = config->createProperty("sampleRate", 44100.0f, res::Cfg_Standalone);
     property_sample_rate.setComment("Determines the sample rate.");
-    property_io_device   = config->createProperty("devices", var(), res::Cfg_Standalone);
+    property_io_device = config->createProperty("devices", var(), res::Cfg_Standalone);
     property_io_device.setComment("Determines the input/output devices.");
     property_io_device.createProperty("input", "default");
     property_io_device.createProperty("output", "default");
-    property_mute_input  = config->createProperty("muteInput", true, res::Cfg_Standalone);
+    property_mute_input = config->createProperty("muteInput", true, res::Cfg_Standalone);
     property_mute_input.setComment("Determines whether input should be muted or not.\n"
                                    "This is due to a possible feedback loop!");
     property_device_type = config->createProperty("deviceType", "default", res::Cfg_Standalone);
@@ -259,21 +260,17 @@ void SharedData::initConfig()
     property_log_to_file = config->createProperty("logToFile", false, res::Cfg_Standalone);
     property_log_to_file.setComment("Determines if the logger should be enabled and should output to a log file.\n"
                                     "This should only be used for debugging reasons as it could impact performance!");
-
-    Logger::getCurrentLogger()->writeToLog("1 Hardware acceleration is:" + var(property_hardware_acceleration.getValue()).toString());
+    property_double_precision = config->createProperty("useDoublePrecisionProcessing", false, res::Cfg_Standalone);
+    property_double_precision.setComment("Determines whether to use single or double precision sample processing.");
 
     if(!config->load())
     {
-        // If there is a problem with config saving, we've got a problem!
+        // If there is a problem with config saving, we've got a problem in general!
+        // Maybe you don't have any access rights?
         jassert(config_file.create().wasOk());
     }
-
-    Logger::getCurrentLogger()->writeToLog("2 Hardware acceleration is:" + var(property_hardware_acceleration.getValue()).toString());
     
     (void) config->save();
-
-    Logger::getCurrentLogger()->writeToLog("3 Hardware acceleration is:" + var(property_hardware_acceleration.getValue()).toString());
-
     appConfig.reset(config);
 }
 

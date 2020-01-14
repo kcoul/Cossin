@@ -748,12 +748,13 @@ CossinPluginWindow::CossinPluginWindow()
     setFullScreen(true);
     setContentOwned(new MainContentComponent(*this), false);
 #else
+
     setContentOwned(new MainContentComponent(*this), true);
-    
-    auto shared_data (SharedData::getInstance());
 
     if (auto* cache = pluginHolder->cossinCache.get())
     {
+        auto shared_data (SharedData::getInstance());
+
         const auto propsize = shared_data->Configuration().getProperty("size", res::Cfg_Defaults);
         const int x         = cache->getIntValue("windowX", -100);
         const int y         = cache->getIntValue("windowY", -100);
