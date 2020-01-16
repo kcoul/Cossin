@@ -334,42 +334,6 @@ Font PluginStyle::getAlertWindowFont()
 }
 
 //======================================================================================================================
-int PluginStyle::getOptionListLabelWidth(const String &label)
-{
-    return font.withHeight(13.0f).getStringWidth(label);
-}
-
-void PluginStyle::drawOptionListOptionBox(Graphics &g, Rectangle<int> bounds, bool isCheckBox, bool checked,
-                                          bool enabled, bool isMouseOver, bool isMouseDown)
-{
-    if(!enabled)
-    {
-        g.setOpacity(0.3f);
-    }
-
-    g.drawImageAt(imgCheckbox, 0, 0);
-
-    if(checked)
-    {
-        g.drawImageAt(imgCheckboxTick, 0, 0);
-    }
-    else if(!checked && isMouseOver && enabled)
-    {
-        g.setOpacity(0.3f);
-        g.drawImageAt(imgCheckboxTick, 0, 0);
-    }
-}
-
-void PluginStyle::drawOptionListOptionLabel(Graphics &g, const String &label, Rectangle<int> bounds, bool isCheckBox,
-                                            bool isRightAligned, bool checked, bool enabled, bool isMouseOver,
-                                            bool isMouseDown)
-{
-    g.setFont(font.withHeight(13.0f));
-    jaut::LookAndFeel::drawOptionListOptionLabel(g, label, bounds, isCheckBox, isRightAligned, checked, enabled,
-                                                 isMouseOver, isMouseDown);
-}
-
-//======================================================================================================================
 void PluginStyle::drawScrollbar(juce::Graphics &g, juce::ScrollBar &scrollBar, int x, int y, int width, int height,
                                 bool isScrollbarVertical, int thumbStartPosition, int thumbSize, bool isMouseOver, bool)
 {
@@ -463,9 +427,6 @@ void PluginStyle::reset(const jaut::ThemePointer &theme) noexcept
     setColour(FFAU::LevelMeter::lmMeterOutlineColour,     Colours::transparentBlack);
     setColour(FFAU::LevelMeter::lmBackgroundColour,       Colours::transparentBlack);
     setColour(FFAU::LevelMeter::lmTextClipColour,         Colours::transparentBlack);
-
-    // jaut::OptionList
-    setColour(jaut::OptionList::ColourOptionLabelId, colour_font);
 
     // jaut::CharFormat
     setColour(jaut::CharFormat::ColourFormat0Id, theme->getThemeColour(res::Col_Format_0));

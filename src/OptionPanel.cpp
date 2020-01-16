@@ -100,7 +100,7 @@ OptionPanel::OptionPanel(CossinAudioProcessorEditor &editor, jaut::Localisation 
     : editor(editor), closeCallback(nullptr), lastSelectedRow(0), bttClose("X"),
       optionContainer(*this), optionTabs("OptionTabs", this), locale(locale),
       optionsGeneral(editor, locale), optionsThemes(editor, locale),
-      optionsPerformance(editor, locale), optionsStandalone(editor, locale)
+      optionsPerformance(editor, locale)
 {
     // About resources
     imgCossinAbout   = ImageCache::getFromMemory(Assets::png011_png,         Assets::png011_pngSize);
@@ -117,7 +117,8 @@ OptionPanel::OptionPanel(CossinAudioProcessorEditor &editor, jaut::Localisation 
 
     if(JUCEApplicationBase::isStandaloneApp())
     {
-        addOptionCategory(res::Cfg_Standalone, optionsStandalone);
+        optionsStandalone.reset(new OptionPanelStandalone(editor, locale));
+        addOptionCategory(res::Cfg_Standalone, *optionsStandalone);
 
 #if !JUCE_USE_CUSTOM_PLUGIN_STANDALONE_APP
         this->onIntercept = [this](const String &categoryName)
@@ -175,6 +176,8 @@ OptionPanel::OptionPanel(CossinAudioProcessorEditor &editor, jaut::Localisation 
 
 OptionPanel::~OptionPanel()
 {
+    optionsStandalone.reset();
+    
     for(auto *category : optionContainer.getCategories())
     {
         editor.removeReloadListener(category);

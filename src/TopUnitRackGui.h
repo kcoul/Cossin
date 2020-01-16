@@ -26,12 +26,14 @@
 #pragma once
 
 #include "JuceHeader.h"
+#include "ReloadListener.h"
 #include <jaut/dspgui.h>
 
 namespace jaut
 {
 class AudioProcessorRack;
 class Localisation;
+class ThemePointer;
 }
 
 class TopUnitRackGui final : public jaut::DspGui, public ReloadListener

@@ -25,8 +25,10 @@
 #include "TopUnitRackGui.h"
 
 #include "PluginEditor.h"
+
 #include <jaut/audioprocessorrack.h>
 #include <jaut/localisation.h>
+#include <jaut/thememanager.h>
 
 //======================================================================================================================
 TopUnitRackGui::TopUnitRackGui(jaut::AudioProcessorRack &rack, jaut::Localisation &locale)

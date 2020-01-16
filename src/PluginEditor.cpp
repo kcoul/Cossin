@@ -708,6 +708,8 @@ void CossinAudioProcessorEditor::reloadAllData()
         reloadTheme (sharedData->ThemeManager().getCurrentTheme());
     }
 
+    repaint();
+
     MouseCursor::hideWaitCursor();
 }
 

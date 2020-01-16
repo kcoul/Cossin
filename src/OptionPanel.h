@@ -89,7 +89,7 @@ private:
     OptionPanelThemes optionsThemes;
     OptionPanelPerformance optionsPerformance;
     //OptionPanelAccount optionsAccount;
-    OptionPanelStandalone optionsStandalone;
+    std::unique_ptr<OptionPanelStandalone> optionsStandalone;
     ListBox optionTabs;
     HyperlinkButton linkDiscord;
     HyperlinkButton linkTumblr;

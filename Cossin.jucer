@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="HDznAT" projectType="audioplug" jucerVersion="5.4.5" reportAppUsage="0"
-              displaySplashScreen="0" pluginFormats="buildAAX,buildAU,buildAUv3,buildStandalone,buildVST3"
+              displaySplashScreen="0" pluginFormats="buildAAX,buildAU,buildAUv3,buildStandalone,buildVST,buildVST3"
               pluginDesc="A multi-purpose effector plugin for creatives and artists."
               pluginManufacturerCode="Elsa" pluginCode="Escs" version="1.0.0"
               name="Cossin" companyName="ElandaSunshine" companyCopyright="ElandaSunshine 2019"
@@ -173,8 +173,6 @@
           <FILE id="Y4T2Cl" name="appdata.h" compile="0" resource="0" file="externals/jaut/include/jaut/appdata.h"/>
           <FILE id="AJ9mSH" name="audioprocessorrack.h" compile="0" resource="0"
                 file="externals/jaut/include/jaut/audioprocessorrack.h"/>
-          <FILE id="e8AyHQ" name="componentoptionlist.h" compile="0" resource="0"
-                file="externals/jaut/include/jaut/componentoptionlist.h"/>
           <FILE id="L8XfU9" name="config.h" compile="0" resource="0" file="externals/jaut/include/jaut/config.h"/>
           <FILE id="Dg6cPz" name="dspgui.h" compile="0" resource="0" file="externals/jaut/include/jaut/dspgui.h"/>
           <FILE id="SoQwJl" name="dspunit.h" compile="0" resource="0" file="externals/jaut/include/jaut/dspunit.h"/>
@@ -210,8 +208,6 @@
         <FILE id="xKsqlz" name="appdata.cpp" compile="1" resource="0" file="externals/jaut/src/appdata.cpp"/>
         <FILE id="HAUZkN" name="audioprocessorrack.cpp" compile="1" resource="0"
               file="externals/jaut/src/audioprocessorrack.cpp"/>
-        <FILE id="DW7WzW" name="componentoptionlist.cpp" compile="1" resource="0"
-              file="externals/jaut/src/componentoptionlist.cpp"/>
         <FILE id="Osy4fJ" name="config.cpp" compile="1" resource="0" file="externals/jaut/src/config.cpp"/>
         <FILE id="tuLvf9" name="configparser.cpp" compile="1" resource="0"
               file="externals/jaut/src/configparser.cpp"/>
@@ -247,12 +243,13 @@
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
-    <LINUX_MAKE targetFolder="bin/LinuxMakefile" extraDefs="JUCE_USE_CUSTOM_PLUGIN_STANDALONE_APP=1&#10;JUCE_OPENGL_ALLOW_NON_POWER_OF_TWO_TEXTURES=1">
+    <LINUX_MAKE targetFolder="bin/LinuxMakefile" extraDefs="JUCE_USE_CUSTOM_PLUGIN_STANDALONE_APP=1&#10;JUCE_OPENGL_ALLOW_NON_POWER_OF_TWO_TEXTURES=1"
+                extraCompilerFlags="-g">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" headerPath="../../externals/modules&#10;../../externals/yaml-cpp/include&#10;../../externals/jaut/include"
                        targetName="Cossin Debug"/>
         <CONFIGURATION isDebug="0" name="Release" headerPath="../../externals/modules&#10;../../externals/yaml-cpp/include&#10;../../externals/jaut/include"
-                       linkTimeOptimisation="1"/>
+                       linkTimeOptimisation="1" recommendedWarnings="GCC"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_audio_basics" path="../../../JUCE/modules"/>

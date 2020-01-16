@@ -29,7 +29,6 @@
 #include "MetreLookAndFeel.h"
 #include "ThemeFolder.h"
 
-#include <jaut/componentoptionlist.h>
 #include <jaut/fontformat.h>
 #include <jaut/lookandfeel.h>
 #include <jaut/thememanager.h>
@@ -63,12 +62,6 @@ protected:
     Font getAlertWindowTitleFont() override;
     Font getAlertWindowMessageFont() override;
     Font getAlertWindowFont() override;
-
-    //==================================================================================================================
-    int getOptionListLabelWidth(const String&) override;
-    void drawOptionListOptionBox(Graphics&, Rectangle<int>, bool, bool, bool, bool, bool) override;
-    void drawOptionListOptionLabel(Graphics&, const String&, Rectangle<int>, bool, bool, bool, bool,
-                                   bool, bool) override;
 
     //==================================================================================================================
     void drawScrollbar(Graphics&, ScrollBar&, int, int, int, int, bool, int, int, bool, bool) override;
