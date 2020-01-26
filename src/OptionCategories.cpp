@@ -35,6 +35,8 @@
 #include <jaut/fontformat.h>
 #include <jaut/localisation.h>
 
+#include <numeric>
+
 #pragma region Namespace
 namespace
 {
@@ -119,7 +121,7 @@ struct Resolution
 
     static Resolution getResolutionFromSize(int width, int height) noexcept
     {
-        const int ratio_gcd = std::__gcd(width, height);
+        const int ratio_gcd = std::gcd(width, height);
         int ratio_width  = 16;
         int ratio_height = 9;
         String name;
@@ -1118,12 +1120,15 @@ OptionPanelPerformance::OptionPanelPerformance(CossinAudioProcessorEditor &edito
 
 #if COSSIN_USE_OPENGL
     tickHardwareAcceleration.setButtonText(locale.translate("options.category.optimization.use_hardware"));
+    tickHardwareAcceleration.setEnabled(editor.isOpenGLSupported());
     addAndMakeVisible(tickHardwareAcceleration);
 
     tickMultisampling.setButtonText(locale.translate("options.category.optimization.multisampling"));
+    tickMultisampling.setEnabled(editor.isOpenGLSupported());
     addAndMakeVisible(tickMultisampling);
 
     tickSmoothing.setButtonText(locale.translate("options.category.optimization.filter"));
+    tickSmoothing.setEnabled(editor.isOpenGLSupported());
     addAndMakeVisible(tickSmoothing);
 #endif
 }

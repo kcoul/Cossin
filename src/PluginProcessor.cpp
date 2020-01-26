@@ -118,7 +118,7 @@ bool CossinAudioProcessor::hasEditor() const
 
 AudioProcessorEditor *CossinAudioProcessor::createEditor()
 {
-    return new CossinAudioProcessorEditor(*this, parameters, properties, metreSource, topUnitRack);
+    return new CossinMainEditorWindow(*this, parameters, properties, metreSource, topUnitRack);
 }
 
 //======================================================================================================================

@@ -60,6 +60,7 @@ class AudioProcessorRack;
 }
 
 class CossinAudioProcessor;
+class CossinMainEditorWindow;
 class SharedData;
 
 //======================================================================================================================
@@ -74,7 +75,7 @@ struct PluginSession final
     {}
 };
 
-class CossinAudioProcessorEditor : public AudioProcessorEditor, public ActionListener, private Button::Listener,
+class CossinAudioProcessorEditor : public Component, public ActionListener, private Button::Listener,
                                    private Slider::Listener, private LookAndFeel_V4,
 #if COSSIN_USE_OPENGL
                                    public OpenGLRenderer,
@@ -96,20 +97,17 @@ public:
     };
 
     CossinAudioProcessorEditor(CossinAudioProcessor&, juce::AudioProcessorValueTreeState&, jaut::PropertyMap&,
-                               FFAU::LevelMeterSource&, jaut::AudioProcessorRack&);
+                               FFAU::LevelMeterSource&, jaut::AudioProcessorRack&, CossinMainEditorWindow&, bool,
+                               const String&);
     ~CossinAudioProcessorEditor();
 
 private:
-    void initializeData();
+    void initializeData(CossinMainEditorWindow&,String);
     void initializeComponents();
-    void initializeWindow();
 
 public:
     void paint(Graphics&) override;
     void resized() override;
-
-    //==================================================================================================================
-    constexpr bool canSelfResize() noexcept;
 
 private:
     void paintBasicInterface(Graphics&) const;
@@ -123,17 +121,21 @@ public:
     bool getOption(int) const noexcept;
     void setOption(int, bool) noexcept;
     const PluginSession &getSession() const noexcept;
+#if COSSIN_USE_OPENGL
+    bool isOpenGLSupported() const noexcept;
+#endif
 
     //==================================================================================================================
     void addReloadListener(ReloadListener*);
     void removeReloadListener(ReloadListener*);
 
 private:
-    using t_ButtonAttachment = AudioProcessorValueTreeState::ButtonAttachment;
-    using t_SliderAttachment = AudioProcessorValueTreeState::SliderAttachment;
-    using p_SliderAttachment = std::unique_ptr<t_SliderAttachment>;
-    using p_ButtonAttachment = std::unique_ptr<t_ButtonAttachment>;
+    using ButtonAttachment = AudioProcessorValueTreeState::ButtonAttachment;
+    using SliderAttachment = AudioProcessorValueTreeState::SliderAttachment;
+    using SliderAttachmentPtr = std::unique_ptr<SliderAttachment>;
+    using ButtonAttachmentPtr = std::unique_ptr<ButtonAttachment>;
 
+    //==================================================================================================================
     class BackgroundBlur : public Component
     {
     public:
@@ -144,16 +146,22 @@ private:
     };
 
     //==================================================================================================================
+    friend class CossinMainEditorWindow;
+
+    //==================================================================================================================
     // General
     PluginSession session;
     SharedResourcePointer<SharedData> sharedData;
-    std::unique_ptr<Logger> logger;
     CossinAudioProcessor   &processor;
     FFAU::LevelMeterSource &sourceMetre;
     bool initialized;
     ListenerList<ReloadListener> listeners;
     PluginStyle lookAndFeel;
     TooltipWindow tooltipServer;
+
+#if COSSIN_USE_OPENGL
+    std::unique_ptr<OpenGLContext> glContext;
+#endif
 
     // Shared data
     String lastLocale;
@@ -178,13 +186,9 @@ private:
     // Processor data
     jaut::PropertyAttribute atrPanningLaw;
     jaut::PropertyAttribute atrProcessor;
-    p_SliderAttachment attLevel;
-    p_SliderAttachment attMix;
-    p_SliderAttachment attPanning;
-
-#if COSSIN_USE_OPENGL
-    OpenGLContext glContext;
-#endif
+    SliderAttachmentPtr attLevel;
+    SliderAttachmentPtr attMix;
+    SliderAttachmentPtr attPanning;
 
     // Drawing
     Image imgBackground;
@@ -222,47 +226,52 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CossinAudioProcessorEditor)
 };
 
+class CossinMainEditorWindow final : public AudioProcessorEditor, private AsyncUpdater
+#if COSSIN_USE_OPENGL
+                                     , private OpenGLRenderer
+#endif
+{
+public:
+    CossinMainEditorWindow(CossinAudioProcessor&, juce::AudioProcessorValueTreeState&, jaut::PropertyMap&,
+                           FFAU::LevelMeterSource&, jaut::AudioProcessorRack&);
+    ~CossinMainEditorWindow();
+    
+    //==================================================================================================================
+    void resized() override;
+    
+private:
+    std::unique_ptr<CossinAudioProcessorEditor> editor;
+    CossinAudioProcessor &processor;
+    AudioProcessorValueTreeState &vts;
+    jaut::PropertyMap &properties;
+    FFAU::LevelMeterSource &metreSource;
+    jaut::AudioProcessorRack &processorRack;
+
+#if COSSIN_USE_OPENGL
+    MessageManager::Lock messageManagerLock;
+    OpenGLContext testContext;
+    bool initialized { false };
+    std::atomic<bool> isSupported;
+    String graphicsCardDetails;
+#endif
+
+    //==================================================================================================================
+    void initializeWindow();
+
+    //==================================================================================================================
+#if COSSIN_USE_OPENGL
+    void newOpenGLContextCreated() override;
+    void renderOpenGL() override {}
+    void openGLContextClosing() override {}
+#endif
+
+    //==================================================================================================================
+    void handleAsyncUpdate() override;
+};
+
 //======================================================================================================================
 // Functions
 inline PluginStyle &getPluginStyle(const Component &component)
 {
     return *dynamic_cast<PluginStyle*>(&component.getLookAndFeel());
-}
-
-inline Logger *createDummyLogger()
-{
-    struct DummyLogger final : public Logger
-    {
-        DummyLogger() = default;
-        void logMessage(const String&) override {}
-    };
-    
-    return new DummyLogger;
-}
-
-inline FileLogger *createLoggerFromSession(const File &logFile, const PluginSession &session, const String &appName,
-                                           const String &appVersion)
-{
-    const String session_id  = session.id.toDashedString();
-    const String cpu_model   = !SystemStats::getCpuModel().isEmpty()  ? SystemStats::getCpuModel()  : "n/a";
-    const String cpu_vendor  = !SystemStats::getCpuVendor().isEmpty() ? " (" + SystemStats::getCpuVendor() + ")" : "";
-    const String gpu_model   = String((char*)(unsigned char*)glGetString(GL_VENDOR)) + " " + String((char*)(unsigned char*)glGetString(GL_RENDERER));
-    const String memory_size = String(SystemStats::getMemorySizeInMegabytes()) + "mb";
-
-    String logmsg;
-
-    logmsg << "                        --Program--                       " << newLine
-           << "App:        " << appName                                    << newLine
-           << "Version:    " << appVersion                                 << newLine
-           << "Session-ID: " << session_id                                 << newLine
-           << "**********************************************************" << newLine
-           << "                        --Machine--                       " << newLine
-           << "System:     " << SystemStats::getOperatingSystemName()      << newLine
-           << "Memory:     " << memory_size                                << newLine
-           << "CPU:        " << cpu_model << cpu_vendor                    << newLine
-           << "Graphics:   " << (gpu_model.containsNonWhitespaceChars()
-                                 ? gpu_model : "Unknown")                  << newLine
-           << "**********************************************************";
-
-    return new FileLogger(logFile, logmsg);
 }

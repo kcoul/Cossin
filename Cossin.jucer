@@ -10,48 +10,48 @@
               binaryDataNamespace="Assets" cppLanguageStandard="latest" aaxIdentifier="xyz.elandasunshine.cossin"
               pluginAUMainType="'aufx'" pluginAUIsSandboxSafe="1">
   <MAINGROUP id="gkSgsV" name="Cossin">
-    <GROUP id="{12F4AA42-6094-374E-1A17-F062AE0764DB}" name="src">
-      <GROUP id="{290334B5-C200-5AC4-FD24-976E13997F0E}" name="assets">
-        <FILE id="NG0mAQ" name="colourmap.json" compile="0" resource="1" file="src/assets/colourmap.json"/>
-        <FILE id="J6YVUL" name="colourmap.png" compile="0" resource="1" file="src/assets/colourmap.png"/>
-        <FILE id="SO2fTa" name="default.lang" compile="0" resource="1" file="src/assets/default.lang"/>
-        <FILE id="d0Y6Sv" name="png-000.png" compile="0" resource="1" file="src/assets/png-000.png"/>
-        <FILE id="otZWHO" name="png-001.png" compile="0" resource="1" file="src/assets/png-001.png"/>
-        <FILE id="EHBDO3" name="png-002.png" compile="0" resource="1" file="src/assets/png-002.png"/>
-        <FILE id="Pj6FJT" name="png-003.png" compile="0" resource="1" file="src/assets/png-003.png"/>
-        <FILE id="usLM1S" name="png-004.png" compile="0" resource="1" file="src/assets/png-004.png"/>
-        <FILE id="jpuCzW" name="png-005.png" compile="0" resource="1" file="src/assets/png-005.png"/>
-        <FILE id="pENIfT" name="png-006.png" compile="0" resource="1" file="src/assets/png-006.png"/>
-        <FILE id="EyEEGF" name="png-007.png" compile="0" resource="1" file="src/assets/png-007.png"/>
-        <FILE id="XcIKcj" name="png-008.png" compile="0" resource="1" file="src/assets/png-008.png"/>
-        <FILE id="uq2Het" name="png-009.png" compile="0" resource="1" file="src/assets/png-009.png"/>
-        <FILE id="PYFsj7" name="png-010.png" compile="0" resource="1" file="src/assets/png-010.png"/>
-        <FILE id="zSup0u" name="png-011.png" compile="0" resource="1" file="src/assets/png-011.png"/>
-        <FILE id="OHuPx3" name="png-012.png" compile="0" resource="1" file="src/assets/png-012.png"/>
-        <FILE id="nwUTA2" name="png-013.png" compile="0" resource="1" file="src/assets/png-013.png"/>
-        <FILE id="fiNWEL" name="png-019.png" compile="0" resource="1" file="src/assets/png-019.png"/>
-        <FILE id="i2Kwda" name="png-020.png" compile="0" resource="1" file="src/assets/png-020.png"/>
-        <FILE id="ThzCY9" name="png-021.png" compile="0" resource="1" file="src/assets/png-021.png"/>
-        <FILE id="rYMG9w" name="png-022.png" compile="0" resource="1" file="src/assets/png-022.png"/>
-        <FILE id="PYEOpq" name="png-023.png" compile="0" resource="1" file="src/assets/png-023.png"/>
-        <FILE id="jICrka" name="png-024.png" compile="0" resource="1" file="src/assets/png-024.png"/>
-        <FILE id="sTeExF" name="png-050.png" compile="0" resource="1" file="src/assets/png-050.png"/>
-        <FILE id="xVvT06" name="screenshot-000.png" compile="0" resource="1"
-              file="src/assets/screenshot-000.png"/>
-        <FILE id="wJomAk" name="screenshot-001.png" compile="0" resource="1"
-              file="src/assets/screenshot-001.png"/>
-        <FILE id="ZGLmFa" name="screenshot-002.png" compile="0" resource="1"
-              file="src/assets/screenshot-002.png"/>
-        <FILE id="foWraN" name="social_discord.png" compile="0" resource="1"
-              file="src/assets/social_discord.png"/>
-        <FILE id="tFNkxB" name="social_tumblr.png" compile="0" resource="1"
-              file="src/assets/social_tumblr.png"/>
-        <FILE id="EOd5pu" name="social_twitter.png" compile="0" resource="1"
-              file="src/assets/social_twitter.png"/>
-        <FILE id="POV29w" name="social_web.png" compile="0" resource="1" file="src/assets/social_web.png"/>
-        <FILE id="A60r9q" name="theme.meta" compile="0" resource="1" file="src/assets/theme.meta"/>
-        <FILE id="Gf0rCV" name="theme.png" compile="0" resource="1" file="src/assets/theme.png"/>
-      </GROUP>
+    <GROUP id="{290334B5-C200-5AC4-FD24-976E13997F0E}" name="assets">
+      <FILE id="NG0mAQ" name="colourmap.json" compile="0" resource="1" file="src/assets/colourmap.json"/>
+      <FILE id="J6YVUL" name="colourmap.png" compile="0" resource="1" file="src/assets/colourmap.png"/>
+      <FILE id="SO2fTa" name="default.lang" compile="0" resource="1" file="src/assets/default.lang"/>
+      <FILE id="d0Y6Sv" name="png-000.png" compile="0" resource="1" file="src/assets/png-000.png"/>
+      <FILE id="otZWHO" name="png-001.png" compile="0" resource="1" file="src/assets/png-001.png"/>
+      <FILE id="EHBDO3" name="png-002.png" compile="0" resource="1" file="src/assets/png-002.png"/>
+      <FILE id="Pj6FJT" name="png-003.png" compile="0" resource="1" file="src/assets/png-003.png"/>
+      <FILE id="usLM1S" name="png-004.png" compile="0" resource="1" file="src/assets/png-004.png"/>
+      <FILE id="jpuCzW" name="png-005.png" compile="0" resource="1" file="src/assets/png-005.png"/>
+      <FILE id="pENIfT" name="png-006.png" compile="0" resource="1" file="src/assets/png-006.png"/>
+      <FILE id="EyEEGF" name="png-007.png" compile="0" resource="1" file="src/assets/png-007.png"/>
+      <FILE id="XcIKcj" name="png-008.png" compile="0" resource="1" file="src/assets/png-008.png"/>
+      <FILE id="uq2Het" name="png-009.png" compile="0" resource="1" file="src/assets/png-009.png"/>
+      <FILE id="PYFsj7" name="png-010.png" compile="0" resource="1" file="src/assets/png-010.png"/>
+      <FILE id="zSup0u" name="png-011.png" compile="0" resource="1" file="src/assets/png-011.png"/>
+      <FILE id="OHuPx3" name="png-012.png" compile="0" resource="1" file="src/assets/png-012.png"/>
+      <FILE id="nwUTA2" name="png-013.png" compile="0" resource="1" file="src/assets/png-013.png"/>
+      <FILE id="fiNWEL" name="png-019.png" compile="0" resource="1" file="src/assets/png-019.png"/>
+      <FILE id="i2Kwda" name="png-020.png" compile="0" resource="1" file="src/assets/png-020.png"/>
+      <FILE id="ThzCY9" name="png-021.png" compile="0" resource="1" file="src/assets/png-021.png"/>
+      <FILE id="rYMG9w" name="png-022.png" compile="0" resource="1" file="src/assets/png-022.png"/>
+      <FILE id="PYEOpq" name="png-023.png" compile="0" resource="1" file="src/assets/png-023.png"/>
+      <FILE id="jICrka" name="png-024.png" compile="0" resource="1" file="src/assets/png-024.png"/>
+      <FILE id="sTeExF" name="png-050.png" compile="0" resource="1" file="src/assets/png-050.png"/>
+      <FILE id="xVvT06" name="screenshot-000.png" compile="0" resource="1"
+            file="src/assets/screenshot-000.png"/>
+      <FILE id="wJomAk" name="screenshot-001.png" compile="0" resource="1"
+            file="src/assets/screenshot-001.png"/>
+      <FILE id="ZGLmFa" name="screenshot-002.png" compile="0" resource="1"
+            file="src/assets/screenshot-002.png"/>
+      <FILE id="foWraN" name="social_discord.png" compile="0" resource="1"
+            file="src/assets/social_discord.png"/>
+      <FILE id="tFNkxB" name="social_tumblr.png" compile="0" resource="1"
+            file="src/assets/social_tumblr.png"/>
+      <FILE id="EOd5pu" name="social_twitter.png" compile="0" resource="1"
+            file="src/assets/social_twitter.png"/>
+      <FILE id="POV29w" name="social_web.png" compile="0" resource="1" file="src/assets/social_web.png"/>
+      <FILE id="A60r9q" name="theme.meta" compile="0" resource="1" file="src/assets/theme.meta"/>
+      <FILE id="Gf0rCV" name="theme.png" compile="0" resource="1" file="src/assets/theme.png"/>
+    </GROUP>
+    <GROUP id="{12F4AA42-6094-374E-1A17-F062AE0764DB}" name="cossin">
       <FILE id="Twbp0G" name="CossinMain.cpp" compile="1" resource="0" file="src/CossinMain.cpp"/>
       <FILE id="p8JOZV" name="CossinMain.h" compile="0" resource="0" file="src/CossinMain.h"/>
       <FILE id="QuS0jb" name="EffectModuleGuis.cpp" compile="1" resource="0"
@@ -162,89 +162,44 @@
       </GROUP>
     </GROUP>
     <GROUP id="{7D65E470-E716-0CF1-1DB4-3BCBEE9E1504}" name="jaut">
-      <GROUP id="{FB616898-A780-76CF-B53B-5ED6EBBA3700}" name="include">
-        <GROUP id="{534D66A5-41EF-F206-4929-940F42D036D6}" name="yaml-cpp">
-          <FILE id="inon5d" name="yaml.h" compile="0" resource="0" file="externals/jaut/include/yaml-cpp/yaml.h"/>
-        </GROUP>
-        <GROUP id="{67566C20-725E-A316-5330-0BD35F7A5D76}" name="jaut">
-          <GROUP id="{DE88CCF5-DA1B-9205-1321-4DB1EF848C7B}" name="impl">
-            <FILE id="YuS4fP" name="configparser.h" compile="0" resource="0" file="externals/jaut/include/jaut/impl/configparser.h"/>
-          </GROUP>
-          <FILE id="Y4T2Cl" name="appdata.h" compile="0" resource="0" file="externals/jaut/include/jaut/appdata.h"/>
-          <FILE id="AJ9mSH" name="audioprocessorrack.h" compile="0" resource="0"
-                file="externals/jaut/include/jaut/audioprocessorrack.h"/>
-          <FILE id="L8XfU9" name="config.h" compile="0" resource="0" file="externals/jaut/include/jaut/config.h"/>
-          <FILE id="Dg6cPz" name="dspgui.h" compile="0" resource="0" file="externals/jaut/include/jaut/dspgui.h"/>
-          <FILE id="SoQwJl" name="dspunit.h" compile="0" resource="0" file="externals/jaut/include/jaut/dspunit.h"/>
-          <FILE id="Ez0Rq4" name="dspunitmanager.h" compile="0" resource="0"
-                file="externals/jaut/include/jaut/dspunitmanager.h"/>
-          <FILE id="btXjbE" name="dynamicgui.h" compile="0" resource="0" file="externals/jaut/include/jaut/dynamicgui.h"/>
-          <FILE id="M39nlT" name="exception.h" compile="0" resource="0" file="externals/jaut/include/jaut/exception.h"/>
-          <FILE id="TcgQJL" name="expo.h" compile="0" resource="0" file="externals/jaut/include/jaut/expo.h"/>
-          <FILE id="jv9jNd" name="fontformat.h" compile="0" resource="0" file="externals/jaut/include/jaut/fontformat.h"/>
-          <FILE id="kobbwk" name="guidspunitmanager.h" compile="0" resource="0"
-                file="externals/jaut/include/jaut/guidspunitmanager.h"/>
-          <FILE id="i0rHWp" name="icomponentdrawing.h" compile="0" resource="0"
-                file="externals/jaut/include/jaut/icomponentdrawing.h"/>
-          <FILE id="pR6LMY" name="iconfigparser.h" compile="0" resource="0" file="externals/jaut/include/jaut/iconfigparser.h"/>
-          <FILE id="DXxWFg" name="imetadata.h" compile="0" resource="0" file="externals/jaut/include/jaut/imetadata.h"/>
-          <FILE id="P4ZJBY" name="imetareader.h" compile="0" resource="0" file="externals/jaut/include/jaut/imetareader.h"/>
-          <FILE id="xnxqRT" name="impls.h" compile="0" resource="0" file="externals/jaut/include/jaut/impls.h"/>
-          <FILE id="NSeFy8" name="ithemedefinition.h" compile="0" resource="0"
-                file="externals/jaut/include/jaut/ithemedefinition.h"/>
-          <FILE id="Eud3aD" name="jaut.h" compile="0" resource="0" file="externals/jaut/include/jaut/jaut.h"/>
-          <FILE id="wGZ8Af" name="localisation.h" compile="0" resource="0" file="externals/jaut/include/jaut/localisation.h"/>
-          <FILE id="QqwT8U" name="lookandfeel.h" compile="0" resource="1" file="externals/jaut/include/jaut/lookandfeel.h"/>
-          <FILE id="n9VgvU" name="metadatahelper.h" compile="0" resource="0"
-                file="externals/jaut/include/jaut/metadatahelper.h"/>
-          <FILE id="S2XN9C" name="propertyattribute.h" compile="0" resource="0"
-                file="externals/jaut/include/jaut/propertyattribute.h"/>
-          <FILE id="s21ytD" name="propertymap.h" compile="0" resource="0" file="externals/jaut/include/jaut/propertymap.h"/>
-          <FILE id="HrRNG0" name="sfxunit.h" compile="0" resource="0" file="externals/jaut/include/jaut/sfxunit.h"/>
-          <FILE id="E0NRMM" name="thememanager.h" compile="0" resource="0" file="externals/jaut/include/jaut/thememanager.h"/>
-        </GROUP>
-      </GROUP>
-      <GROUP id="{92A7C1ED-2C6B-2989-CE37-12D5389C1103}" name="src">
-        <FILE id="xKsqlz" name="appdata.cpp" compile="1" resource="0" file="externals/jaut/src/appdata.cpp"/>
-        <FILE id="HAUZkN" name="audioprocessorrack.cpp" compile="1" resource="0"
-              file="externals/jaut/src/audioprocessorrack.cpp"/>
-        <FILE id="Osy4fJ" name="config.cpp" compile="1" resource="0" file="externals/jaut/src/config.cpp"/>
-        <FILE id="tuLvf9" name="configparser.cpp" compile="1" resource="0"
-              file="externals/jaut/src/configparser.cpp"/>
-        <FILE id="IndUUp" name="dspgui.cpp" compile="1" resource="0" file="externals/jaut/src/dspgui.cpp"/>
-        <FILE id="Mn4rTv" name="dspunit.cpp" compile="1" resource="0" file="externals/jaut/src/dspunit.cpp"/>
-        <FILE id="qJw5Ze" name="dspunitmanager.cpp" compile="1" resource="0"
-              file="externals/jaut/src/dspunitmanager.cpp"/>
-        <FILE id="ovJWwm" name="dynamicgui.cpp" compile="1" resource="0" file="externals/jaut/src/dynamicgui.cpp"/>
-        <FILE id="Du5WLE" name="ext.cpp" compile="1" resource="0" file="externals/jaut/src/ext.cpp"/>
-        <FILE id="RdSLsP" name="fontformat.cpp" compile="1" resource="0" file="externals/jaut/src/fontformat.cpp"/>
-        <FILE id="wZU0Fl" name="guidspunitmanager.cpp" compile="1" resource="0"
-              file="externals/jaut/src/guidspunitmanager.cpp"/>
-        <FILE id="tKo2BY" name="jaut_format_attributes.cpp" compile="1" resource="0"
-              file="externals/jaut/src/jaut_format_attributes.cpp"/>
-        <FILE id="tykQS2" name="jaut_format_attributes.h" compile="0" resource="0"
-              file="externals/jaut/src/jaut_format_attributes.h"/>
-        <FILE id="thFm3X" name="jaut_format_layout.cpp" compile="1" resource="0"
-              file="externals/jaut/src/jaut_format_layout.cpp"/>
-        <FILE id="q2kZd4" name="jaut_format_layout.h" compile="0" resource="0"
-              file="externals/jaut/src/jaut_format_layout.h"/>
-        <FILE id="COflk1" name="localisation.cpp" compile="1" resource="0"
-              file="externals/jaut/src/localisation.cpp"/>
-        <FILE id="pHOqB2" name="lookandfeel.cpp" compile="1" resource="0" file="externals/jaut/src/lookandfeel.cpp"/>
-        <FILE id="pnsMur" name="metadatahelper.cpp" compile="1" resource="0"
-              file="externals/jaut/src/metadatahelper.cpp"/>
-        <FILE id="B7yfpk" name="propertyattribute.cpp" compile="1" resource="0"
-              file="externals/jaut/src/propertyattribute.cpp"/>
-        <FILE id="OZtBUE" name="propertymap.cpp" compile="1" resource="0" file="externals/jaut/src/propertymap.cpp"/>
-        <FILE id="pX5S5X" name="sfxunit.cpp" compile="1" resource="0" file="externals/jaut/src/sfxunit.cpp"/>
-        <FILE id="b8Y1eF" name="thememanager.cpp" compile="1" resource="0"
-              file="externals/jaut/src/thememanager.cpp"/>
-      </GROUP>
+      <FILE id="xKsqlz" name="appdata.cpp" compile="1" resource="0" file="externals/jaut/src/appdata.cpp"/>
+      <FILE id="HAUZkN" name="audioprocessorrack.cpp" compile="1" resource="0"
+            file="externals/jaut/src/audioprocessorrack.cpp"/>
+      <FILE id="Osy4fJ" name="config.cpp" compile="1" resource="0" file="externals/jaut/src/config.cpp"/>
+      <FILE id="tuLvf9" name="configparser.cpp" compile="1" resource="0"
+            file="externals/jaut/src/configparser.cpp"/>
+      <FILE id="IndUUp" name="dspgui.cpp" compile="1" resource="0" file="externals/jaut/src/dspgui.cpp"/>
+      <FILE id="Mn4rTv" name="dspunit.cpp" compile="1" resource="0" file="externals/jaut/src/dspunit.cpp"/>
+      <FILE id="qJw5Ze" name="dspunitmanager.cpp" compile="1" resource="0"
+            file="externals/jaut/src/dspunitmanager.cpp"/>
+      <FILE id="ovJWwm" name="dynamicgui.cpp" compile="1" resource="0" file="externals/jaut/src/dynamicgui.cpp"/>
+      <FILE id="Du5WLE" name="ext.cpp" compile="1" resource="0" file="externals/jaut/src/ext.cpp"/>
+      <FILE id="RdSLsP" name="fontformat.cpp" compile="1" resource="0" file="externals/jaut/src/fontformat.cpp"/>
+      <FILE id="wZU0Fl" name="guidspunitmanager.cpp" compile="1" resource="0"
+            file="externals/jaut/src/guidspunitmanager.cpp"/>
+      <FILE id="tKo2BY" name="jaut_format_attributes.cpp" compile="1" resource="0"
+            file="externals/jaut/src/jaut_format_attributes.cpp"/>
+      <FILE id="tykQS2" name="jaut_format_attributes.h" compile="0" resource="0"
+            file="externals/jaut/src/jaut_format_attributes.h"/>
+      <FILE id="thFm3X" name="jaut_format_layout.cpp" compile="1" resource="0"
+            file="externals/jaut/src/jaut_format_layout.cpp"/>
+      <FILE id="q2kZd4" name="jaut_format_layout.h" compile="0" resource="0"
+            file="externals/jaut/src/jaut_format_layout.h"/>
+      <FILE id="COflk1" name="localisation.cpp" compile="1" resource="0"
+            file="externals/jaut/src/localisation.cpp"/>
+      <FILE id="pHOqB2" name="lookandfeel.cpp" compile="1" resource="0" file="externals/jaut/src/lookandfeel.cpp"/>
+      <FILE id="pnsMur" name="metadatahelper.cpp" compile="1" resource="0"
+            file="externals/jaut/src/metadatahelper.cpp"/>
+      <FILE id="B7yfpk" name="propertyattribute.cpp" compile="1" resource="0"
+            file="externals/jaut/src/propertyattribute.cpp"/>
+      <FILE id="OZtBUE" name="propertymap.cpp" compile="1" resource="0" file="externals/jaut/src/propertymap.cpp"/>
+      <FILE id="pX5S5X" name="sfxunit.cpp" compile="1" resource="0" file="externals/jaut/src/sfxunit.cpp"/>
+      <FILE id="b8Y1eF" name="thememanager.cpp" compile="1" resource="0"
+            file="externals/jaut/src/thememanager.cpp"/>
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
-    <LINUX_MAKE targetFolder="bin/LinuxMakefile" extraDefs="JUCE_USE_CUSTOM_PLUGIN_STANDALONE_APP=1&#10;JUCE_OPENGL_ALLOW_NON_POWER_OF_TWO_TEXTURES=1"
-                extraCompilerFlags="-g">
+    <LINUX_MAKE targetFolder="bin/LinuxMakefile" extraDefs="JUCE_USE_CUSTOM_PLUGIN_STANDALONE_APP=1&#10;JUCE_OPENGL_ALLOW_NON_POWER_OF_TWO_TEXTURES=1">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" headerPath="../../externals/modules&#10;../../externals/yaml-cpp/include&#10;../../externals/jaut/include"
                        targetName="Cossin Debug"/>
@@ -269,10 +224,13 @@
         <MODULEPATH id="ff_meters" path="externals/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
-    <VS2017 targetFolder="Builds/VisualStudio2017" extraDefs="JUCE_USE_CUSTOM_PLUGIN_STANDALONE_APP=1&#10;JUCE_OPENGL_ALLOW_NON_POWER_OF_TWO_TEXTURES=1">
+    <VS2019 targetFolder="bin/VisualStudio2019" extraDefs="JUCE_USE_CUSTOM_PLUGIN_STANDALONE_APP=1&#10;JUCE_OPENGL_ALLOW_NON_POWER_OF_TWO_TEXTURES=1">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" headerPath="../../externals/modules&#10;../../externals/yaml-cpp/include&#10;../../externals/jaut/include"
                        targetName="Cossin Debug"/>
+        <CONFIGURATION name="DebuggedRelease" headerPath="../../externals/modules&#10;../../externals/yaml-cpp/include&#10;../../externals/jaut/include"
+                       alwaysGenerateDebugSymbols="1" debugInformationFormat="ProgramDatabase"
+                       winWarningLevel="2"/>
         <CONFIGURATION isDebug="0" name="Release" headerPath="../../externals/modules&#10;../../externals/yaml-cpp/include&#10;../../externals/jaut/include"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
@@ -290,9 +248,9 @@
         <MODULEPATH id="juce_audio_formats" path="../../juce"/>
         <MODULEPATH id="juce_audio_devices" path="../../juce"/>
         <MODULEPATH id="juce_audio_basics" path="../../juce"/>
-        <MODULEPATH id="ff_meters" path="../../juce"/>
+        <MODULEPATH id="ff_meters" path="externals/modules"/>
       </MODULEPATHS>
-    </VS2017>
+    </VS2019>
   </EXPORTFORMATS>
   <MODULES>
     <MODULE id="ff_meters" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
@@ -314,6 +272,7 @@
   </MODULES>
   <LIVE_SETTINGS>
     <LINUX/>
+    <WINDOWS buildEnabled="1"/>
   </LIVE_SETTINGS>
   <JUCEOPTIONS JUCE_VST3_CAN_REPLACE_VST2="0" JUCE_STRICT_REFCOUNTEDPOINTER="1"
                JUCE_USE_FLAC="0" JUCE_USE_OGGVORBIS="0" JUCE_USE_WINDOWS_MEDIA_FORMAT="0"

@@ -47,11 +47,21 @@ inline constexpr int constHeightBody(int height) noexcept
     return height - Const_HeightHeader - Const_HeightFooter - Const_PanelMargin * 2;
 }
 
-//======================================================================================================================
 inline String getLocaleName(const jaut::Localisation &locale)
 {
     return locale.getInternalLocalisation().getLanguageName()
          + locale.getInternalLocalisation().getCountryCodes().joinIntoString("-");
+}
+
+inline void cLog(const String &message)
+{
+    Time time = Time::getCurrentTime();
+    String thread_name = MessageManager::getInstance()->isThisTheMessageThread() ? "MESSAGE " : "AUDIO ";
+
+    String prependix;
+    prependix << "[" << thread_name << time.toString(false, true) << "] ";
+
+    Logger::writeToLog(prependix + message);
 }
 }
 #pragma endregion Namespace
@@ -59,37 +69,35 @@ inline String getLocaleName(const jaut::Localisation &locale)
 #pragma region CossinAudioProcessorEditor
 CossinAudioProcessorEditor::CossinAudioProcessorEditor(CossinAudioProcessor &p, AudioProcessorValueTreeState &vts,
                                                        jaut::PropertyMap &map, FFAU::LevelMeterSource &metreSource,
-                                                       jaut::AudioProcessorRack &rack)
-    : AudioProcessorEditor(&p),
-      processor(p), sourceMetre(metreSource), initialized(false), tooltipServer(this),
+                                                       jaut::AudioProcessorRack &rack, CossinMainEditorWindow &parent,
+                                                       bool supportsOpenGl, const String &gpuInfo)
+    : processor(p), sourceMetre(metreSource), initialized(false), tooltipServer(this),
+#if COSSIN_USE_OPENGL
+      glContext(supportsOpenGl ? new OpenGLContext() : nullptr),
+#endif
       locale(sharedData->getDefaultLocale()), needsUpdate(false),
       buttonPanningLawSelection("ButtonPanningLawSelection", DrawableButton::ImageRaw),
-      buttonSettings("ButtonSettings", DrawableButton::ButtonStyle::ImageRaw), metreLevel(FFAU::LevelMeter::Horizontal),
-      optionsPanel(*this, locale), topUnitRackGui(rack, locale),
+      buttonSettings("ButtonSettings", DrawableButton::ButtonStyle::ImageRaw),
+      metreLevel(FFAU::LevelMeter::Horizontal), optionsPanel(*this, locale), topUnitRackGui(rack, locale),
       atrPanningLaw(map, "PanningLaw"), atrProcessor(map, "SelectedProcessor")
 {
     addMouseListener(this, true);
 
-#if COSSIN_USE_OPENGL
-    glContext.setRenderer(this);
-#endif
-
     JT_IS_STANDALONE
     (
-        getTopLevelComponent()->setLookAndFeel(&lookAndFeel);
+        setDefaultLookAndFeel(&lookAndFeel);
     )
     JT_STANDALONE_ELSE
     (
-        setLookAndFeel(&lookAndFeel);
-    );
+        parent.setLookAndFeel(&lookAndFeel);
+    )
 
-    initializeWindow();
     initializeComponents();
-    initializeData();
+    initializeData(parent, gpuInfo);
 
-    attLevel.reset  (new t_SliderAttachment(vts, "par_master_level",   sliderLevel));
-    attMix.reset    (new t_SliderAttachment(vts, "par_master_mix",     sliderMix));
-    attPanning.reset(new t_SliderAttachment(vts, "par_master_panning", sliderPanning));
+    attLevel.reset  (new SliderAttachment(vts, "par_master_level",   sliderLevel));
+    attMix.reset    (new SliderAttachment(vts, "par_master_mix",     sliderMix));
+    attPanning.reset(new SliderAttachment(vts, "par_master_panning", sliderPanning));
 
     sliderDragEnded(&sliderTabControl);
     startTimer(500);
@@ -97,23 +105,43 @@ CossinAudioProcessorEditor::CossinAudioProcessorEditor(CossinAudioProcessor &p, 
     initialized = true;
     resized();
 
-    logger->writeToLog("Done initializing Cossin.");
+    ::cLog("Done initializing Cossin.");
 }
 
 CossinAudioProcessorEditor::~CossinAudioProcessorEditor()
 {
 #if COSSIN_USE_OPENGL
-    glContext.detach();
-    glContext.setRenderer(nullptr);
+    if (glContext)
+    {
+        glContext->detach();
+        glContext->setRenderer(nullptr);
+    }
 #endif
+
     stopTimer();
-    setLookAndFeel(nullptr);
     sharedData->removeActionListener(this);
-    Logger::setCurrentLogger(nullptr);
+
+    JT_IS_STANDALONE
+    (
+        setDefaultLookAndFeel(nullptr);
+    )
+    JT_STANDALONE_ELSE
+    (
+        getParentComponent()->setLookAndFeel(nullptr);
+    )
+
+    JT_NDEBUGGING(if(sharedData->Configuration().getProperty("logToFile", res::Cfg_Standalone).getValue()
+                  && JUCEApplicationBase::isStandaloneApp()))
+    {
+        Logger *logger_to_delete = Logger::getCurrentLogger();
+        Logger::setCurrentLogger(nullptr);
+
+        delete logger_to_delete;
+    }
 }
 
 //======================================================================================================================
-void CossinAudioProcessorEditor::initializeData()
+void CossinAudioProcessorEditor::initializeData(CossinMainEditorWindow &parent,String gpuInfo)
 {
     if(initialized)
     {
@@ -135,30 +163,56 @@ void CossinAudioProcessorEditor::initializeData()
     options[Flag_GlMultisampling]      = gl_multisampling_enabled;
     options[Flag_GlTextureSmoothing]   = gl_texture_smoothing_enabled;
 
-    if(accelerated_by_hardware)
+    if(accelerated_by_hardware && glContext)
     {
-        glContext.setMultisamplingEnabled(gl_multisampling_enabled);
-        glContext.setTextureMagnificationFilter(static_cast<OpenGLContext::TextureMagnificationFilter>
-                                               (static_cast<int>(gl_texture_smoothing_enabled)));
-        glContext.attachTo(*this);
+        glContext->setRenderer(this);
+        glContext->setMultisamplingEnabled(gl_multisampling_enabled);
+        glContext->setTextureMagnificationFilter(static_cast<OpenGLContext::TextureMagnificationFilter>
+                                                (static_cast<int>(gl_texture_smoothing_enabled)));
+        glContext->attachTo(parent);
     }
 #endif
 
-    JT_NDEBUGGING(if(sharedData->Configuration().getProperty("logToFile", res::Cfg_Standalone).getValue()))
+    // Create logger
+    const String session_id  = session.id.toDashedString();
+    const String cpu_model   = !SystemStats::getCpuModel() .isEmpty() ? SystemStats::getCpuModel()  : "n/a";
+    const String cpu_vendor  = !SystemStats::getCpuVendor().isEmpty() ? " (" + SystemStats::getCpuVendor() + ")" : "";
+    const String memory_size = String(SystemStats::getMemorySizeInMegabytes()) + "mb";
+
+    if (!gpuInfo.containsNonWhitespaceChars())
     {
-        logger.reset(createLoggerFromSession(sharedData->AppData().getDir("Logs")
-                                                                  .getFile("session-" + session.id.toDashedString()
-                                                                           + ".log"),
-                                             session, res::App_Name, res::App_Version));
+        gpuInfo = "Unknown";
     }
-    JT_NDEBUGGING(else
+
+    String message;
+    message << "**********************************************************" << newLine
+            << "                        --Program--                       " << newLine
+            << "App:        " << res::App_Name                              << newLine
+            << "Version:    " << res::App_Version                           << newLine
+            << "Session-ID: " << session_id                                 << newLine
+            << "**********************************************************" << newLine
+            << "                        --Machine--                       " << newLine
+            << "System:     " << SystemStats::getOperatingSystemName()      << newLine
+            << "Memory:     " << memory_size                                << newLine
+            << "CPU:        " << cpu_model << cpu_vendor                    << newLine
+            << "Graphics:   " << gpuInfo                                    << newLine
+            << "**********************************************************" << newLine;
+
+    JT_NDEBUGGING(if(sharedData->Configuration().getProperty("logToFile", res::Cfg_Standalone).getValue()
+                  && JUCEApplication::isStandaloneApp()))
     {
-        logger.reset(createDummyLogger());
-    })
+        File file = sharedData->AppData().getDir("logs").getFile("session-" + session_id + ".log");
 
-    Logger::setCurrentLogger(logger.get());
-    logger->writeToLog("Initializing Cossin user interface...");
+        if (file.getParentDirectory().exists())
+        {
+            Logger::setCurrentLogger(new FileLogger(file, ""));
+        }
+    }
 
+    Logger::writeToLog(message);
+    ::cLog("Initializing Cossin user interface...");
+
+    // Load all data elements
     reloadConfig(sharedData->Configuration());
     reloadLocale(sharedData->Localisation());
     reloadTheme (sharedData->ThemeManager().getCurrentTheme());
@@ -240,40 +294,6 @@ void CossinAudioProcessorEditor::initializeComponents()
     addChildComponent(topUnitRackGui);
 }
 
-void CossinAudioProcessorEditor::initializeWindow()
-{
-    int window_width  = Const_WindowDefaultWidth;
-    int window_height = Const_WindowDefaultHeight;
-
-    JT_IS_STANDALONE({})
-    JT_STANDALONE_ELSE
-    (
-        window_width  = processor.getWindowSize().getWidth();
-        window_height = processor.getWindowSize().getHeight();
-    )
-
-    int window_max_area      = 0;
-    int window_max_width     = 0;
-    int window_max_maxheight = 0;
-
-    for (auto display : Desktop::getInstance().getDisplays().displays)
-    {
-        const Rectangle<int> user_area = display.userArea;
-        const int area                 = user_area.getWidth() * user_area.getHeight();
-
-        if (area >= window_max_area)
-        {
-            window_max_area      = area;
-            window_max_width     = user_area.getWidth();
-            window_max_maxheight = user_area.getHeight();
-        }
-    }
-
-    setResizable(true, !canSelfResize());
-    setResizeLimits(Const_WindowDefaultWidth, Const_WindowDefaultHeight, window_max_width, window_max_maxheight);
-    setSize(window_width, window_height);
-}
-
 //======================================================================================================================
 void CossinAudioProcessorEditor::paint(Graphics &g)
 {
@@ -336,11 +356,6 @@ void CossinAudioProcessorEditor::resized()
 }
 
 //======================================================================================================================
-constexpr bool CossinAudioProcessorEditor::canSelfResize() noexcept
-{
-    return processor.wrapperType == AudioProcessor::WrapperType::wrapperType_VST3;
-}
-
 void CossinAudioProcessorEditor::paintBasicInterface(Graphics &g) const
 {
     const LookAndFeel &lf = getLookAndFeel();
@@ -390,8 +405,7 @@ void CossinAudioProcessorEditor::paintBasicInterface(Graphics &g) const
 //======================================================================================================================
 void CossinAudioProcessorEditor::reloadConfig(const jaut::Config &config)
 {
-    logger->writeToLog("==========================================================");
-    logger->writeToLog("Reloading config...");
+    ::cLog("Reloading config...");
 
     const int default_panning_law  = config.getProperty("panning", res::Cfg_Defaults).getValue();
     const int default_processor    = config.getProperty("processor", res::Cfg_Defaults).getValue();
@@ -426,19 +440,18 @@ void CossinAudioProcessorEditor::reloadConfig(const jaut::Config &config)
         listener.reloadConfig(config);
     });
 
-    logger->writeToLog("Config successfully reloaded.");
+    ::cLog("Config successfully reloaded.");
 }
 
 void CossinAudioProcessorEditor::reloadLocale(const jaut::Localisation &locale)
 {
-    logger->writeToLog("==========================================================");
     String locale_name = locale.getLanguageFile().getFullPathName().toLowerCase();
     locale_name        = locale_name.isEmpty() ? "default" : locale_name;
 
     if(lastLocale != locale_name)
     {
         lastLocale = locale_name;
-        logger->writeToLog("Loading localisation '" + locale.getLanguageFile().getFileNameWithoutExtension() + "'...");
+        ::cLog("Loading localisation '" + locale.getLanguageFile().getFileNameWithoutExtension() + "'...");
 
         this->locale.setCurrentLanguage(locale);
 
@@ -448,18 +461,17 @@ void CossinAudioProcessorEditor::reloadLocale(const jaut::Localisation &locale)
         });
     }
 
-    logger->writeToLog("Language successfully set.");
+    ::cLog("Language successfully set.");
 }
 
 void CossinAudioProcessorEditor::reloadTheme(const jaut::ThemePointer &theme)
 {
-    logger->writeToLog("==========================================================");
     const String theme_id = theme.getId();
 
     if(lastTheme != theme_id)
     {
         lastTheme = theme_id;
-        logger->writeToLog("Loading resources of theme pack '" + theme->getThemeMeta()->getName() + "'...");
+        ::cLog("Loading resources of theme pack '" + theme->getThemeMeta()->getName() + "'...");
 
         imgBackground  = theme->getImage(res::Png_Cont_Back);
         imgHeader      = theme->getImage(res::Png_Head_Cover);
@@ -478,7 +490,7 @@ void CossinAudioProcessorEditor::reloadTheme(const jaut::ThemePointer &theme)
         sendLookAndFeelChange();
     }
 
-    logger->writeToLog("Resources successfully reloaded.");
+    ::cLog("Resources successfully reloaded.");
 }
 
 //======================================================================================================================
@@ -506,6 +518,13 @@ const PluginSession &CossinAudioProcessorEditor::getSession() const noexcept
 {
     return session;
 }
+
+#if COSSIN_USE_OPENGL
+bool CossinAudioProcessorEditor::isOpenGLSupported() const noexcept
+{
+    return glContext != nullptr;
+}
+#endif
 
 //======================================================================================================================
 void CossinAudioProcessorEditor::addReloadListener(ReloadListener *listener)
@@ -709,7 +728,6 @@ void CossinAudioProcessorEditor::reloadAllData()
     }
 
     repaint();
-
     MouseCursor::hideWaitCursor();
 }
 
@@ -725,3 +743,115 @@ void CossinAudioProcessorEditor::openGLContextClosing()
 {}
 #endif
 #pragma endregion CossinAudioProcessorEditor
+
+//======================================================================================================================
+#pragma region CossinMainEditorWindow
+CossinMainEditorWindow::CossinMainEditorWindow(CossinAudioProcessor &processor, juce::AudioProcessorValueTreeState &vts,
+                                               jaut::PropertyMap &properties, FFAU::LevelMeterSource &metreSource,
+                                               jaut::AudioProcessorRack &processorRack)
+    : AudioProcessorEditor(processor),
+      processor(processor), vts(vts), properties(properties), metreSource(metreSource), processorRack(processorRack)
+{
+    initializeWindow();
+
+#if COSSIN_USE_OPENGL
+    testContext.setRenderer(this);
+    testContext.attachTo(*this);
+#else
+    handleAsyncUpdate();
+#endif
+}
+
+CossinMainEditorWindow::~CossinMainEditorWindow()
+{}
+
+//======================================================================================================================
+void CossinMainEditorWindow::resized()
+{
+#if COSSIN_USE_OPENGL
+    if (initialized)
+#else
+    if(editor)
+#endif
+    {
+        editor->setBounds(0, 0, getWidth(), getHeight());
+    }
+}
+
+//======================================================================================================================
+void CossinMainEditorWindow::initializeWindow()
+{
+    int window_width  = Const_WindowDefaultWidth;
+    int window_height = Const_WindowDefaultHeight;
+
+    JT_IS_STANDALONE({})
+    JT_STANDALONE_ELSE
+    (
+        window_width  = processor.getWindowSize().getWidth();
+        window_height = processor.getWindowSize().getHeight();
+    )
+
+    int window_max_area   = 0;
+    int window_max_width  = 0;
+    int window_max_height = 0;
+
+    for (auto display : Desktop::getInstance().getDisplays().displays)
+    {
+        const Rectangle<int> user_area = display.userArea;
+        const int area = user_area.getWidth() * user_area.getHeight();
+
+        if (area >= window_max_area)
+        {
+            window_max_area   = area;
+            window_max_width  = user_area.getWidth();
+            window_max_height = user_area.getHeight();
+        }
+    }
+
+    setResizable(true, processor.wrapperType != AudioProcessor::WrapperType::wrapperType_VST3);
+    setResizeLimits(Const_WindowDefaultWidth, Const_WindowDefaultHeight, window_max_width, window_max_height);
+    setSize(window_width, window_height);
+}
+
+#if COSSIN_USE_OPENGL
+//======================================================================================================================
+void CossinMainEditorWindow::newOpenGLContextCreated()
+{
+    graphicsCardDetails = String((char*) glGetString(GL_RENDERER));
+    isSupported.store(testContext.extensions.glActiveTexture != nullptr);
+    triggerAsyncUpdate();
+}
+#endif
+
+//======================================================================================================================
+void CossinMainEditorWindow::handleAsyncUpdate()
+{
+    bool is_supported = false;
+
+#if COSSIN_USE_OPENGL
+    if (initialized)
+    {
+        return;
+    }
+
+    is_supported = isSupported.load();
+    testContext.detach();
+    testContext.setRenderer(nullptr);
+#endif
+
+    String cardInfo = "n/a";
+
+#if COSSIN_USE_OPENGL
+    cardInfo = graphicsCardDetails;
+#endif
+
+    editor = std::make_unique<CossinAudioProcessorEditor>(processor, vts, properties, metreSource, processorRack, *this,
+                                                          is_supported, cardInfo);
+    addAndMakeVisible(editor.get());
+
+#if COSSIN_USE_OPENGL
+    initialized = true;
+#endif
+    resized();
+}
+#pragma endregion CossinMainEditorWindow

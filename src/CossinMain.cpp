@@ -36,7 +36,7 @@ namespace
     static constexpr char const *Id_Cache = "73783927-4465-43c1-8612-0f87be2b37ce";
 
     inline int yncAlert(const jaut::Localisation &locale, const String& title, const String& message, 
-                        std::function<void(bool)> callback = 0,
+                        std::function<void(bool)> callback = nullptr,
                         AlertWindow::AlertIconType icon    = AlertWindow::WarningIcon) noexcept
     {
         const int result = AlertWindow::showYesNoCancelBox(icon, locale.translate(title), locale.translate(message),
@@ -430,11 +430,9 @@ bool CossinPluginWrapper::reloadAudioDeviceState(bool enableAudioInput, const St
 
     if(!result.isEmpty())
     {
-        if(Cossin *cossin = Cossin::getInstance())
-        {
-            Logger::getCurrentLogger()->writeToLog("An exception occurred while trying to initialize the main"
-                                                   "audio device:\n" + result);
-        }
+
+        Logger::getCurrentLogger()->writeToLog("An exception occurred while trying to initialize the main"
+                                               "audio device:\n" + result);
         
         return false;
     }
@@ -842,8 +840,6 @@ CossinPluginWindow::MainContentComponent::MainContentComponent(CossinPluginWindo
       editor(owner.getAudioProcessor()->hasEditor() ? owner.getAudioProcessor()->createEditorIfNeeded()
                                                     : new GenericAudioProcessorEditor(*owner.getAudioProcessor()))
 {
-    Value &inputMutedValue = owner.pluginHolder->getMuteInputValue();
-
     if (editor != nullptr)
     {
         editor->addComponentListener(this);

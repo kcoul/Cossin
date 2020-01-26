@@ -409,6 +409,9 @@ void PluginStyle::reset(const jaut::ThemePointer &theme) noexcept
     setColour(TextEditor::focusedOutlineColourId, colour_component_foreground);
     setColour(TextEditor::outlineColourId,        Colours::transparentBlack);
 
+    // juce::ToggleButton
+    setColour(ToggleButton::textColourId,         colour_font);
+
     // FFAU::LevelMeter
     setColour(FFAU::LevelMeter::lmTextColour,             colour_font);
     setColour(FFAU::LevelMeter::lmTextDeactiveColour,     colour_container_foreground);

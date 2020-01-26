@@ -97,8 +97,8 @@ private:
     Rectangle<int> windowBounds;
 
     //==================================================================================================================
-    void   initialize();
-    void   makeParameters();
+    void initialize();
+    void makeParameters();
     float calculatePanningGain(int) const noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CossinAudioProcessor)
