@@ -4,6 +4,3 @@
 [submodule "externals/jaut"]
 	path = externals/jaut
 	url = https://github.com/ElandaSunshine/jaut.git
-[submodule "externals/modules/ff_meters"]
-	path = externals/modules/ff_meters
-	url = https://github.com/ffAudio/ff_meters.git
