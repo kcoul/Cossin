@@ -30,7 +30,6 @@
 #include "PluginStyle.h"
 #include "ReloadListener.h"
 #include "Resources.h"
-#include "TopUnitRackGui.h"
 
 #include <jaut/localisation.h>
 #include <jaut/propertyattribute.h>
@@ -181,7 +180,6 @@ private:
     Slider sliderMix;
     Slider sliderPanning;
     Slider sliderTabControl;
-    TopUnitRackGui topUnitRackGui;
 
     // Processor data
     jaut::PropertyAttribute atrPanningLaw;

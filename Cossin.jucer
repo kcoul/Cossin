@@ -87,10 +87,6 @@
       <FILE id="bx1VgI" name="SharedData.h" compile="0" resource="0" file="src/SharedData.h"/>
       <FILE id="QNAuSb" name="ThemeFolder.cpp" compile="1" resource="0" file="src/ThemeFolder.cpp"/>
       <FILE id="HCyvBi" name="ThemeFolder.h" compile="0" resource="0" file="src/ThemeFolder.h"/>
-      <FILE id="cumkkZ" name="TopUnitRackGui.cpp" compile="1" resource="0"
-            file="src/TopUnitRackGui.cpp"/>
-      <FILE id="WWA6ea" name="TopUnitRackGui.h" compile="0" resource="0"
-            file="src/TopUnitRackGui.h"/>
     </GROUP>
     <GROUP id="{D41DFCDD-0C88-4698-54ED-58502DE93337}" name="yaml-cpp">
       <GROUP id="{462567A6-D3A6-C646-3C3E-472650D57C61}" name="src">
@@ -201,10 +197,10 @@
   <EXPORTFORMATS>
     <LINUX_MAKE targetFolder="bin/LinuxMakefile" extraDefs="JUCE_USE_CUSTOM_PLUGIN_STANDALONE_APP=1&#10;JUCE_OPENGL_ALLOW_NON_POWER_OF_TWO_TEXTURES=1">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" headerPath="../../externals/modules&#10;../../externals/yaml-cpp/include&#10;../../externals/jaut/include"
+        <CONFIGURATION isDebug="1" name="Debug" headerPath="../../externals/yaml-cpp/include&#10;../../externals/jaut/include"
                        targetName="Cossin Debug"/>
-        <CONFIGURATION isDebug="0" name="Release" headerPath="../../externals/modules&#10;../../externals/yaml-cpp/include&#10;../../externals/jaut/include"
-                       linkTimeOptimisation="1" recommendedWarnings="GCC"/>
+        <CONFIGURATION isDebug="0" name="Release" headerPath="../../externals/yaml-cpp/include&#10;../../externals/jaut/include"
+                       linkTimeOptimisation="1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_audio_basics" path="../../../JUCE/modules"/>
@@ -251,6 +247,25 @@
         <MODULEPATH id="ff_meters" path="externals/modules"/>
       </MODULEPATHS>
     </VS2019>
+    <CLION targetFolder="Builds/CLion">
+      <MODULEPATHS>
+        <MODULEPATH id="juce_opengl" path="../../juce"/>
+        <MODULEPATH id="juce_gui_extra" path="../../juce"/>
+        <MODULEPATH id="juce_gui_basics" path="../../juce"/>
+        <MODULEPATH id="juce_graphics" path="../../juce"/>
+        <MODULEPATH id="juce_events" path="../../juce"/>
+        <MODULEPATH id="juce_data_structures" path="../../juce"/>
+        <MODULEPATH id="juce_cryptography" path="../../juce"/>
+        <MODULEPATH id="juce_core" path="../../juce"/>
+        <MODULEPATH id="juce_audio_utils" path="../../juce"/>
+        <MODULEPATH id="juce_audio_processors" path="../../juce"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../juce"/>
+        <MODULEPATH id="juce_audio_formats" path="../../juce"/>
+        <MODULEPATH id="juce_audio_devices" path="../../juce"/>
+        <MODULEPATH id="juce_audio_basics" path="../../juce"/>
+        <MODULEPATH id="ff_meters" path="../../juce"/>
+      </MODULEPATHS>
+    </CLION>
   </EXPORTFORMATS>
   <MODULES>
     <MODULE id="ff_meters" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
@@ -276,5 +291,5 @@
   </LIVE_SETTINGS>
   <JUCEOPTIONS JUCE_VST3_CAN_REPLACE_VST2="0" JUCE_STRICT_REFCOUNTEDPOINTER="1"
                JUCE_USE_FLAC="0" JUCE_USE_OGGVORBIS="0" JUCE_USE_WINDOWS_MEDIA_FORMAT="0"
-               JUCE_JACK="1" JUCE_WEB_BROWSER="0"/>
+               JUCE_JACK="1" JUCE_WEB_BROWSER="0" FF_AUDIO_ALLOW_ALLOCATIONS_IN_MEASURE_BLOCK="0"/>
 </JUCERPROJECT>

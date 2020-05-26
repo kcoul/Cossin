@@ -78,7 +78,7 @@ CossinAudioProcessorEditor::CossinAudioProcessorEditor(CossinAudioProcessor &p, 
       locale(sharedData->getDefaultLocale()), needsUpdate(false),
       buttonPanningLawSelection("ButtonPanningLawSelection", DrawableButton::ImageRaw),
       buttonSettings("ButtonSettings", DrawableButton::ButtonStyle::ImageRaw),
-      metreLevel(FFAU::LevelMeter::Horizontal), optionsPanel(*this, locale), topUnitRackGui(rack, locale),
+      metreLevel(FFAU::LevelMeter::Horizontal), optionsPanel(*this, locale),
       atrPanningLaw(map, "PanningLaw"), atrProcessor(map, "SelectedProcessor")
 {
     addMouseListener(this, true);
@@ -289,9 +289,6 @@ void CossinAudioProcessorEditor::initializeComponents()
     optionsPanel.setCloseButtonCallback([this](Button *button) { buttonClicked(button); });
     addReloadListener(&optionsPanel);
     addChildComponent(optionsPanel);
-    
-    addReloadListener(&topUnitRackGui);
-    addChildComponent(topUnitRackGui);
 }
 
 //======================================================================================================================
@@ -317,7 +314,7 @@ void CossinAudioProcessorEditor::resized()
     const int header_tab_setting_w = 34;
     const int header_tab_setting_x = header.getRight() - header_tab_setting_w;
     const int header_process_w     = 102;
-    const int header_tab_process_w = topUnitRackGui.getProcessorCount() * header_process_w;
+    const int header_tab_process_w = 2; //TODO topUnitRackGui.getProcessorCount() * header_process_w;
     const int header_tab_process_x = header_tab_setting_x - header_tab_process_w;
 
     sliderTabControl.setBounds(header_tab_process_x, header.getY(), header_tab_process_w, header.getHeight());
@@ -359,7 +356,7 @@ void CossinAudioProcessorEditor::resized()
 void CossinAudioProcessorEditor::paintBasicInterface(Graphics &g) const
 {
     const LookAndFeel &lf = getLookAndFeel();
-
+    
     const Rectangle header(0, 0, getWidth(), ::Const_HeightHeader);
     const Rectangle body(0, ::Const_HeightHeader + ::Const_PanelMargin, getWidth(), ::constHeightBody(getHeight()));
     const Rectangle footer(0, getHeight() - ::Const_HeightFooter, getWidth(), ::Const_HeightFooter);
@@ -616,7 +613,7 @@ void CossinAudioProcessorEditor::sliderValueChanged(Slider *slider) {}
 
 void CossinAudioProcessorEditor::sliderDragEnded(Slider *slider)
 {
-    if (slider == &sliderTabControl)
+    /*if (slider == &sliderTabControl)
     {
         if(optionsPanel.isShowing())
         {
@@ -627,7 +624,7 @@ void CossinAudioProcessorEditor::sliderDragEnded(Slider *slider)
         const int processor_index = jmin(JT_FIX(slider->getValue() / (1.0f / processor_count)), processor_count - 1);
 
         topUnitRackGui.setGui(processor_index, ModifierKeys::getCurrentModifiers().isCtrlDown());
-    }
+    }*/
 }
 
 //======================================================================================================================
@@ -685,7 +682,7 @@ void CossinAudioProcessorEditor::drawLinearSlider(Graphics &g, int width, int he
     if (&slider == &sliderTabControl)
     {
         const Rectangle dest(slider.getLocalBounds());
-        const int processor_count = topUnitRackGui.getProcessorCount();
+        const int processor_count = 2; //topUnitRackGui.getProcessorCount();
         const int processor_index = jmin(JT_FIX(sliderPos / (1.0f / processor_count)), processor_count - 1);
         const Image image_tabs    = imgTabControl.getClippedImage(dest.withTop(dest.getHeight() * processor_index));
 

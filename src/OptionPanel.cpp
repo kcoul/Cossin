@@ -331,7 +331,7 @@ void OptionPanel::paintListBoxItem(int rowNumber, Graphics &g, int width, int he
         g.fillRect(0, 0, width, height);
         shadow.drawForRectangle(g, {0, 0, width, height});
     }
-
+    
     g.setFont(font);
     g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourFontId));
     g.drawText(locale.translate("options.category." + category_name), 10, 0, width - 10, height,

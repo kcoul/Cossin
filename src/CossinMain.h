@@ -28,11 +28,7 @@
 #include "JuceHeader.h"
 #include "PluginStyle.h"
 
-#if JUCE_MODULE_AVAILABLE_juce_audio_plugin_client
-extern juce::AudioProcessor *JUCE_CALLTYPE createPluginFilterOfType(juce::AudioProcessor::WrapperType type);
-#else
-extern juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter();
-#endif
+#include <juce_audio_plugin_client/utility/juce_CreatePluginFilter.h>
 
 namespace jaut
 {
