@@ -28,8 +28,16 @@
 #include "JuceHeader.h"
 #include "PluginStyle.h"
 
-#include <juce_audio_plugin_client/utility/juce_CreatePluginFilter.h>
-
+#if JUCE_MAJOR_VERSION >= 6
+#    include <juce_audio_plugin_client/utility/juce_CreatePluginFilter.h>
+#else
+#    if JUCE_MODULE_AVAILABLE_juce_audio_plugin_client
+         extern juce::AudioProcessor *JUCE_CALLTYPE createPluginFilterOfType(juce::AudioProcessor::WrapperType type);
+#    else
+         extern juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter();
+#    endif
+#endif
+         
 namespace jaut
 {
     class Localisation;
