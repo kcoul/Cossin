@@ -25,31 +25,30 @@
 
 #pragma once
 
-#include "JuceHeader.h"
 #include "OptionCategories.h"
 
-class OptionPanel final : public Button::Listener, public Component, public ListBoxModel, public ReloadListener,
-                          private LookAndFeel_V4
+class OptionPanel final : public juce::Button::Listener, public juce::Component, public juce::ListBoxModel,
+                          public ReloadListener, private juce::LookAndFeel_V4
 {
 public:
-    std::function<bool(const String&)> onIntercept;
+    std::function<bool(const juce::String&)> onIntercept;
 
     OptionPanel(CossinAudioProcessorEditor&, jaut::Localisation&);
     ~OptionPanel();
 
     //==================================================================================================================
-    void paint(Graphics&) override;
+    void paint(juce::Graphics&) override;
     void resized() override;
 
     //==================================================================================================================
-    void addOptionCategory(const String&, OptionCategory&);
+    void addOptionCategory(const juce::String&, OptionCategory&);
 
     //==================================================================================================================
     void show();
     void hide();
     
     //==================================================================================================================
-    void setCloseButtonCallback(std::function<void(Button*)>) noexcept;
+    void setCloseButtonCallback(std::function<void(juce::Button*)>) noexcept;
 
 private:
     class OptionsContainer final : public Component
@@ -78,46 +77,46 @@ private:
     //==================================================================================================================
     // General
     CossinAudioProcessorEditor &editor;
-    std::function<void(Button*)> closeCallback;
+    std::function<void(juce::Button*)> closeCallback;
     int lastSelectedRow;
-    Array<String> categories;
+    juce::Array<juce::String> categories;
 
     // Components
-    TextButton bttClose;
+    juce::TextButton bttClose;
     OptionsContainer optionContainer;
     OptionPanelGeneral optionsGeneral;
     OptionPanelThemes optionsThemes;
     OptionPanelPerformance optionsPerformance;
     //OptionPanelAccount optionsAccount;
     std::unique_ptr<OptionPanelStandalone> optionsStandalone;
-    ListBox optionTabs;
-    HyperlinkButton linkDiscord;
-    HyperlinkButton linkTumblr;
-    HyperlinkButton linkTwitter;
-    HyperlinkButton linkWebsite;
+    juce::ListBox optionTabs;
+    juce::HyperlinkButton linkDiscord;
+    juce::HyperlinkButton linkTumblr;
+    juce::HyperlinkButton linkTwitter;
+    juce::HyperlinkButton linkWebsite;
 
     // Shared Data
     jaut::Localisation &locale;
 
     // Paint data
-    Image imgCossinAbout;
-    Image imgSocialDiscord;
-    Image imgSocialTumblr;
-    Image imgSocialTwitter;
-    Image imgSocialWebsite;
-    Font font;
+    juce::Image imgCossinAbout;
+    juce::Image imgSocialDiscord;
+    juce::Image imgSocialTumblr;
+    juce::Image imgSocialTwitter;
+    juce::Image imgSocialWebsite;
+    juce::Font font;
 
     //==================================================================================================================
-    void buttonClicked(Button*) override;
+    void buttonClicked(juce::Button*) override;
 
     //==================================================================================================================
-    void drawButtonBackground(Graphics&, Button&, const Colour&, bool, bool) override {}
-    void drawButtonText(Graphics&, TextButton&, bool, bool) override;
+    void drawButtonBackground(juce::Graphics&, juce::Button&, const juce::Colour&, bool, bool) override {}
+    void drawButtonText(juce::Graphics&, juce::TextButton&, bool, bool) override;
 
     //==================================================================================================================
     int getNumRows() override;
-    void paintListBoxItem(int, Graphics&, int, int, bool) override;
-    void listBoxItemClicked(int, const MouseEvent&) override;
+    void paintListBoxItem(int, juce::Graphics&, int, int, bool) override;
+    void listBoxItemClicked(int, const juce::MouseEvent&) override;
     
     //==================================================================================================================
     void reloadTheme(const jaut::ThemePointer&) override;

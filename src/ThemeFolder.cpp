@@ -16,7 +16,7 @@
     Copyright (c) 2019 ElandaSunshine
     ===============================================================
     
-    @author Elanda (elanda@elandasunshine.xyz)
+    @author Elanda
     @file   ThemeFolder.cpp
     @date   05, October 2019
     
@@ -24,74 +24,69 @@
  */
 
 #include "ThemeFolder.h"
-#include <jaut/appdata.h>
-#include <jaut/metadatahelper.h>
 
-//==============================================================================
-//============================  ThemeMetaReader  ===============================
-//==============================================================================
-
-jaut::IMetadata *ThemeMetaReader::parseMetadata(InputStream &stream)
+//**********************************************************************************************************************
+// region ThemeMetaReader
+//======================================================================================================================
+jaut::IMetadata* ThemeMetaReader::parseMetadata(juce::InputStream &stream)
 {
     return new ThemeMeta(jaut::MetadataHelper::readMetaToNamedValueSet(stream));
 }
-
-
-
-//==============================================================================
-//===============================  ThemeMeta  ==================================
-//==============================================================================
-
-ThemeMeta::ThemeMeta(const NamedValueSet &metaData) noexcept
-    : metaData(metaData)
+//======================================================================================================================
+// endregion ThemeMetaReader
+//**********************************************************************************************************************
+// region ThemeMeta
+//======================================================================================================================
+ThemeMeta::ThemeMeta(juce::NamedValueSet metaData) noexcept
+    : metaData(std::move(metaData))
 {}
 
-//=====================================================================================================================
-const String ThemeMeta::getName() const
+//======================================================================================================================
+juce::String ThemeMeta::getName() const
 {
     return metaData["name"];
 }
 
-const String ThemeMeta::getAuthor() const
+juce::String ThemeMeta::getAuthor() const
 {
     return metaData["author"];
 }
 
-const StringArray ThemeMeta::getAuthors() const
+juce::StringArray ThemeMeta::getAuthors() const
 {
-    var array_authors = metaData["authors"];
+    juce::var array_authors = metaData["authors"];
     return *array_authors.getArray();
 }
 
-const String ThemeMeta::getDescription() const
+juce::String ThemeMeta::getDescription() const
 {
     return metaData["description"];
 }
 
-const std::pair<String, String> ThemeMeta::getLicense() const
+ThemeMeta::License ThemeMeta::getLicense() const
 {
     auto objects = metaData["license"];
     return std::make_pair(objects[0].toString(), objects[1].toString());
 }
 
-const String ThemeMeta::getVersion() const
+jaut::Version ThemeMeta::getVersion() const
 {
-    return metaData["version"];
+    return jaut::Version(metaData["version"]);
 }
 
-const String ThemeMeta::getWebsite() const
+juce::String ThemeMeta::getWebsite() const
 {
     return metaData["website"];
 }
 
-const StringArray ThemeMeta::getExcludedImages() const
+juce::StringArray ThemeMeta::getExcludedImages() const
 {
-    return StringArray(static_cast<Array<String>>(metaData["excludedImages"]));
+    return juce::StringArray(static_cast<juce::Array<juce::String>>(metaData["excludedImages"]));
 }
 
-const StringArray ThemeMeta::getScreenshots() const
+juce::StringArray ThemeMeta::getScreenshots() const
 {
-    return StringArray(metaData["screenshots"]);
+    return juce::StringArray(metaData["screenshots"]);
 }
 
 
@@ -100,41 +95,30 @@ const StringArray ThemeMeta::getScreenshots() const
 //============================  ThemeDefinition ================================
 //==============================================================================
 
-ThemeDefinition::ThemeDefinition(ThemeMeta *metaData) noexcept
+ThemeDefinition::ThemeDefinition(jaut::IMetadata *metaData) noexcept
     : meta(metaData)
 {
-    MemoryInputStream mis(Assets::colourmap_json, Assets::colourmap_jsonSize, false);
-    var json;
-
-    if (mis.isExhausted())
+    juce::MemoryInputStream input_stream(Assets::colourmap_json, Assets::colourmap_jsonSize, false);
+    juce::var json;
+    
+    if (!input_stream.isExhausted() && juce::JSON::parse(input_stream.readEntireStreamAsString(), json).wasOk())
     {
-        return;
-    }
+        juce::DynamicObject *const json_root = json.getDynamicObject();
 
-    if (JSON::parse(mis.readEntireStreamAsString(), json).wasOk())
-    {
-        DynamicObject *jsonroot = json.getDynamicObject();
-
-        if (!jsonroot)
+        if (!json_root)
         {
             return;
         }
 
-        for (auto &[key, coords] : jsonroot->getProperties())
+        for (auto &[key, coords] : json_root->getProperties())
         {
-            StringArray colorCoords;
-            colorCoords.addTokens(coords.toString(), ":", "\"");
-            colours.emplace(key.toString().trim().toLowerCase(), std::make_pair(colorCoords[0].getIntValue(),
-                                                                                colorCoords[1].getIntValue()));
+            juce::StringArray color_coords;
+            color_coords.addTokens(coords.toString(), ":", "\"");
+            colours.emplace(key.toString().trim().toLowerCase(), std::make_pair(color_coords[0].getIntValue(),
+                                                                                color_coords[1].getIntValue()));
         }
     }
 }
-
-ThemeDefinition::ThemeDefinition(const ThemeDefinition &other)
-    : meta(new ThemeMeta(*other.meta)),
-      colours(other.colours),
-      cachedFont(other.cachedFont)
-{}
 
 ThemeDefinition::ThemeDefinition(ThemeDefinition &&other)
     : meta(std::move(other.meta)),
@@ -145,14 +129,6 @@ ThemeDefinition::ThemeDefinition(ThemeDefinition &&other)
 }
 
 //=====================================================================================================================
-ThemeDefinition &ThemeDefinition::operator=(const ThemeDefinition &other)
-{
-    ThemeDefinition temp(other);
-    swap(*this, temp);
-
-    return *this;
-}
-
 ThemeDefinition &ThemeDefinition::operator=(ThemeDefinition &&other)
 {
     swap(*this, other);
@@ -162,33 +138,33 @@ ThemeDefinition &ThemeDefinition::operator=(ThemeDefinition &&other)
 }
 
 //=====================================================================================================================
-const String ThemeDefinition::getThemeRootPath() const
+juce::String ThemeDefinition::getThemeRootPath() const
 {
     return "";
 }
 
-Image ThemeDefinition::getThemeThumbnail() const
+juce::Image ThemeDefinition::getThemeThumbnail() const
 {
-    return ImageCache::getFromMemory(Assets::theme_png, Assets::theme_pngSize);
+    return juce::ImageCache::getFromMemory(Assets::theme_png, Assets::theme_pngSize);
 }
 
-File ThemeDefinition::getFile(const String&) const
+juce::File ThemeDefinition::getFile(const juce::String&) const
 {
-    return File();
+    return {};
 }
 
-Image ThemeDefinition::getImage(const String &imageName) const
+juce::Image ThemeDefinition::getImage(const juce::String &imageName) const
 {
-    int imgSize = 0;
-    String name = imageName.removeCharacters("-") + "_" + getImageExtension();
-    const char *imgData = Assets::getNamedResource(name.toRawUTF8(), imgSize);
-    Image img = ImageCache::getFromMemory(imgData, imgSize);
+    int imgSize             = 0;
+    const juce::String name = imageName.removeCharacters("-") + "_" + getImageExtension();
+    const char *imgData     = Assets::getNamedResource(name.toRawUTF8(), imgSize);
+    juce::Image img         = juce::ImageCache::getFromMemory(imgData, imgSize);
 
     if (img.isNull() || !img.isValid())
     {
         img = getMissingImage();
     }
-
+    
     return img;
 }
 

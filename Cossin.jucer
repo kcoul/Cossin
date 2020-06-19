@@ -34,13 +34,6 @@
       <FILE id="rYMG9w" name="png-022.png" compile="0" resource="1" file="src/assets/png-022.png"/>
       <FILE id="PYEOpq" name="png-023.png" compile="0" resource="1" file="src/assets/png-023.png"/>
       <FILE id="jICrka" name="png-024.png" compile="0" resource="1" file="src/assets/png-024.png"/>
-      <FILE id="sTeExF" name="png-050.png" compile="0" resource="1" file="src/assets/png-050.png"/>
-      <FILE id="xVvT06" name="screenshot-000.png" compile="0" resource="1"
-            file="src/assets/screenshot-000.png"/>
-      <FILE id="wJomAk" name="screenshot-001.png" compile="0" resource="1"
-            file="src/assets/screenshot-001.png"/>
-      <FILE id="ZGLmFa" name="screenshot-002.png" compile="0" resource="1"
-            file="src/assets/screenshot-002.png"/>
       <FILE id="foWraN" name="social_discord.png" compile="0" resource="1"
             file="src/assets/social_discord.png"/>
       <FILE id="tFNkxB" name="social_tumblr.png" compile="0" resource="1"

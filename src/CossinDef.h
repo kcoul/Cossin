@@ -25,6 +25,8 @@
 
 #pragma once
 
+#include <juce_events/juce_events.h>
+
 #if JUCE_OPENGL && !defined(COSSIN_USE_OPENGL)
     #define COSSIN_USE_OPENGL 1
 #endif
@@ -62,7 +64,7 @@
  *  @param x The value which should be expanded if it's run as standalone (doesn't do anything if the default
  *            standalone filter is defined)
  */
-    #define COSSIN_IS_STANDALONE(x) if(JUCEApplicationBase::isStandaloneApp()) {x}
+    #define COSSIN_IS_STANDALONE(x) if(juce::JUCEApplicationBase::isStandaloneApp()) {x}
 
 /**
  *  This comes in handy when messing with custom standalone windows and plugin versions.

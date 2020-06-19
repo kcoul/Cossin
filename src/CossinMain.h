@@ -16,7 +16,7 @@
     Copyright (c) 2019 ElandaSunshine
     ===============================================================
     
-    @author Elanda (elanda@elandasunshine.xyz)
+    @author Elanda
     @file   CossinMain.h
     @date   20, October 2019
     
@@ -25,30 +25,24 @@
 
 #pragma once
 
-#include "JuceHeader.h"
+#include <juce_audio_utils/juce_audio_utils.h>
+
 #include "PluginStyle.h"
 
 #if JUCE_MAJOR_VERSION >= 6
-#    include <juce_audio_plugin_client/utility/juce_CreatePluginFilter.h>
+#   include <juce_audio_plugin_client/utility/juce_CreatePluginFilter.h>
 #else
-#    if JUCE_MODULE_AVAILABLE_juce_audio_plugin_client
-         extern juce::AudioProcessor *JUCE_CALLTYPE createPluginFilterOfType(juce::AudioProcessor::WrapperType type);
-#    else
-         extern juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter();
-#    endif
+#   if JUCE_MODULE_AVAILABLE_juce_audio_plugin_client
+        extern juce::AudioProcessor *JUCE_CALLTYPE createPluginFilterOfType(juce::AudioProcessor::WrapperType type);
+#   else
+        extern juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter();
+#   endif
 #endif
-         
-namespace jaut
-{
-    class Localisation;
-    class ThemeManager;
-    class AppData;
-    class Config;
-}
 
 class SharedData;
 
-class CossinPluginWrapper final : private AudioIODeviceCallback, private Value::Listener, private Timer
+class CossinPluginWrapper final : private juce::AudioIODeviceCallback, private juce::Value::Listener,
+                                  private juce::Timer
 {
 public:
     struct PluginInOuts
@@ -59,34 +53,33 @@ public:
 
     //==================================================================================================================
     CossinPluginWrapper();
-    virtual ~CossinPluginWrapper() override;
+    ~CossinPluginWrapper() override;
 
     //==================================================================================================================
-    void init(bool, const String&);
+    void init(bool, const juce::String&);
 
     //==================================================================================================================
-    virtual void createPlugin(bool = true);
-    virtual void deletePlugin();
-    static String getFilePatterns(const String&);
+    void createPlugin(bool = true);
+    void deletePlugin();
+    static juce::String getFilePatterns(const juce::String&);
 
     //==================================================================================================================
-    Value &getMuteInputValue();
+    juce::Value& getMuteInputValue();
     bool getProcessorHasPotentialFeedbackLoop() const;
-    void valueChanged(Value&) override;
+    void valueChanged(juce::Value&) override;
 
     //==================================================================================================================
-    File getLastFile() const;
-    void setLastFile(const File&);
-    bool askUserToSaveState(const String& = String());
-    bool askUserToLoadState(const String& = String());
+    juce::File getLastFile() const;
+    void setLastFile(const juce::File&);
+    bool askUserToSaveState(const juce::String& = juce::String());
+    bool askUserToLoadState(const juce::String& = juce::String());
 
     //==================================================================================================================
     void startPlaying();
     void stopPlaying();
 
     //==================================================================================================================
-    bool saveAudioDeviceState();
-    bool reloadAudioDeviceState(bool, const String&, const AudioDeviceManager::AudioDeviceSetup*);
+    bool reloadAudioDeviceState(bool, const juce::String&, const juce::AudioDeviceManager::AudioDeviceSetup*);
     bool savePluginCache();
     bool reloadPluginCache();
     bool savePluginState(bool askToSave   = false, bool askIfNotSuccessful = false, bool notifyOnFail = false);
@@ -97,63 +90,44 @@ public:
     bool isInterAppAudioConnected();
 
 #if JUCE_MODULE_AVAILABLE_juce_gui_basics
-    Image getIAAHostIcon(int);
+    juce::Image getIAAHostIcon(int);
 #endif
 
     static CossinPluginWrapper *getInstance();
 
     //==================================================================================================================
-    SharedResourcePointer<SharedData> sharedData;
-    std::unique_ptr<InterProcessLock> cacheLock;
-    std::unique_ptr<PropertiesFile> cossinCache;
-    std::unique_ptr<AudioProcessor> processor;
-    AudioDeviceManager deviceManager;
-    AudioProcessorPlayer player;
-    Array<PluginInOuts> channelConfiguration;
-    bool processorHasPotentialFeedbackLoop = true;
+    juce::AudioDeviceManager deviceManager;
+    juce::AudioProcessorPlayer player;
+    juce::AudioBuffer<float> emptyBuffer;
+    juce::Value shouldMuteInput;
+    juce::Array<PluginInOuts> channelConfiguration;
+    juce::Array<juce::MidiDeviceInfo> lastMidiDevices;
+    juce::SharedResourcePointer<SharedData> sharedData;
+    std::unique_ptr<juce::InterProcessLock> cacheLock;
+    std::unique_ptr<juce::PropertiesFile> cossinCache;
+    std::unique_ptr<juce::AudioProcessor> processor;
+    std::unique_ptr<juce::AudioDeviceManager::AudioDeviceSetup> options;
+    juce::File currentSaveFile;
+    juce::String lastLoadedState;
     std::atomic<bool> muteInput { true };
-    Value shouldMuteInput;
-    AudioBuffer<float> emptyBuffer;
     bool autoOpenMidiDevices;
-    std::unique_ptr<AudioDeviceManager::AudioDeviceSetup> options;
-    Array<MidiDeviceInfo> lastMidiDevices;
-    File currentSaveFile;
-    String lastLoadedState;
+    bool processorHasPotentialFeedbackLoop { true };
+
 
 private:
-    class SettingsComponent : public Component
-    {
-    public:
-        SettingsComponent (CossinPluginWrapper&, AudioDeviceManager&, int, int, int, int);
-
-        //==============================================================================================================
-        void paint (Graphics&) override;
-        void resized() override;
-
-    private:
-        CossinPluginWrapper& owner;
-        AudioDeviceSelectorComponent deviceSelector;
-        Label shouldMuteLabel;
-        ToggleButton shouldMuteButton;
-
-        //==============================================================================================================
-        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SettingsComponent)
-    };
-
-    //==================================================================================================================
     void audioDeviceIOCallback(const float**, int, float**, int, int) override;
-    void audioDeviceAboutToStart(AudioIODevice*) override;
+    void audioDeviceAboutToStart(juce::AudioIODevice*) override;
     void audioDeviceStopped() override;
 
     //==================================================================================================================
-    void setupAudioDevices(bool, const String&, const AudioDeviceManager::AudioDeviceSetup*);
+    void setupAudioDevices(bool, const juce::String&, const juce::AudioDeviceManager::AudioDeviceSetup*);
     void shutDownAudioDevices();
     void timerCallback() override;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CossinPluginWrapper)
 };
 
-class CossinPluginWindow final : public DocumentWindow
+class CossinPluginWindow final : public juce::DocumentWindow
 {
 public:
     typedef CossinPluginWrapper::PluginInOuts PluginInOuts;
@@ -166,19 +140,19 @@ public:
     ~CossinPluginWindow() override;
 
     //==================================================================================================================
-    AudioProcessor *getAudioProcessor() const noexcept;
-    AudioDeviceManager &getDeviceManager() const noexcept;
+    juce::AudioProcessor* getAudioProcessor() const noexcept;
+    juce::AudioDeviceManager& getDeviceManager() const noexcept;
     void resetToDefaultState();
 
     //==================================================================================================================
     void closeButtonPressed() override;
-    virtual CossinPluginWrapper *getPluginHolder();
+    virtual CossinPluginWrapper* getPluginHolder();
 
 private:
-    class MainContentComponent : public Component, private ComponentListener
+    class MainContentComponent final : public Component, private juce::ComponentListener
     {
     public:
-        MainContentComponent(CossinPluginWindow&);
+        explicit MainContentComponent(CossinPluginWindow&);
         ~MainContentComponent() override;
 
         //==============================================================================================================
@@ -187,11 +161,11 @@ private:
     private:
         //==============================================================================================================
         void componentMovedOrResized (Component&, bool, bool) override;
-        Rectangle<int> getSizeToContainEditor() const;
+        juce::Rectangle<int> getSizeToContainEditor() const;
 
         //==============================================================================================================
         CossinPluginWindow &owner;
-        std::unique_ptr<AudioProcessorEditor> editor;
+        std::unique_ptr<juce::AudioProcessorEditor> editor;
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContentComponent)
     };
@@ -199,35 +173,34 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CossinPluginWindow)
 };
 
-class Cossin final : public JUCEApplication
+class Cossin final : public juce::JUCEApplication
 {
 public:
     static Cossin *JUCE_CALLTYPE getInstance() noexcept;
 
     //==================================================================================================================
     Cossin();
-    ~Cossin();
+    ~Cossin() override;
 
     //==================================================================================================================
-    const String getApplicationName() override;
-    const String getApplicationVersion() override;
+    const juce::String getApplicationName() override;
+    const juce::String getApplicationVersion() override;
     bool moreThanOneInstanceAllowed() override { return true; }
-    void anotherInstanceStarted(const String&) override {}
+    void anotherInstanceStarted(const juce::String&) override {}
 
     //==================================================================================================================
-    const bool isInputMuted() const noexcept;
+    bool isInputMuted() const noexcept;
 
     //==================================================================================================================
-    void initialise(const String&) override;
+    void initialise(const juce::String&) override;
     void shutdown() override;
 
     //==================================================================================================================
     void systemRequestedQuit() override;
 
     //==================================================================================================================
-    CossinPluginWindow *createWindow();
+    static CossinPluginWindow* createWindow();
 
 private:
-    std::unique_ptr<Logger> logger;
     std::unique_ptr<CossinPluginWindow> mainWindow;
 };

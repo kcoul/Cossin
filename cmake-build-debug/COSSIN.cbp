@@ -1,0 +1,1380 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="COSSIN"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\..\;CMake Files\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\..\usr\;CMake Files\..\..\..\..\..\..\..\usr\local\;CMake Files\..\..\..\..\..\..\..\usr\local\lib\;CMake Files\..\..\..\..\..\..\..\usr\local\lib\cmake\;CMake Files\..\..\..\..\..\..\..\usr\local\lib\cmake\JUCE-6.0.0\;CMake Files\externals\;CMake Files\externals\jaut\;CMake Files\externals\jaut\modules\;CMake Files\externals\modules\;CMake Files\externals\yaml-cpp\;CMake Files\externals\yaml-cpp\util\;CMake Files\src\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="list_install_components">
+				<Option working_dir="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 list_install_components"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="install/strip">
+				<Option working_dir="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 install/strip"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Cossin_Standalone">
+				<Option output="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Cossin_artefacts/Debug/Standalone/ES Cossin" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="0"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DJUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1"/>
+					<Add option="-DDEBUG=1"/>
+					<Add option="-D_DEBUG=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_ff_meters=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_audio_basics=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_core=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_gui_basics=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_graphics=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_events=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_data_structures=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_jaut_provider=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_jaut_core=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_jaut_audio=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_jaut_message=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_audio_processors=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_gui_extra=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_audio_plugin_client=1"/>
+					<Add option="-DJUCE_STANDALONE_APPLICATION=JucePlugin_Build_Standalone"/>
+					<Add option="-DJucePlugin_IsSynth=0"/>
+					<Add option="-DJucePlugin_ManufacturerCode=0x70726f6a"/>
+					<Add option="-DJucePlugin_Manufacturer=&quot;ElandaSunshine&quot;"/>
+					<Add option="-DJucePlugin_ManufacturerWebsite=&quot;&quot;"/>
+					<Add option="-DJucePlugin_ManufacturerEmail=&quot;&quot;"/>
+					<Add option="-DJucePlugin_PluginCode=0x45734373"/>
+					<Add option="-DJucePlugin_ProducesMidiOutput=0"/>
+					<Add option="-DJucePlugin_IsMidiEffect=0"/>
+					<Add option="-DJucePlugin_WantsMidiInput=0"/>
+					<Add option="-DJucePlugin_EditorRequiresKeyboardFocus=0"/>
+					<Add option="-DJucePlugin_Name=&quot;ES Cossin&quot;"/>
+					<Add option="-DJucePlugin_Desc=&quot;ES Cossin&quot;"/>
+					<Add option="-DJucePlugin_Version=0.1.0"/>
+					<Add option="-DJucePlugin_VersionString=&quot;0.1.0&quot;"/>
+					<Add option="-DJucePlugin_VersionCode=0x100"/>
+					<Add option="-DJucePlugin_VSTUniqueID=JucePlugin_PluginCode"/>
+					<Add option="-DJucePlugin_VSTCategory=kPlugCategEffect"/>
+					<Add option="-DJucePlugin_Vst3Category=&quot;Fx|Fx &quot;"/>
+					<Add option="-DJucePlugin_AUMainType=&apos;aufx&apos;"/>
+					<Add option="-DJucePlugin_AUSubType=JucePlugin_PluginCode"/>
+					<Add option="-DJucePlugin_AUExportPrefix=ES_CossinAU"/>
+					<Add option="-DJucePlugin_AUExportPrefixQuoted=&quot;ES_CossinAU&quot;"/>
+					<Add option="-DJucePlugin_AUManufacturerCode=JucePlugin_ManufacturerCode"/>
+					<Add option="-DJucePlugin_CFBundleIdentifier=&quot;com.ElandaSunshine.Cossin&quot;"/>
+					<Add option="-DJucePlugin_AAXIdentifier=com.ElandaSunshine.Cossin"/>
+					<Add option="-DJucePlugin_AAXManufacturerCode=JucePlugin_ManufacturerCode"/>
+					<Add option="-DJucePlugin_AAXProductId=JucePlugin_PluginCode"/>
+					<Add option="-DJucePlugin_AAXCategory=0x00000000"/>
+					<Add option="-DJucePlugin_AAXDisableBypass=0"/>
+					<Add option="-DJucePlugin_AAXDisableMultiMono=0"/>
+					<Add option="-DJucePlugin_VSTNumMidiInputs=16"/>
+					<Add option="-DJucePlugin_VSTNumMidiOutputs=16"/>
+					<Add option="-DJUCE_WEB_BROWSER=0"/>
+					<Add option="-DJUCE_USE_CURL=0"/>
+					<Add option="-DJUCE_VST3_CAN_REPLACE_VST2=0"/>
+					<Add option="-DJUCE_USE_CUSTOM_PLUGIN_STANDALONE_APP=1"/>
+					<Add option="-DJUCE_OPENGL_ALLOW_NON_POWER_OF_TWO_TEXTURES=1"/>
+					<Add option="-DJucePlugin_Build_AU=0"/>
+					<Add option="-DJucePlugin_Build_AUv3=0"/>
+					<Add option="-DJucePlugin_Build_AAX=0"/>
+					<Add option="-DJucePlugin_Build_Standalone=1"/>
+					<Add option="-DJucePlugin_Build_Unity=0"/>
+					<Add option="-DJucePlugin_Build_VST=0"/>
+					<Add option="-DJucePlugin_Build_VST3=0"/>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Cossin_artefacts/JuceLibraryCode"/>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode"/>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/include"/>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/modules"/>
+					<Add directory="/usr/local/include/JUCE-6.0.0/modules"/>
+					<Add directory="/usr/include/freetype2"/>
+					<Add directory="/usr/include/libpng16"/>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules"/>
+					<Add directory="/usr/local/include/JUCE-6.0.0/modules/juce_audio_processors/format_types/VST3_SDK"/>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 Cossin_Standalone"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Cossin_Standalone/fast">
+				<Option output="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Cossin_artefacts/Debug/Standalone/ES Cossin" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="0"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DJUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1"/>
+					<Add option="-DDEBUG=1"/>
+					<Add option="-D_DEBUG=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_ff_meters=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_audio_basics=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_core=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_gui_basics=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_graphics=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_events=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_data_structures=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_jaut_provider=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_jaut_core=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_jaut_audio=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_jaut_message=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_audio_processors=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_gui_extra=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_audio_plugin_client=1"/>
+					<Add option="-DJUCE_STANDALONE_APPLICATION=JucePlugin_Build_Standalone"/>
+					<Add option="-DJucePlugin_IsSynth=0"/>
+					<Add option="-DJucePlugin_ManufacturerCode=0x70726f6a"/>
+					<Add option="-DJucePlugin_Manufacturer=&quot;ElandaSunshine&quot;"/>
+					<Add option="-DJucePlugin_ManufacturerWebsite=&quot;&quot;"/>
+					<Add option="-DJucePlugin_ManufacturerEmail=&quot;&quot;"/>
+					<Add option="-DJucePlugin_PluginCode=0x45734373"/>
+					<Add option="-DJucePlugin_ProducesMidiOutput=0"/>
+					<Add option="-DJucePlugin_IsMidiEffect=0"/>
+					<Add option="-DJucePlugin_WantsMidiInput=0"/>
+					<Add option="-DJucePlugin_EditorRequiresKeyboardFocus=0"/>
+					<Add option="-DJucePlugin_Name=&quot;ES Cossin&quot;"/>
+					<Add option="-DJucePlugin_Desc=&quot;ES Cossin&quot;"/>
+					<Add option="-DJucePlugin_Version=0.1.0"/>
+					<Add option="-DJucePlugin_VersionString=&quot;0.1.0&quot;"/>
+					<Add option="-DJucePlugin_VersionCode=0x100"/>
+					<Add option="-DJucePlugin_VSTUniqueID=JucePlugin_PluginCode"/>
+					<Add option="-DJucePlugin_VSTCategory=kPlugCategEffect"/>
+					<Add option="-DJucePlugin_Vst3Category=&quot;Fx|Fx &quot;"/>
+					<Add option="-DJucePlugin_AUMainType=&apos;aufx&apos;"/>
+					<Add option="-DJucePlugin_AUSubType=JucePlugin_PluginCode"/>
+					<Add option="-DJucePlugin_AUExportPrefix=ES_CossinAU"/>
+					<Add option="-DJucePlugin_AUExportPrefixQuoted=&quot;ES_CossinAU&quot;"/>
+					<Add option="-DJucePlugin_AUManufacturerCode=JucePlugin_ManufacturerCode"/>
+					<Add option="-DJucePlugin_CFBundleIdentifier=&quot;com.ElandaSunshine.Cossin&quot;"/>
+					<Add option="-DJucePlugin_AAXIdentifier=com.ElandaSunshine.Cossin"/>
+					<Add option="-DJucePlugin_AAXManufacturerCode=JucePlugin_ManufacturerCode"/>
+					<Add option="-DJucePlugin_AAXProductId=JucePlugin_PluginCode"/>
+					<Add option="-DJucePlugin_AAXCategory=0x00000000"/>
+					<Add option="-DJucePlugin_AAXDisableBypass=0"/>
+					<Add option="-DJucePlugin_AAXDisableMultiMono=0"/>
+					<Add option="-DJucePlugin_VSTNumMidiInputs=16"/>
+					<Add option="-DJucePlugin_VSTNumMidiOutputs=16"/>
+					<Add option="-DJUCE_WEB_BROWSER=0"/>
+					<Add option="-DJUCE_USE_CURL=0"/>
+					<Add option="-DJUCE_VST3_CAN_REPLACE_VST2=0"/>
+					<Add option="-DJUCE_USE_CUSTOM_PLUGIN_STANDALONE_APP=1"/>
+					<Add option="-DJUCE_OPENGL_ALLOW_NON_POWER_OF_TWO_TEXTURES=1"/>
+					<Add option="-DJucePlugin_Build_AU=0"/>
+					<Add option="-DJucePlugin_Build_AUv3=0"/>
+					<Add option="-DJucePlugin_Build_AAX=0"/>
+					<Add option="-DJucePlugin_Build_Standalone=1"/>
+					<Add option="-DJucePlugin_Build_Unity=0"/>
+					<Add option="-DJucePlugin_Build_VST=0"/>
+					<Add option="-DJucePlugin_Build_VST3=0"/>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Cossin_artefacts/JuceLibraryCode"/>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode"/>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/include"/>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/modules"/>
+					<Add directory="/usr/local/include/JUCE-6.0.0/modules"/>
+					<Add directory="/usr/include/freetype2"/>
+					<Add directory="/usr/include/libpng16"/>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules"/>
+					<Add directory="/usr/local/include/JUCE-6.0.0/modules/juce_audio_processors/format_types/VST3_SDK"/>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 Cossin_Standalone/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Cossin_All">
+				<Option working_dir="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 Cossin_All"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Cossin">
+				<Option output="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Cossin_artefacts/Debug/libES Cossin_SharedCode.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DJucePlugin_Build_AU=0"/>
+					<Add option="-DJucePlugin_Build_AUv3=0"/>
+					<Add option="-DJucePlugin_Build_AAX=0"/>
+					<Add option="-DJucePlugin_Build_Standalone=1"/>
+					<Add option="-DJucePlugin_Build_Unity=0"/>
+					<Add option="-DJucePlugin_Build_VST=0"/>
+					<Add option="-DJucePlugin_Build_VST3=1"/>
+					<Add option="-DJUCE_SHARED_CODE=1"/>
+					<Add option="-DJUCE_STANDALONE_APPLICATION=JucePlugin_Build_Standalone"/>
+					<Add option="-DJucePlugin_IsSynth=0"/>
+					<Add option="-DJucePlugin_ManufacturerCode=0x70726f6a"/>
+					<Add option="-DJucePlugin_Manufacturer=&quot;ElandaSunshine&quot;"/>
+					<Add option="-DJucePlugin_ManufacturerWebsite=&quot;&quot;"/>
+					<Add option="-DJucePlugin_ManufacturerEmail=&quot;&quot;"/>
+					<Add option="-DJucePlugin_PluginCode=0x45734373"/>
+					<Add option="-DJucePlugin_ProducesMidiOutput=0"/>
+					<Add option="-DJucePlugin_IsMidiEffect=0"/>
+					<Add option="-DJucePlugin_WantsMidiInput=0"/>
+					<Add option="-DJucePlugin_EditorRequiresKeyboardFocus=0"/>
+					<Add option="-DJucePlugin_Name=&quot;ES Cossin&quot;"/>
+					<Add option="-DJucePlugin_Desc=&quot;ES Cossin&quot;"/>
+					<Add option="-DJucePlugin_Version=0.1.0"/>
+					<Add option="-DJucePlugin_VersionString=&quot;0.1.0&quot;"/>
+					<Add option="-DJucePlugin_VersionCode=0x100"/>
+					<Add option="-DJucePlugin_VSTUniqueID=JucePlugin_PluginCode"/>
+					<Add option="-DJucePlugin_VSTCategory=kPlugCategEffect"/>
+					<Add option="-DJucePlugin_Vst3Category=&quot;Fx|Fx &quot;"/>
+					<Add option="-DJucePlugin_AUMainType=&apos;aufx&apos;"/>
+					<Add option="-DJucePlugin_AUSubType=JucePlugin_PluginCode"/>
+					<Add option="-DJucePlugin_AUExportPrefix=ES_CossinAU"/>
+					<Add option="-DJucePlugin_AUExportPrefixQuoted=&quot;ES_CossinAU&quot;"/>
+					<Add option="-DJucePlugin_AUManufacturerCode=JucePlugin_ManufacturerCode"/>
+					<Add option="-DJucePlugin_CFBundleIdentifier=&quot;com.ElandaSunshine.Cossin&quot;"/>
+					<Add option="-DJucePlugin_AAXIdentifier=com.ElandaSunshine.Cossin"/>
+					<Add option="-DJucePlugin_AAXManufacturerCode=JucePlugin_ManufacturerCode"/>
+					<Add option="-DJucePlugin_AAXProductId=JucePlugin_PluginCode"/>
+					<Add option="-DJucePlugin_AAXCategory=0x00000000"/>
+					<Add option="-DJucePlugin_AAXDisableBypass=0"/>
+					<Add option="-DJucePlugin_AAXDisableMultiMono=0"/>
+					<Add option="-DJucePlugin_VSTNumMidiInputs=16"/>
+					<Add option="-DJucePlugin_VSTNumMidiOutputs=16"/>
+					<Add option="-DJUCE_WEB_BROWSER=0"/>
+					<Add option="-DJUCE_USE_CURL=0"/>
+					<Add option="-DJUCE_VST3_CAN_REPLACE_VST2=0"/>
+					<Add option="-DJUCE_USE_CUSTOM_PLUGIN_STANDALONE_APP=1"/>
+					<Add option="-DJUCE_OPENGL_ALLOW_NON_POWER_OF_TWO_TEXTURES=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_ff_meters=1"/>
+					<Add option="-DLINUX=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_audio_basics=1"/>
+					<Add option="-DJUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1"/>
+					<Add option="-DDEBUG=1"/>
+					<Add option="-D_DEBUG=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_core=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_gui_basics=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_graphics=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_events=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_data_structures=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_jaut_provider=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_jaut_core=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_jaut_audio=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_jaut_message=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_audio_processors=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_gui_extra=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_audio_plugin_client=1"/>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Cossin_artefacts/JuceLibraryCode"/>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode"/>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/include"/>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/modules"/>
+					<Add directory="/usr/local/include/JUCE-6.0.0/modules"/>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules"/>
+					<Add directory="/usr/local/include/JUCE-6.0.0/modules/juce_audio_processors/format_types/VST3_SDK"/>
+					<Add directory="/usr/include/freetype2"/>
+					<Add directory="/usr/include/libpng16"/>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 Cossin"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Cossin/fast">
+				<Option output="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Cossin_artefacts/Debug/libES Cossin_SharedCode.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DJucePlugin_Build_AU=0"/>
+					<Add option="-DJucePlugin_Build_AUv3=0"/>
+					<Add option="-DJucePlugin_Build_AAX=0"/>
+					<Add option="-DJucePlugin_Build_Standalone=1"/>
+					<Add option="-DJucePlugin_Build_Unity=0"/>
+					<Add option="-DJucePlugin_Build_VST=0"/>
+					<Add option="-DJucePlugin_Build_VST3=1"/>
+					<Add option="-DJUCE_SHARED_CODE=1"/>
+					<Add option="-DJUCE_STANDALONE_APPLICATION=JucePlugin_Build_Standalone"/>
+					<Add option="-DJucePlugin_IsSynth=0"/>
+					<Add option="-DJucePlugin_ManufacturerCode=0x70726f6a"/>
+					<Add option="-DJucePlugin_Manufacturer=&quot;ElandaSunshine&quot;"/>
+					<Add option="-DJucePlugin_ManufacturerWebsite=&quot;&quot;"/>
+					<Add option="-DJucePlugin_ManufacturerEmail=&quot;&quot;"/>
+					<Add option="-DJucePlugin_PluginCode=0x45734373"/>
+					<Add option="-DJucePlugin_ProducesMidiOutput=0"/>
+					<Add option="-DJucePlugin_IsMidiEffect=0"/>
+					<Add option="-DJucePlugin_WantsMidiInput=0"/>
+					<Add option="-DJucePlugin_EditorRequiresKeyboardFocus=0"/>
+					<Add option="-DJucePlugin_Name=&quot;ES Cossin&quot;"/>
+					<Add option="-DJucePlugin_Desc=&quot;ES Cossin&quot;"/>
+					<Add option="-DJucePlugin_Version=0.1.0"/>
+					<Add option="-DJucePlugin_VersionString=&quot;0.1.0&quot;"/>
+					<Add option="-DJucePlugin_VersionCode=0x100"/>
+					<Add option="-DJucePlugin_VSTUniqueID=JucePlugin_PluginCode"/>
+					<Add option="-DJucePlugin_VSTCategory=kPlugCategEffect"/>
+					<Add option="-DJucePlugin_Vst3Category=&quot;Fx|Fx &quot;"/>
+					<Add option="-DJucePlugin_AUMainType=&apos;aufx&apos;"/>
+					<Add option="-DJucePlugin_AUSubType=JucePlugin_PluginCode"/>
+					<Add option="-DJucePlugin_AUExportPrefix=ES_CossinAU"/>
+					<Add option="-DJucePlugin_AUExportPrefixQuoted=&quot;ES_CossinAU&quot;"/>
+					<Add option="-DJucePlugin_AUManufacturerCode=JucePlugin_ManufacturerCode"/>
+					<Add option="-DJucePlugin_CFBundleIdentifier=&quot;com.ElandaSunshine.Cossin&quot;"/>
+					<Add option="-DJucePlugin_AAXIdentifier=com.ElandaSunshine.Cossin"/>
+					<Add option="-DJucePlugin_AAXManufacturerCode=JucePlugin_ManufacturerCode"/>
+					<Add option="-DJucePlugin_AAXProductId=JucePlugin_PluginCode"/>
+					<Add option="-DJucePlugin_AAXCategory=0x00000000"/>
+					<Add option="-DJucePlugin_AAXDisableBypass=0"/>
+					<Add option="-DJucePlugin_AAXDisableMultiMono=0"/>
+					<Add option="-DJucePlugin_VSTNumMidiInputs=16"/>
+					<Add option="-DJucePlugin_VSTNumMidiOutputs=16"/>
+					<Add option="-DJUCE_WEB_BROWSER=0"/>
+					<Add option="-DJUCE_USE_CURL=0"/>
+					<Add option="-DJUCE_VST3_CAN_REPLACE_VST2=0"/>
+					<Add option="-DJUCE_USE_CUSTOM_PLUGIN_STANDALONE_APP=1"/>
+					<Add option="-DJUCE_OPENGL_ALLOW_NON_POWER_OF_TWO_TEXTURES=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_ff_meters=1"/>
+					<Add option="-DLINUX=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_audio_basics=1"/>
+					<Add option="-DJUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1"/>
+					<Add option="-DDEBUG=1"/>
+					<Add option="-D_DEBUG=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_core=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_gui_basics=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_graphics=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_events=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_data_structures=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_jaut_provider=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_jaut_core=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_jaut_audio=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_jaut_message=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_audio_processors=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_gui_extra=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_audio_plugin_client=1"/>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Cossin_artefacts/JuceLibraryCode"/>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode"/>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/include"/>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/modules"/>
+					<Add directory="/usr/local/include/JUCE-6.0.0/modules"/>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules"/>
+					<Add directory="/usr/local/include/JUCE-6.0.0/modules/juce_audio_processors/format_types/VST3_SDK"/>
+					<Add directory="/usr/include/freetype2"/>
+					<Add directory="/usr/include/libpng16"/>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 Cossin/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Cossin_VST3">
+				<Option output="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Cossin_artefacts/Debug/VST3/ES Cossin.vst3/Contents/x86_64-linux/ES Cossin.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DJUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1"/>
+					<Add option="-DDEBUG=1"/>
+					<Add option="-D_DEBUG=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_ff_meters=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_audio_basics=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_core=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_gui_basics=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_graphics=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_events=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_data_structures=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_jaut_provider=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_jaut_core=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_jaut_audio=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_jaut_message=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_audio_processors=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_gui_extra=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_audio_plugin_client=1"/>
+					<Add option="-DJUCE_STANDALONE_APPLICATION=JucePlugin_Build_Standalone"/>
+					<Add option="-DJucePlugin_IsSynth=0"/>
+					<Add option="-DJucePlugin_ManufacturerCode=0x70726f6a"/>
+					<Add option="-DJucePlugin_Manufacturer=&quot;ElandaSunshine&quot;"/>
+					<Add option="-DJucePlugin_ManufacturerWebsite=&quot;&quot;"/>
+					<Add option="-DJucePlugin_ManufacturerEmail=&quot;&quot;"/>
+					<Add option="-DJucePlugin_PluginCode=0x45734373"/>
+					<Add option="-DJucePlugin_ProducesMidiOutput=0"/>
+					<Add option="-DJucePlugin_IsMidiEffect=0"/>
+					<Add option="-DJucePlugin_WantsMidiInput=0"/>
+					<Add option="-DJucePlugin_EditorRequiresKeyboardFocus=0"/>
+					<Add option="-DJucePlugin_Name=&quot;ES Cossin&quot;"/>
+					<Add option="-DJucePlugin_Desc=&quot;ES Cossin&quot;"/>
+					<Add option="-DJucePlugin_Version=0.1.0"/>
+					<Add option="-DJucePlugin_VersionString=&quot;0.1.0&quot;"/>
+					<Add option="-DJucePlugin_VersionCode=0x100"/>
+					<Add option="-DJucePlugin_VSTUniqueID=JucePlugin_PluginCode"/>
+					<Add option="-DJucePlugin_VSTCategory=kPlugCategEffect"/>
+					<Add option="-DJucePlugin_Vst3Category=&quot;Fx|Fx &quot;"/>
+					<Add option="-DJucePlugin_AUMainType=&apos;aufx&apos;"/>
+					<Add option="-DJucePlugin_AUSubType=JucePlugin_PluginCode"/>
+					<Add option="-DJucePlugin_AUExportPrefix=ES_CossinAU"/>
+					<Add option="-DJucePlugin_AUExportPrefixQuoted=&quot;ES_CossinAU&quot;"/>
+					<Add option="-DJucePlugin_AUManufacturerCode=JucePlugin_ManufacturerCode"/>
+					<Add option="-DJucePlugin_CFBundleIdentifier=&quot;com.ElandaSunshine.Cossin&quot;"/>
+					<Add option="-DJucePlugin_AAXIdentifier=com.ElandaSunshine.Cossin"/>
+					<Add option="-DJucePlugin_AAXManufacturerCode=JucePlugin_ManufacturerCode"/>
+					<Add option="-DJucePlugin_AAXProductId=JucePlugin_PluginCode"/>
+					<Add option="-DJucePlugin_AAXCategory=0x00000000"/>
+					<Add option="-DJucePlugin_AAXDisableBypass=0"/>
+					<Add option="-DJucePlugin_AAXDisableMultiMono=0"/>
+					<Add option="-DJucePlugin_VSTNumMidiInputs=16"/>
+					<Add option="-DJucePlugin_VSTNumMidiOutputs=16"/>
+					<Add option="-DJUCE_WEB_BROWSER=0"/>
+					<Add option="-DJUCE_USE_CURL=0"/>
+					<Add option="-DJUCE_VST3_CAN_REPLACE_VST2=0"/>
+					<Add option="-DJUCE_USE_CUSTOM_PLUGIN_STANDALONE_APP=1"/>
+					<Add option="-DJUCE_OPENGL_ALLOW_NON_POWER_OF_TWO_TEXTURES=1"/>
+					<Add option="-DJucePlugin_Build_AU=0"/>
+					<Add option="-DJucePlugin_Build_AUv3=0"/>
+					<Add option="-DJucePlugin_Build_AAX=0"/>
+					<Add option="-DJucePlugin_Build_Standalone=0"/>
+					<Add option="-DJucePlugin_Build_Unity=0"/>
+					<Add option="-DJucePlugin_Build_VST=0"/>
+					<Add option="-DJucePlugin_Build_VST3=1"/>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Cossin_artefacts/JuceLibraryCode"/>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode"/>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/include"/>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/modules"/>
+					<Add directory="/usr/local/include/JUCE-6.0.0/modules"/>
+					<Add directory="/usr/include/freetype2"/>
+					<Add directory="/usr/include/libpng16"/>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules"/>
+					<Add directory="/usr/local/include/JUCE-6.0.0/modules/juce_audio_processors/format_types/VST3_SDK"/>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 Cossin_VST3"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Cossin_VST3/fast">
+				<Option output="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Cossin_artefacts/Debug/VST3/ES Cossin.vst3/Contents/x86_64-linux/ES Cossin.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DJUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1"/>
+					<Add option="-DDEBUG=1"/>
+					<Add option="-D_DEBUG=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_ff_meters=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_audio_basics=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_core=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_gui_basics=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_graphics=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_events=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_data_structures=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_jaut_provider=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_jaut_core=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_jaut_audio=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_jaut_message=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_audio_processors=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_gui_extra=1"/>
+					<Add option="-DJUCE_MODULE_AVAILABLE_juce_audio_plugin_client=1"/>
+					<Add option="-DJUCE_STANDALONE_APPLICATION=JucePlugin_Build_Standalone"/>
+					<Add option="-DJucePlugin_IsSynth=0"/>
+					<Add option="-DJucePlugin_ManufacturerCode=0x70726f6a"/>
+					<Add option="-DJucePlugin_Manufacturer=&quot;ElandaSunshine&quot;"/>
+					<Add option="-DJucePlugin_ManufacturerWebsite=&quot;&quot;"/>
+					<Add option="-DJucePlugin_ManufacturerEmail=&quot;&quot;"/>
+					<Add option="-DJucePlugin_PluginCode=0x45734373"/>
+					<Add option="-DJucePlugin_ProducesMidiOutput=0"/>
+					<Add option="-DJucePlugin_IsMidiEffect=0"/>
+					<Add option="-DJucePlugin_WantsMidiInput=0"/>
+					<Add option="-DJucePlugin_EditorRequiresKeyboardFocus=0"/>
+					<Add option="-DJucePlugin_Name=&quot;ES Cossin&quot;"/>
+					<Add option="-DJucePlugin_Desc=&quot;ES Cossin&quot;"/>
+					<Add option="-DJucePlugin_Version=0.1.0"/>
+					<Add option="-DJucePlugin_VersionString=&quot;0.1.0&quot;"/>
+					<Add option="-DJucePlugin_VersionCode=0x100"/>
+					<Add option="-DJucePlugin_VSTUniqueID=JucePlugin_PluginCode"/>
+					<Add option="-DJucePlugin_VSTCategory=kPlugCategEffect"/>
+					<Add option="-DJucePlugin_Vst3Category=&quot;Fx|Fx &quot;"/>
+					<Add option="-DJucePlugin_AUMainType=&apos;aufx&apos;"/>
+					<Add option="-DJucePlugin_AUSubType=JucePlugin_PluginCode"/>
+					<Add option="-DJucePlugin_AUExportPrefix=ES_CossinAU"/>
+					<Add option="-DJucePlugin_AUExportPrefixQuoted=&quot;ES_CossinAU&quot;"/>
+					<Add option="-DJucePlugin_AUManufacturerCode=JucePlugin_ManufacturerCode"/>
+					<Add option="-DJucePlugin_CFBundleIdentifier=&quot;com.ElandaSunshine.Cossin&quot;"/>
+					<Add option="-DJucePlugin_AAXIdentifier=com.ElandaSunshine.Cossin"/>
+					<Add option="-DJucePlugin_AAXManufacturerCode=JucePlugin_ManufacturerCode"/>
+					<Add option="-DJucePlugin_AAXProductId=JucePlugin_PluginCode"/>
+					<Add option="-DJucePlugin_AAXCategory=0x00000000"/>
+					<Add option="-DJucePlugin_AAXDisableBypass=0"/>
+					<Add option="-DJucePlugin_AAXDisableMultiMono=0"/>
+					<Add option="-DJucePlugin_VSTNumMidiInputs=16"/>
+					<Add option="-DJucePlugin_VSTNumMidiOutputs=16"/>
+					<Add option="-DJUCE_WEB_BROWSER=0"/>
+					<Add option="-DJUCE_USE_CURL=0"/>
+					<Add option="-DJUCE_VST3_CAN_REPLACE_VST2=0"/>
+					<Add option="-DJUCE_USE_CUSTOM_PLUGIN_STANDALONE_APP=1"/>
+					<Add option="-DJUCE_OPENGL_ALLOW_NON_POWER_OF_TWO_TEXTURES=1"/>
+					<Add option="-DJucePlugin_Build_AU=0"/>
+					<Add option="-DJucePlugin_Build_AUv3=0"/>
+					<Add option="-DJucePlugin_Build_AAX=0"/>
+					<Add option="-DJucePlugin_Build_Standalone=0"/>
+					<Add option="-DJucePlugin_Build_Unity=0"/>
+					<Add option="-DJucePlugin_Build_VST=0"/>
+					<Add option="-DJucePlugin_Build_VST3=1"/>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Cossin_artefacts/JuceLibraryCode"/>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode"/>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/include"/>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/modules"/>
+					<Add directory="/usr/local/include/JUCE-6.0.0/modules"/>
+					<Add directory="/usr/include/freetype2"/>
+					<Add directory="/usr/include/libpng16"/>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules"/>
+					<Add directory="/usr/local/include/JUCE-6.0.0/modules/juce_audio_processors/format_types/VST3_SDK"/>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 Cossin_VST3/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="install">
+				<Option working_dir="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 install"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="install/local">
+				<Option working_dir="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 install/local"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="yaml-cpp">
+				<Option output="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/libyaml-cppd.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/include"/>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src"/>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/Makefile&quot;  VERBOSE=1 yaml-cpp"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="yaml-cpp/fast">
+				<Option output="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/libyaml-cppd.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/include"/>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src"/>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/Makefile&quot;  VERBOSE=1 yaml-cpp/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Nightly">
+				<Option working_dir="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/Makefile&quot;  VERBOSE=1 Nightly"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Continuous">
+				<Option working_dir="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/Makefile&quot;  VERBOSE=1 Continuous"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Experimental">
+				<Option working_dir="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/Makefile&quot;  VERBOSE=1 Experimental"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="yaml-cpp-sandbox">
+				<Option output="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util/sandbox" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/include"/>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util/Makefile&quot;  VERBOSE=1 yaml-cpp-sandbox"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="yaml-cpp-sandbox/fast">
+				<Option output="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util/sandbox" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/include"/>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util/Makefile&quot;  VERBOSE=1 yaml-cpp-sandbox/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="yaml-cpp-parse">
+				<Option output="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util/parse" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/include"/>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util/Makefile&quot;  VERBOSE=1 yaml-cpp-parse"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="yaml-cpp-parse/fast">
+				<Option output="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util/parse" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/include"/>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util/Makefile&quot;  VERBOSE=1 yaml-cpp-parse/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="yaml-cpp-read">
+				<Option output="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util/read" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/include"/>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util/Makefile&quot;  VERBOSE=1 yaml-cpp-read"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="yaml-cpp-read/fast">
+				<Option output="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util/read" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/include"/>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util/Makefile&quot;  VERBOSE=1 yaml-cpp-read/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/externals/yaml-cpp/util/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="PluginAssets">
+				<Option output="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/libPluginAssets.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/Makefile&quot;  VERBOSE=1 PluginAssets"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="PluginAssets/fast">
+				<Option output="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/libPluginAssets.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/Makefile&quot;  VERBOSE=1 PluginAssets/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData.h">
+			<Option target="PluginAssets"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData.h.rule">
+			<Option target="PluginAssets"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData1.cpp">
+			<Option target="PluginAssets"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData10.cpp">
+			<Option target="PluginAssets"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData11.cpp">
+			<Option target="PluginAssets"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData12.cpp">
+			<Option target="PluginAssets"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData13.cpp">
+			<Option target="PluginAssets"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData14.cpp">
+			<Option target="PluginAssets"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData15.cpp">
+			<Option target="PluginAssets"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData16.cpp">
+			<Option target="PluginAssets"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData17.cpp">
+			<Option target="PluginAssets"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData18.cpp">
+			<Option target="PluginAssets"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData19.cpp">
+			<Option target="PluginAssets"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData2.cpp">
+			<Option target="PluginAssets"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData20.cpp">
+			<Option target="PluginAssets"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData21.cpp">
+			<Option target="PluginAssets"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData22.cpp">
+			<Option target="PluginAssets"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData23.cpp">
+			<Option target="PluginAssets"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData24.cpp">
+			<Option target="PluginAssets"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData25.cpp">
+			<Option target="PluginAssets"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData26.cpp">
+			<Option target="PluginAssets"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData27.cpp">
+			<Option target="PluginAssets"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData28.cpp">
+			<Option target="PluginAssets"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData29.cpp">
+			<Option target="PluginAssets"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData3.cpp">
+			<Option target="PluginAssets"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData4.cpp">
+			<Option target="PluginAssets"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData5.cpp">
+			<Option target="PluginAssets"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData6.cpp">
+			<Option target="PluginAssets"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData7.cpp">
+			<Option target="PluginAssets"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData8.cpp">
+			<Option target="PluginAssets"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData9.cpp">
+			<Option target="PluginAssets"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules/jaut_audio/jaut_audio.cpp">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules/jaut_audio/jaut_audio.h">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules/jaut_core/jaut_core.cpp">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules/jaut_core/jaut_core.h">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules/jaut_message/jaut_message.h">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules/jaut_provider/jaut_provider.cpp">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules/jaut_provider/jaut_provider.h">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/modules/ff_meters/ff_meters.h">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/modules/ff_meters/ff_meters_LevelMeter.cpp">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/modules/ff_meters/ff_meters_LevelMeter.h">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/binary.cpp">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/contrib/graphbuilder.cpp">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/contrib/graphbuilderadapter.cpp">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/contrib/graphbuilderadapter.h">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/convert.cpp">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/directives.cpp">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/directives.h">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/emit.cpp">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/emitfromevents.cpp">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/emitter.cpp">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/emitterstate.cpp">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/emitterstate.h">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/emitterutils.cpp">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/emitterutils.h">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/exceptions.cpp">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/exp.cpp">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/exp.h">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/memory.cpp">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/node.cpp">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/node_data.cpp">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/nodebuilder.cpp">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/nodebuilder.h">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/nodeevents.cpp">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/nodeevents.h">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/null.cpp">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/ostream_wrapper.cpp">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/parse.cpp">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/parser.cpp">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/regex_yaml.cpp">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/regex_yaml.h">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/scanner.cpp">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/scanner.h">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/scanscalar.cpp">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/scanscalar.h">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/scantag.cpp">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/scantag.h">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/scantoken.cpp">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/simplekey.cpp">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/singledocparser.cpp">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/singledocparser.h">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/stream.cpp">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/stream.h">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/tag.cpp">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/src/tag.h">
+			<Option target="yaml-cpp"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/util/parse.cpp">
+			<Option target="yaml-cpp-parse"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/util/read.cpp">
+			<Option target="yaml-cpp-read"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/util/sandbox.cpp">
+			<Option target="yaml-cpp-sandbox"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/src/CossinMain.cpp">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/src/CossinMain.h">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/src/EffectModuleGuis.cpp">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/src/EffectModuleGuis.h">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/src/EffectModules.cpp">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/src/EffectModules.h">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/src/MetreLookAndFeel.cpp">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/src/MetreLookAndFeel.h">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/src/OptionCategories.cpp">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/src/OptionCategories.h">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/src/OptionPanel.cpp">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/src/OptionPanel.h">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/src/PluginEditor.cpp">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/src/PluginEditor.h">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/src/PluginProcessor.cpp">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/src/PluginProcessor.h">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/src/PluginStyle.cpp">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/src/PluginStyle.h">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/src/SharedData.cpp">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/src/SharedData.h">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/src/ThemeFolder.cpp">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/src/ThemeFolder.h">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/usr/local/include/JUCE-6.0.0/modules/juce_audio_basics/juce_audio_basics.cpp">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/usr/local/include/JUCE-6.0.0/modules/juce_audio_basics/juce_audio_basics.h">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/usr/local/include/JUCE-6.0.0/modules/juce_audio_plugin_client/juce_audio_plugin_client.h">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/usr/local/include/JUCE-6.0.0/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX.cpp">
+			<Option target="Cossin_Standalone"/>
+			<Option target="Cossin_VST3"/>
+		</Unit>
+		<Unit filename="/usr/local/include/JUCE-6.0.0/modules/juce_audio_plugin_client/juce_audio_plugin_client_RTAS_1.cpp">
+			<Option target="Cossin_Standalone"/>
+			<Option target="Cossin_VST3"/>
+		</Unit>
+		<Unit filename="/usr/local/include/JUCE-6.0.0/modules/juce_audio_plugin_client/juce_audio_plugin_client_RTAS_2.cpp">
+			<Option target="Cossin_Standalone"/>
+			<Option target="Cossin_VST3"/>
+		</Unit>
+		<Unit filename="/usr/local/include/JUCE-6.0.0/modules/juce_audio_plugin_client/juce_audio_plugin_client_RTAS_3.cpp">
+			<Option target="Cossin_Standalone"/>
+			<Option target="Cossin_VST3"/>
+		</Unit>
+		<Unit filename="/usr/local/include/JUCE-6.0.0/modules/juce_audio_plugin_client/juce_audio_plugin_client_RTAS_4.cpp">
+			<Option target="Cossin_Standalone"/>
+			<Option target="Cossin_VST3"/>
+		</Unit>
+		<Unit filename="/usr/local/include/JUCE-6.0.0/modules/juce_audio_plugin_client/juce_audio_plugin_client_RTAS_utils.cpp">
+			<Option target="Cossin_Standalone"/>
+			<Option target="Cossin_VST3"/>
+		</Unit>
+		<Unit filename="/usr/local/include/JUCE-6.0.0/modules/juce_audio_plugin_client/juce_audio_plugin_client_Standalone.cpp">
+			<Option target="Cossin_Standalone"/>
+			<Option target="Cossin_VST3"/>
+		</Unit>
+		<Unit filename="/usr/local/include/JUCE-6.0.0/modules/juce_audio_plugin_client/juce_audio_plugin_client_Unity.cpp">
+			<Option target="Cossin_Standalone"/>
+			<Option target="Cossin_VST3"/>
+		</Unit>
+		<Unit filename="/usr/local/include/JUCE-6.0.0/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST2.cpp">
+			<Option target="Cossin_Standalone"/>
+			<Option target="Cossin_VST3"/>
+		</Unit>
+		<Unit filename="/usr/local/include/JUCE-6.0.0/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST3.cpp">
+			<Option target="Cossin_Standalone"/>
+			<Option target="Cossin_VST3"/>
+		</Unit>
+		<Unit filename="/usr/local/include/JUCE-6.0.0/modules/juce_audio_plugin_client/juce_audio_plugin_client_utils.cpp">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/usr/local/include/JUCE-6.0.0/modules/juce_audio_processors/juce_audio_processors.cpp">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/usr/local/include/JUCE-6.0.0/modules/juce_audio_processors/juce_audio_processors.h">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/usr/local/include/JUCE-6.0.0/modules/juce_core/juce_core.cpp">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/usr/local/include/JUCE-6.0.0/modules/juce_core/juce_core.h">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/usr/local/include/JUCE-6.0.0/modules/juce_data_structures/juce_data_structures.cpp">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/usr/local/include/JUCE-6.0.0/modules/juce_data_structures/juce_data_structures.h">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/usr/local/include/JUCE-6.0.0/modules/juce_events/juce_events.cpp">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/usr/local/include/JUCE-6.0.0/modules/juce_events/juce_events.h">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/usr/local/include/JUCE-6.0.0/modules/juce_graphics/juce_graphics.cpp">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/usr/local/include/JUCE-6.0.0/modules/juce_graphics/juce_graphics.h">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/usr/local/include/JUCE-6.0.0/modules/juce_gui_basics/juce_gui_basics.cpp">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/usr/local/include/JUCE-6.0.0/modules/juce_gui_basics/juce_gui_basics.h">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.cpp">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.h">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/../../../../../../../usr/local/lib/cmake/JUCE-6.0.0/JUCE.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\usr\local\lib\cmake\JUCE-6.0.0\"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/../../../../../../../usr/local/lib/cmake/JUCE-6.0.0/JUCEConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\usr\local\lib\cmake\JUCE-6.0.0\"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/../../../../../../../usr/local/lib/cmake/JUCE-6.0.0/JUCEConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\usr\local\lib\cmake\JUCE-6.0.0\"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/../../../../../../../usr/local/lib/cmake/JUCE-6.0.0/JUCEUtils.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\usr\local\lib\cmake\JUCE-6.0.0\"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\externals\"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\externals\jaut\"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\externals\jaut\modules\"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/modules/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\externals\modules\"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\externals\yaml-cpp\"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/yaml-cpp-config.cmake.in">
+			<Option virtualFolder="CMake Files\externals\yaml-cpp\"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/yaml-cpp.pc.in">
+			<Option virtualFolder="CMake Files\externals\yaml-cpp\"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/yaml-cpp/util/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\externals\yaml-cpp\util\"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/src/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\src\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

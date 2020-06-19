@@ -16,7 +16,7 @@
     Copyright (c) 2019 ElandaSunshine
     ===============================================================
     
-    @author Elanda (elanda@elandasunshine.xyz)
+    @author Elanda
     @file   ReloadListener.h
     @date   10, November 2019
     
@@ -27,9 +27,9 @@
 
 namespace jaut
 {
-    class Config;
-    class Localisation;
-    class ThemePointer;
+class Config;
+class ThemePointer;
+class Localisation;
 }
 
 struct ReloadListener

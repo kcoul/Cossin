@@ -16,7 +16,7 @@
     Copyright (c) 2019 ElandaSunshine
     ===============================================================
     
-    @author Elanda (elanda@elandasunshine.xyz)
+    @author Elanda
     @file   PluginStyle.h
     @date   05, October 2019
     
@@ -25,46 +25,45 @@
 
 #pragma once
 
-#include "JuceHeader.h"
+#include <ff_meters/ff_meters.h>
+#include <jaut_provider/jaut_provider.h>
+#include <jaut_gui/jaut_gui.h>
+
 #include "MetreLookAndFeel.h"
-#include "ThemeFolder.h"
 
-#include <jaut/fontformat.h>
-#include <jaut/lookandfeel.h>
-#include <jaut/thememanager.h>
-
-class PluginStyle final : public jaut::LookAndFeel, public MetreLookAndFeel
+class PluginStyle final : public juce::LookAndFeel_V4, public MetreLookAndFeel
 {
 public:
     PluginStyle() noexcept;
     ~PluginStyle() override;
 
 protected:
-    void drawRotarySlider(Graphics&, int, int, int, int, float, float, float, Slider&) override;
-    void drawCornerResizer(Graphics&, int, int, bool, bool) override;
-    void drawTooltip(Graphics&, const String&, int, int) override;
-    void drawButtonBackground(Graphics&, Button&, const Colour&, bool, bool) override;
-    void drawButtonText(Graphics&, TextButton&, bool, bool) override;
-    void drawComboBox(Graphics&, int, int, bool, int, int, int, int, ComboBox&) override;
+    void drawRotarySlider(juce::Graphics&, int, int, int, int, float, float, float, juce::Slider&) override;
+    void drawCornerResizer(juce::Graphics&, int, int, bool, bool) override;
+    void drawTooltip(juce::Graphics&, const juce::String&, int, int) override;
+    void drawButtonBackground(juce::Graphics&, juce::Button&, const juce::Colour&, bool, bool) override;
+    void drawButtonText(juce::Graphics&, juce::TextButton&, bool, bool) override;
+    void drawComboBox(juce::Graphics&, int, int, bool, int, int, int, int, juce::ComboBox&) override;
     void drawToggleButton(juce::Graphics&, juce::ToggleButton&, bool, bool) override;
     void drawBubble(juce::Graphics&, juce::BubbleComponent&, const juce::Point<float>&,
                     const juce::Rectangle<float>&) override;
 
     //==================================================================================================================
-    void drawPopupMenuBackground(Graphics&, int, int) override;
-    void drawPopupMenuItem(Graphics&, const Rectangle<int>&, bool, bool, bool, bool, bool, const String&,
-                           const String&, const Drawable*, const Colour*) override;
-    Font getPopupMenuFont() override;
+    void drawPopupMenuBackground(juce::Graphics&, int, int) override;
+    void drawPopupMenuItem(juce::Graphics&, const juce::Rectangle<int>&, bool, bool, bool, bool, bool,
+                           const juce::String&, const juce::String&, const juce::Drawable*,
+                           const juce::Colour*) override;
+    juce::Font getPopupMenuFont() override;
 
     //==================================================================================================================
-    void drawAlertBox(Graphics&, AlertWindow&, const Rectangle<int>&, TextLayout&) override;
+    void drawAlertBox(juce::Graphics&, juce::AlertWindow&, const juce::Rectangle<int>&, juce::TextLayout&) override;
     int  getAlertWindowButtonHeight() override;
-    Font getAlertWindowTitleFont() override;
-    Font getAlertWindowMessageFont() override;
-    Font getAlertWindowFont() override;
+    juce::Font getAlertWindowTitleFont() override;
+    juce::Font getAlertWindowMessageFont() override;
+    juce::Font getAlertWindowFont() override;
 
     //==================================================================================================================
-    void drawScrollbar(Graphics&, ScrollBar&, int, int, int, int, bool, int, int, bool, bool) override;
+    void drawScrollbar(juce::Graphics&, juce::ScrollBar&, int, int, int, int, bool, int, int, bool, bool) override;
 
 public:
     //==================================================================================================================
@@ -72,21 +71,21 @@ public:
     const jaut::ThemePointer getTheme() const noexcept;
 
     //==================================================================================================================
-    const Font &getFont() const noexcept;
-    Font getFont(float, int = 0, float = 1.0f, float = 0.0f) const noexcept;
+    const juce::Font &getFont() const noexcept;
+    juce::Font getFont(float, int = 0, float = 1.0f, float = 0.0f) const noexcept;
 
 private:
     jaut::ThemePointer theme;
     jaut::CharFormat formatter;
-
-    Image imgCheckbox;
-    Image imgCheckboxTick;
-    Image imgKnobBig;
-    Image imgKnobBigCursor;
-    Image imgKnobSmall;
-    Image imgKnobSmallCursor;
-    Image imgSliderPeakMetre;
-    Font font;
+    
+    juce::Image imgCheckbox;
+    juce::Image imgCheckboxTick;
+    juce::Image imgKnobBig;
+    juce::Image imgKnobBigCursor;
+    juce::Image imgKnobSmall;
+    juce::Image imgKnobSmallCursor;
+    juce::Image imgSliderPeakMetre;
+    juce::Font font;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginStyle)
 };
