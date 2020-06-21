@@ -1,4 +1,5 @@
 # Hashes of file build rules.
+d6514365ce81b1882f1ec4781032104e Cossin_artefacts/JuceLibraryCode/JuceHeader.h
 e7c5f6e971a262a63323261191409569 externals/yaml-cpp/CMakeFiles/Continuous
 bfdfa87325e4a0ee885cd76a53c37167 externals/yaml-cpp/CMakeFiles/ContinuousBuild
 adbb36ff834e28dbe98649fe79fa9214 externals/yaml-cpp/CMakeFiles/ContinuousConfigure
@@ -27,4 +28,4 @@ bf91aeeb34bec78d928a88c524b261dc externals/yaml-cpp/CMakeFiles/NightlyStart
 03dcc56a07dccdaff5efe2ec1c52a8b3 externals/yaml-cpp/CMakeFiles/NightlySubmit
 87a3330b690920beccd5ba05af04e548 externals/yaml-cpp/CMakeFiles/NightlyTest
 530ba56a74f0bb1e972033bcd38aecba externals/yaml-cpp/CMakeFiles/NightlyUpdate
-8f1ede6058695ce2e9a3439dfb1c5a55 src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData.h
+69a12293dbf367aa5bb724a871e39414 src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData.h

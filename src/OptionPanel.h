@@ -3,7 +3,7 @@
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    (at your option) any internal version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,7 +16,7 @@
     Copyright (c) 2019 ElandaSunshine
     ===============================================================
     
-    @author Elanda (elanda@elandasunshine.xyz)
+    @author Elanda
     @file   OptionPanel.h
     @date   18, October 2019
     
@@ -34,7 +34,7 @@ public:
     std::function<bool(const juce::String&)> onIntercept;
 
     OptionPanel(CossinAudioProcessorEditor&, jaut::Localisation&);
-    ~OptionPanel();
+    ~OptionPanel() override;
 
     //==================================================================================================================
     void paint(juce::Graphics&) override;
@@ -54,7 +54,7 @@ private:
     class OptionsContainer final : public Component
     {
     public:
-        OptionsContainer(OptionPanel&);
+        explicit OptionsContainer(OptionPanel&);
 
         //==============================================================================================================
         void resized() override;

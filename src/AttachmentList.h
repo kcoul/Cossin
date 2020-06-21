@@ -3,7 +3,7 @@
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    (at your option) any internal version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -39,10 +39,9 @@ template<class ...List>
 struct AttachmentList
 {
 private:
-    template<class> struct isPairCheck : std::false_type {};
+    template<class>         struct isPairCheck : std::false_type {};
     template<class ...Args> struct isPairCheck<AttachmentEntry<Args...>> : std::true_type {};
-    template<class Pair>
-    static constexpr bool isPair = isPairCheck<Pair>::value;
+    template<class Pair>    static constexpr bool isPair = isPairCheck<Pair>::value;
     
     //==================================================================================================================
     template<class TargetType, class FirstPair, class ...Others>
@@ -56,10 +55,6 @@ private:
     template<class TargetType>
     struct AttachmentOfBase<TargetType, std::void_t<>>
     {
-        //static_assert(!std::is_same_v<TargetType, TargetType>,
-        //              "No attachment type for the given target type was registered");
-    
-        //==============================================================================================================
         using Type = std::void_t<>;
     };
 
@@ -84,9 +79,49 @@ public:
     static constexpr bool hasAttachmentFor = (std::is_base_of_v<typename List::TargetType, TargetType> || ...);
     
     //==================================================================================================================
-    template<class Target, class ...Args>
-    static VariantType attach(juce::RangedAudioParameter &par, Target &target, Args &&...args)
+    class Array
     {
-        return VariantType(std::in_place_type<AttachmentOf<Target>>, par, target, std::forward<Args>(args)...);
-    }
+    public:
+        template<class Target, class ...Args>
+        void attach(juce::RangedAudioParameter &par, Target &target, Args &&...args)
+        {
+            static_assert(hasAttachmentFor<Target>, "No attachment type for the given target type was registered");
+            
+            if constexpr (hasAttachmentFor<Target>)
+            {
+                attachments.emplace_back(std::make_unique<VariantType>(std::in_place_type<AttachmentOf<Target>>, par,
+                                                                       target, std::forward<Args>(args)...));
+            }
+        }
+    
+        template<class Target, class ...Args>
+        void attach(const juce::String &id, juce::AudioProcessorValueTreeState &vts, Target &target, Args &&...args)
+        {
+            static_assert(hasAttachmentFor<Target>, "No attachment type for the given target type was registered");
+    
+            if constexpr (hasAttachmentFor<Target>)
+            {
+                if (juce::RangedAudioParameter *const par = vts.getParameter(id))
+                {
+                    attach<Target, Args...>(*par, target, std::forward<Args>(args)...);
+                }
+                else
+                {
+                    DBG("Could not attach parameter '" << id << "', no such parameter was registered.");
+                    jassertfalse;
+                }
+            }
+        }
+        
+    private:
+        std::vector<std::unique_ptr<VariantType>> attachments;
+    };
 };
+
+template<class ...Entries>
+using DefaultAttachmentList = AttachmentList<
+    AttachmentEntry<juce::Button,   juce::ButtonParameterAttachment>,
+    AttachmentEntry<juce::Slider,   juce::SliderParameterAttachment>,
+    AttachmentEntry<juce::ComboBox, juce::ComboBoxParameterAttachment>,
+    Entries...
+>;

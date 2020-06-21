@@ -22,6 +22,16 @@ if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
 endif()
 
 # module_cpp at /usr/local/lib/cmake/JUCE-6.0.0/JUCEUtils.cmake:267 (file)
+file(GLOB NEW_GLOB LIST_DIRECTORIES false RELATIVE "/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules" "/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules/jaut_gui/jaut_gui*.cpp")
+set(OLD_GLOB
+  "jaut_gui/jaut_gui.cpp"
+  )
+if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
+  message("-- GLOB mismatch!")
+  file(TOUCH_NOCREATE "/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles/cmake.verify_globs")
+endif()
+
+# module_cpp at /usr/local/lib/cmake/JUCE-6.0.0/JUCEUtils.cmake:267 (file)
 file(GLOB NEW_GLOB LIST_DIRECTORIES false RELATIVE "/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules" "/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules/jaut_message/jaut_message*.cpp")
 set(OLD_GLOB
   )
@@ -43,6 +53,16 @@ endif()
 # module_cpp at /usr/local/lib/cmake/JUCE-6.0.0/JUCEUtils.cmake:267 (file)
 file(GLOB NEW_GLOB LIST_DIRECTORIES false RELATIVE "/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules" "/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules/jaut_reflect/jaut_reflect*.cpp")
 set(OLD_GLOB
+  )
+if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
+  message("-- GLOB mismatch!")
+  file(TOUCH_NOCREATE "/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles/cmake.verify_globs")
+endif()
+
+# module_cpp at /usr/local/lib/cmake/JUCE-6.0.0/JUCEUtils.cmake:267 (file)
+file(GLOB NEW_GLOB LIST_DIRECTORIES false RELATIVE "/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules" "/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules/jaut_util/jaut_util*.cpp")
+set(OLD_GLOB
+  "jaut_util/jaut_util.cpp"
   )
 if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
   message("-- GLOB mismatch!")

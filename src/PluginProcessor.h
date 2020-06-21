@@ -3,7 +3,7 @@
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    (at your option) any internal version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -42,11 +42,11 @@ struct ParameterIds
 
 class SharedData;
 
-class CossinAudioProcessor : public juce::AudioProcessor
+class CossinAudioProcessor final : public juce::AudioProcessor
 {
 public:
     CossinAudioProcessor();
-    ~CossinAudioProcessor();
+    ~CossinAudioProcessor() override;
 
     //==================================================================================================================
     void prepareToPlay(double, int) override;
@@ -93,9 +93,6 @@ private:
     }
     
     //==================================================================================================================
-    juce::UndoManager undoManager;
-    foleys::LevelMeterSource metreSource;
-    juce::AudioProcessorValueTreeState parameters;
     juce::SharedResourcePointer<SharedData> sharedData;
     
     juce::AudioParameterFloat *parGain     { nullptr };
@@ -103,6 +100,10 @@ private:
     juce::AudioParameterFloat *parMix      { nullptr };
     juce::AudioParameterInt   *parPanMode  { nullptr };
     juce::AudioParameterInt   *parProcMode { nullptr };
+    
+    juce::UndoManager undoManager;
+    foleys::LevelMeterSource metreSource;
+    juce::AudioProcessorValueTreeState parameters;
     
     float previousGain[Const_NumChannels] { 0.0f, 0.0f };
 

@@ -57,9 +57,13 @@ include CMakeFiles/Cossin.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/Cossin.dir/flags.make
 
+Cossin_artefacts/JuceLibraryCode/JuceHeader.h: Cossin_artefacts/JuceLibraryCode/Release/Defs.txt
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating Cossin_artefacts/JuceLibraryCode/JuceHeader.h"
+	/usr/local/bin/juceaide header /home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/Cossin_artefacts/JuceLibraryCode/Release/Defs.txt /home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/Cossin_artefacts/JuceLibraryCode/JuceHeader.h
+
 CMakeFiles/Cossin.dir/src/CossinMain.cpp.o: CMakeFiles/Cossin.dir/flags.make
 CMakeFiles/Cossin.dir/src/CossinMain.cpp.o: ../src/CossinMain.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/Cossin.dir/src/CossinMain.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/Cossin.dir/src/CossinMain.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cossin.dir/src/CossinMain.cpp.o -c /home/elanda/Documents/Development/Juce/Plugins/Cossin/src/CossinMain.cpp
 
 CMakeFiles/Cossin.dir/src/CossinMain.cpp.i: cmake_force
@@ -70,35 +74,9 @@ CMakeFiles/Cossin.dir/src/CossinMain.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Cossin.dir/src/CossinMain.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/elanda/Documents/Development/Juce/Plugins/Cossin/src/CossinMain.cpp -o CMakeFiles/Cossin.dir/src/CossinMain.cpp.s
 
-CMakeFiles/Cossin.dir/src/EffectModuleGuis.cpp.o: CMakeFiles/Cossin.dir/flags.make
-CMakeFiles/Cossin.dir/src/EffectModuleGuis.cpp.o: ../src/EffectModuleGuis.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/Cossin.dir/src/EffectModuleGuis.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cossin.dir/src/EffectModuleGuis.cpp.o -c /home/elanda/Documents/Development/Juce/Plugins/Cossin/src/EffectModuleGuis.cpp
-
-CMakeFiles/Cossin.dir/src/EffectModuleGuis.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Cossin.dir/src/EffectModuleGuis.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/elanda/Documents/Development/Juce/Plugins/Cossin/src/EffectModuleGuis.cpp > CMakeFiles/Cossin.dir/src/EffectModuleGuis.cpp.i
-
-CMakeFiles/Cossin.dir/src/EffectModuleGuis.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Cossin.dir/src/EffectModuleGuis.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/elanda/Documents/Development/Juce/Plugins/Cossin/src/EffectModuleGuis.cpp -o CMakeFiles/Cossin.dir/src/EffectModuleGuis.cpp.s
-
-CMakeFiles/Cossin.dir/src/EffectModules.cpp.o: CMakeFiles/Cossin.dir/flags.make
-CMakeFiles/Cossin.dir/src/EffectModules.cpp.o: ../src/EffectModules.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/Cossin.dir/src/EffectModules.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cossin.dir/src/EffectModules.cpp.o -c /home/elanda/Documents/Development/Juce/Plugins/Cossin/src/EffectModules.cpp
-
-CMakeFiles/Cossin.dir/src/EffectModules.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Cossin.dir/src/EffectModules.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/elanda/Documents/Development/Juce/Plugins/Cossin/src/EffectModules.cpp > CMakeFiles/Cossin.dir/src/EffectModules.cpp.i
-
-CMakeFiles/Cossin.dir/src/EffectModules.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Cossin.dir/src/EffectModules.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/elanda/Documents/Development/Juce/Plugins/Cossin/src/EffectModules.cpp -o CMakeFiles/Cossin.dir/src/EffectModules.cpp.s
-
 CMakeFiles/Cossin.dir/src/MetreLookAndFeel.cpp.o: CMakeFiles/Cossin.dir/flags.make
 CMakeFiles/Cossin.dir/src/MetreLookAndFeel.cpp.o: ../src/MetreLookAndFeel.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/Cossin.dir/src/MetreLookAndFeel.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/Cossin.dir/src/MetreLookAndFeel.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cossin.dir/src/MetreLookAndFeel.cpp.o -c /home/elanda/Documents/Development/Juce/Plugins/Cossin/src/MetreLookAndFeel.cpp
 
 CMakeFiles/Cossin.dir/src/MetreLookAndFeel.cpp.i: cmake_force
@@ -111,7 +89,7 @@ CMakeFiles/Cossin.dir/src/MetreLookAndFeel.cpp.s: cmake_force
 
 CMakeFiles/Cossin.dir/src/OptionCategories.cpp.o: CMakeFiles/Cossin.dir/flags.make
 CMakeFiles/Cossin.dir/src/OptionCategories.cpp.o: ../src/OptionCategories.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/Cossin.dir/src/OptionCategories.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/Cossin.dir/src/OptionCategories.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cossin.dir/src/OptionCategories.cpp.o -c /home/elanda/Documents/Development/Juce/Plugins/Cossin/src/OptionCategories.cpp
 
 CMakeFiles/Cossin.dir/src/OptionCategories.cpp.i: cmake_force
@@ -124,7 +102,7 @@ CMakeFiles/Cossin.dir/src/OptionCategories.cpp.s: cmake_force
 
 CMakeFiles/Cossin.dir/src/OptionPanel.cpp.o: CMakeFiles/Cossin.dir/flags.make
 CMakeFiles/Cossin.dir/src/OptionPanel.cpp.o: ../src/OptionPanel.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/Cossin.dir/src/OptionPanel.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/Cossin.dir/src/OptionPanel.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cossin.dir/src/OptionPanel.cpp.o -c /home/elanda/Documents/Development/Juce/Plugins/Cossin/src/OptionPanel.cpp
 
 CMakeFiles/Cossin.dir/src/OptionPanel.cpp.i: cmake_force
@@ -137,7 +115,7 @@ CMakeFiles/Cossin.dir/src/OptionPanel.cpp.s: cmake_force
 
 CMakeFiles/Cossin.dir/src/PluginEditor.cpp.o: CMakeFiles/Cossin.dir/flags.make
 CMakeFiles/Cossin.dir/src/PluginEditor.cpp.o: ../src/PluginEditor.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/Cossin.dir/src/PluginEditor.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/Cossin.dir/src/PluginEditor.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cossin.dir/src/PluginEditor.cpp.o -c /home/elanda/Documents/Development/Juce/Plugins/Cossin/src/PluginEditor.cpp
 
 CMakeFiles/Cossin.dir/src/PluginEditor.cpp.i: cmake_force
@@ -150,7 +128,7 @@ CMakeFiles/Cossin.dir/src/PluginEditor.cpp.s: cmake_force
 
 CMakeFiles/Cossin.dir/src/PluginProcessor.cpp.o: CMakeFiles/Cossin.dir/flags.make
 CMakeFiles/Cossin.dir/src/PluginProcessor.cpp.o: ../src/PluginProcessor.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/Cossin.dir/src/PluginProcessor.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/Cossin.dir/src/PluginProcessor.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cossin.dir/src/PluginProcessor.cpp.o -c /home/elanda/Documents/Development/Juce/Plugins/Cossin/src/PluginProcessor.cpp
 
 CMakeFiles/Cossin.dir/src/PluginProcessor.cpp.i: cmake_force
@@ -163,7 +141,7 @@ CMakeFiles/Cossin.dir/src/PluginProcessor.cpp.s: cmake_force
 
 CMakeFiles/Cossin.dir/src/PluginStyle.cpp.o: CMakeFiles/Cossin.dir/flags.make
 CMakeFiles/Cossin.dir/src/PluginStyle.cpp.o: ../src/PluginStyle.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/Cossin.dir/src/PluginStyle.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/Cossin.dir/src/PluginStyle.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cossin.dir/src/PluginStyle.cpp.o -c /home/elanda/Documents/Development/Juce/Plugins/Cossin/src/PluginStyle.cpp
 
 CMakeFiles/Cossin.dir/src/PluginStyle.cpp.i: cmake_force
@@ -176,7 +154,7 @@ CMakeFiles/Cossin.dir/src/PluginStyle.cpp.s: cmake_force
 
 CMakeFiles/Cossin.dir/src/SharedData.cpp.o: CMakeFiles/Cossin.dir/flags.make
 CMakeFiles/Cossin.dir/src/SharedData.cpp.o: ../src/SharedData.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/Cossin.dir/src/SharedData.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/Cossin.dir/src/SharedData.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cossin.dir/src/SharedData.cpp.o -c /home/elanda/Documents/Development/Juce/Plugins/Cossin/src/SharedData.cpp
 
 CMakeFiles/Cossin.dir/src/SharedData.cpp.i: cmake_force
@@ -189,7 +167,7 @@ CMakeFiles/Cossin.dir/src/SharedData.cpp.s: cmake_force
 
 CMakeFiles/Cossin.dir/src/ThemeFolder.cpp.o: CMakeFiles/Cossin.dir/flags.make
 CMakeFiles/Cossin.dir/src/ThemeFolder.cpp.o: ../src/ThemeFolder.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/Cossin.dir/src/ThemeFolder.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/Cossin.dir/src/ThemeFolder.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cossin.dir/src/ThemeFolder.cpp.o -c /home/elanda/Documents/Development/Juce/Plugins/Cossin/src/ThemeFolder.cpp
 
 CMakeFiles/Cossin.dir/src/ThemeFolder.cpp.i: cmake_force
@@ -202,7 +180,7 @@ CMakeFiles/Cossin.dir/src/ThemeFolder.cpp.s: cmake_force
 
 CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_plugin_client/juce_audio_plugin_client_utils.cpp.o: CMakeFiles/Cossin.dir/flags.make
 CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_plugin_client/juce_audio_plugin_client_utils.cpp.o: /usr/local/include/JUCE-6.0.0/modules/juce_audio_plugin_client/juce_audio_plugin_client_utils.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_plugin_client/juce_audio_plugin_client_utils.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_plugin_client/juce_audio_plugin_client_utils.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_plugin_client/juce_audio_plugin_client_utils.cpp.o -c /usr/local/include/JUCE-6.0.0/modules/juce_audio_plugin_client/juce_audio_plugin_client_utils.cpp
 
 CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_plugin_client/juce_audio_plugin_client_utils.cpp.i: cmake_force
@@ -215,7 +193,7 @@ CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_plugin_cli
 
 CMakeFiles/Cossin.dir/externals/modules/ff_meters/ff_meters_LevelMeter.cpp.o: CMakeFiles/Cossin.dir/flags.make
 CMakeFiles/Cossin.dir/externals/modules/ff_meters/ff_meters_LevelMeter.cpp.o: ../externals/modules/ff_meters/ff_meters_LevelMeter.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/Cossin.dir/externals/modules/ff_meters/ff_meters_LevelMeter.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/Cossin.dir/externals/modules/ff_meters/ff_meters_LevelMeter.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cossin.dir/externals/modules/ff_meters/ff_meters_LevelMeter.cpp.o -c /home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/modules/ff_meters/ff_meters_LevelMeter.cpp
 
 CMakeFiles/Cossin.dir/externals/modules/ff_meters/ff_meters_LevelMeter.cpp.i: cmake_force
@@ -228,7 +206,7 @@ CMakeFiles/Cossin.dir/externals/modules/ff_meters/ff_meters_LevelMeter.cpp.s: cm
 
 CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_basics/juce_audio_basics.cpp.o: CMakeFiles/Cossin.dir/flags.make
 CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_basics/juce_audio_basics.cpp.o: /usr/local/include/JUCE-6.0.0/modules/juce_audio_basics/juce_audio_basics.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_basics/juce_audio_basics.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_basics/juce_audio_basics.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_basics/juce_audio_basics.cpp.o -c /usr/local/include/JUCE-6.0.0/modules/juce_audio_basics/juce_audio_basics.cpp
 
 CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_basics/juce_audio_basics.cpp.i: cmake_force
@@ -241,7 +219,7 @@ CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_basics/juc
 
 CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_core/juce_core.cpp.o: CMakeFiles/Cossin.dir/flags.make
 CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_core/juce_core.cpp.o: /usr/local/include/JUCE-6.0.0/modules/juce_core/juce_core.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_core/juce_core.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_core/juce_core.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_core/juce_core.cpp.o -c /usr/local/include/JUCE-6.0.0/modules/juce_core/juce_core.cpp
 
 CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_core/juce_core.cpp.i: cmake_force
@@ -254,7 +232,7 @@ CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_core/juce_core.c
 
 CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_gui_basics/juce_gui_basics.cpp.o: CMakeFiles/Cossin.dir/flags.make
 CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_gui_basics/juce_gui_basics.cpp.o: /usr/local/include/JUCE-6.0.0/modules/juce_gui_basics/juce_gui_basics.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_gui_basics/juce_gui_basics.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_gui_basics/juce_gui_basics.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_gui_basics/juce_gui_basics.cpp.o -c /usr/local/include/JUCE-6.0.0/modules/juce_gui_basics/juce_gui_basics.cpp
 
 CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_gui_basics/juce_gui_basics.cpp.i: cmake_force
@@ -267,7 +245,7 @@ CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_gui_basics/juce_
 
 CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_graphics/juce_graphics.cpp.o: CMakeFiles/Cossin.dir/flags.make
 CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_graphics/juce_graphics.cpp.o: /usr/local/include/JUCE-6.0.0/modules/juce_graphics/juce_graphics.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_graphics/juce_graphics.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_graphics/juce_graphics.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_graphics/juce_graphics.cpp.o -c /usr/local/include/JUCE-6.0.0/modules/juce_graphics/juce_graphics.cpp
 
 CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_graphics/juce_graphics.cpp.i: cmake_force
@@ -280,7 +258,7 @@ CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_graphics/juce_gr
 
 CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_events/juce_events.cpp.o: CMakeFiles/Cossin.dir/flags.make
 CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_events/juce_events.cpp.o: /usr/local/include/JUCE-6.0.0/modules/juce_events/juce_events.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_events/juce_events.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_events/juce_events.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_events/juce_events.cpp.o -c /usr/local/include/JUCE-6.0.0/modules/juce_events/juce_events.cpp
 
 CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_events/juce_events.cpp.i: cmake_force
@@ -293,7 +271,7 @@ CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_events/juce_even
 
 CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_data_structures/juce_data_structures.cpp.o: CMakeFiles/Cossin.dir/flags.make
 CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_data_structures/juce_data_structures.cpp.o: /usr/local/include/JUCE-6.0.0/modules/juce_data_structures/juce_data_structures.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_data_structures/juce_data_structures.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_data_structures/juce_data_structures.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_data_structures/juce_data_structures.cpp.o -c /usr/local/include/JUCE-6.0.0/modules/juce_data_structures/juce_data_structures.cpp
 
 CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_data_structures/juce_data_structures.cpp.i: cmake_force
@@ -304,22 +282,22 @@ CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_data_structures/
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_data_structures/juce_data_structures.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /usr/local/include/JUCE-6.0.0/modules/juce_data_structures/juce_data_structures.cpp -o CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_data_structures/juce_data_structures.cpp.s
 
-CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_provider/jaut_provider.cpp.o: CMakeFiles/Cossin.dir/flags.make
-CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_provider/jaut_provider.cpp.o: ../externals/jaut/modules/jaut_provider/jaut_provider.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_provider/jaut_provider.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_provider/jaut_provider.cpp.o -c /home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules/jaut_provider/jaut_provider.cpp
+CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_gui/jaut_gui.cpp.o: CMakeFiles/Cossin.dir/flags.make
+CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_gui/jaut_gui.cpp.o: ../externals/jaut/modules/jaut_gui/jaut_gui.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_gui/jaut_gui.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_gui/jaut_gui.cpp.o -c /home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules/jaut_gui/jaut_gui.cpp
 
-CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_provider/jaut_provider.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_provider/jaut_provider.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules/jaut_provider/jaut_provider.cpp > CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_provider/jaut_provider.cpp.i
+CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_gui/jaut_gui.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_gui/jaut_gui.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules/jaut_gui/jaut_gui.cpp > CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_gui/jaut_gui.cpp.i
 
-CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_provider/jaut_provider.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_provider/jaut_provider.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules/jaut_provider/jaut_provider.cpp -o CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_provider/jaut_provider.cpp.s
+CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_gui/jaut_gui.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_gui/jaut_gui.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules/jaut_gui/jaut_gui.cpp -o CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_gui/jaut_gui.cpp.s
 
 CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_core/jaut_core.cpp.o: CMakeFiles/Cossin.dir/flags.make
 CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_core/jaut_core.cpp.o: ../externals/jaut/modules/jaut_core/jaut_core.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_core/jaut_core.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_core/jaut_core.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_core/jaut_core.cpp.o -c /home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules/jaut_core/jaut_core.cpp
 
 CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_core/jaut_core.cpp.i: cmake_force
@@ -330,9 +308,48 @@ CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_core/jaut_core.cpp.s: cmake_fo
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_core/jaut_core.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules/jaut_core/jaut_core.cpp -o CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_core/jaut_core.cpp.s
 
+CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.cpp.o: CMakeFiles/Cossin.dir/flags.make
+CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.cpp.o: /usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.cpp.o -c /usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.cpp
+
+CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.cpp > CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.cpp.i
+
+CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.cpp -o CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.cpp.s
+
+CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_provider/jaut_provider.cpp.o: CMakeFiles/Cossin.dir/flags.make
+CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_provider/jaut_provider.cpp.o: ../externals/jaut/modules/jaut_provider/jaut_provider.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building CXX object CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_provider/jaut_provider.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_provider/jaut_provider.cpp.o -c /home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules/jaut_provider/jaut_provider.cpp
+
+CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_provider/jaut_provider.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_provider/jaut_provider.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules/jaut_provider/jaut_provider.cpp > CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_provider/jaut_provider.cpp.i
+
+CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_provider/jaut_provider.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_provider/jaut_provider.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules/jaut_provider/jaut_provider.cpp -o CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_provider/jaut_provider.cpp.s
+
+CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_util/jaut_util.cpp.o: CMakeFiles/Cossin.dir/flags.make
+CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_util/jaut_util.cpp.o: ../externals/jaut/modules/jaut_util/jaut_util.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building CXX object CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_util/jaut_util.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_util/jaut_util.cpp.o -c /home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules/jaut_util/jaut_util.cpp
+
+CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_util/jaut_util.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_util/jaut_util.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules/jaut_util/jaut_util.cpp > CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_util/jaut_util.cpp.i
+
+CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_util/jaut_util.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_util/jaut_util.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules/jaut_util/jaut_util.cpp -o CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_util/jaut_util.cpp.s
+
 CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_audio/jaut_audio.cpp.o: CMakeFiles/Cossin.dir/flags.make
 CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_audio/jaut_audio.cpp.o: ../externals/jaut/modules/jaut_audio/jaut_audio.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building CXX object CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_audio/jaut_audio.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building CXX object CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_audio/jaut_audio.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_audio/jaut_audio.cpp.o -c /home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules/jaut_audio/jaut_audio.cpp
 
 CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_audio/jaut_audio.cpp.i: cmake_force
@@ -345,7 +362,7 @@ CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_audio/jaut_audio.cpp.s: cmake_
 
 CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_processors/juce_audio_processors.cpp.o: CMakeFiles/Cossin.dir/flags.make
 CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_processors/juce_audio_processors.cpp.o: /usr/local/include/JUCE-6.0.0/modules/juce_audio_processors/juce_audio_processors.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building CXX object CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_processors/juce_audio_processors.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building CXX object CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_processors/juce_audio_processors.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_processors/juce_audio_processors.cpp.o -c /usr/local/include/JUCE-6.0.0/modules/juce_audio_processors/juce_audio_processors.cpp
 
 CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_processors/juce_audio_processors.cpp.i: cmake_force
@@ -356,24 +373,61 @@ CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_processors
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_processors/juce_audio_processors.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /usr/local/include/JUCE-6.0.0/modules/juce_audio_processors/juce_audio_processors.cpp -o CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_processors/juce_audio_processors.cpp.s
 
-CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.cpp.o: CMakeFiles/Cossin.dir/flags.make
-CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.cpp.o: /usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building CXX object CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.cpp.o -c /usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.cpp
+CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_devices/juce_audio_devices.cpp.o: CMakeFiles/Cossin.dir/flags.make
+CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_devices/juce_audio_devices.cpp.o: /usr/local/include/JUCE-6.0.0/modules/juce_audio_devices/juce_audio_devices.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Building CXX object CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_devices/juce_audio_devices.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_devices/juce_audio_devices.cpp.o -c /usr/local/include/JUCE-6.0.0/modules/juce_audio_devices/juce_audio_devices.cpp
 
-CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.cpp > CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.cpp.i
+CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_devices/juce_audio_devices.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_devices/juce_audio_devices.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /usr/local/include/JUCE-6.0.0/modules/juce_audio_devices/juce_audio_devices.cpp > CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_devices/juce_audio_devices.cpp.i
 
-CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.cpp -o CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.cpp.s
+CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_devices/juce_audio_devices.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_devices/juce_audio_devices.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /usr/local/include/JUCE-6.0.0/modules/juce_audio_devices/juce_audio_devices.cpp -o CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_devices/juce_audio_devices.cpp.s
+
+CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_utils/juce_audio_utils.cpp.o: CMakeFiles/Cossin.dir/flags.make
+CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_utils/juce_audio_utils.cpp.o: /usr/local/include/JUCE-6.0.0/modules/juce_audio_utils/juce_audio_utils.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Building CXX object CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_utils/juce_audio_utils.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_utils/juce_audio_utils.cpp.o -c /usr/local/include/JUCE-6.0.0/modules/juce_audio_utils/juce_audio_utils.cpp
+
+CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_utils/juce_audio_utils.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_utils/juce_audio_utils.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /usr/local/include/JUCE-6.0.0/modules/juce_audio_utils/juce_audio_utils.cpp > CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_utils/juce_audio_utils.cpp.i
+
+CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_utils/juce_audio_utils.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_utils/juce_audio_utils.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /usr/local/include/JUCE-6.0.0/modules/juce_audio_utils/juce_audio_utils.cpp -o CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_utils/juce_audio_utils.cpp.s
+
+CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_formats/juce_audio_formats.cpp.o: CMakeFiles/Cossin.dir/flags.make
+CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_formats/juce_audio_formats.cpp.o: /usr/local/include/JUCE-6.0.0/modules/juce_audio_formats/juce_audio_formats.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_28) "Building CXX object CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_formats/juce_audio_formats.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_formats/juce_audio_formats.cpp.o -c /usr/local/include/JUCE-6.0.0/modules/juce_audio_formats/juce_audio_formats.cpp
+
+CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_formats/juce_audio_formats.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_formats/juce_audio_formats.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /usr/local/include/JUCE-6.0.0/modules/juce_audio_formats/juce_audio_formats.cpp > CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_formats/juce_audio_formats.cpp.i
+
+CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_formats/juce_audio_formats.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_formats/juce_audio_formats.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /usr/local/include/JUCE-6.0.0/modules/juce_audio_formats/juce_audio_formats.cpp -o CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_formats/juce_audio_formats.cpp.s
+
+CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_opengl/juce_opengl.cpp.o: CMakeFiles/Cossin.dir/flags.make
+CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_opengl/juce_opengl.cpp.o: /usr/local/include/JUCE-6.0.0/modules/juce_opengl/juce_opengl.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_29) "Building CXX object CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_opengl/juce_opengl.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_opengl/juce_opengl.cpp.o -c /usr/local/include/JUCE-6.0.0/modules/juce_opengl/juce_opengl.cpp
+
+CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_opengl/juce_opengl.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_opengl/juce_opengl.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /usr/local/include/JUCE-6.0.0/modules/juce_opengl/juce_opengl.cpp > CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_opengl/juce_opengl.cpp.i
+
+CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_opengl/juce_opengl.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_opengl/juce_opengl.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /usr/local/include/JUCE-6.0.0/modules/juce_opengl/juce_opengl.cpp -o CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_opengl/juce_opengl.cpp.s
 
 # Object files for target Cossin
 Cossin_OBJECTS = \
 "CMakeFiles/Cossin.dir/src/CossinMain.cpp.o" \
-"CMakeFiles/Cossin.dir/src/EffectModuleGuis.cpp.o" \
-"CMakeFiles/Cossin.dir/src/EffectModules.cpp.o" \
 "CMakeFiles/Cossin.dir/src/MetreLookAndFeel.cpp.o" \
 "CMakeFiles/Cossin.dir/src/OptionCategories.cpp.o" \
 "CMakeFiles/Cossin.dir/src/OptionPanel.cpp.o" \
@@ -390,18 +444,22 @@ Cossin_OBJECTS = \
 "CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_graphics/juce_graphics.cpp.o" \
 "CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_events/juce_events.cpp.o" \
 "CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_data_structures/juce_data_structures.cpp.o" \
-"CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_provider/jaut_provider.cpp.o" \
+"CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_gui/jaut_gui.cpp.o" \
 "CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_core/jaut_core.cpp.o" \
+"CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.cpp.o" \
+"CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_provider/jaut_provider.cpp.o" \
+"CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_util/jaut_util.cpp.o" \
 "CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_audio/jaut_audio.cpp.o" \
 "CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_processors/juce_audio_processors.cpp.o" \
-"CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.cpp.o"
+"CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_devices/juce_audio_devices.cpp.o" \
+"CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_utils/juce_audio_utils.cpp.o" \
+"CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_formats/juce_audio_formats.cpp.o" \
+"CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_opengl/juce_opengl.cpp.o"
 
 # External object files for target Cossin
 Cossin_EXTERNAL_OBJECTS =
 
 Cossin_artefacts/Release/libES\ Cossin_SharedCode.a: CMakeFiles/Cossin.dir/src/CossinMain.cpp.o
-Cossin_artefacts/Release/libES\ Cossin_SharedCode.a: CMakeFiles/Cossin.dir/src/EffectModuleGuis.cpp.o
-Cossin_artefacts/Release/libES\ Cossin_SharedCode.a: CMakeFiles/Cossin.dir/src/EffectModules.cpp.o
 Cossin_artefacts/Release/libES\ Cossin_SharedCode.a: CMakeFiles/Cossin.dir/src/MetreLookAndFeel.cpp.o
 Cossin_artefacts/Release/libES\ Cossin_SharedCode.a: CMakeFiles/Cossin.dir/src/OptionCategories.cpp.o
 Cossin_artefacts/Release/libES\ Cossin_SharedCode.a: CMakeFiles/Cossin.dir/src/OptionPanel.cpp.o
@@ -418,14 +476,20 @@ Cossin_artefacts/Release/libES\ Cossin_SharedCode.a: CMakeFiles/Cossin.dir/usr/l
 Cossin_artefacts/Release/libES\ Cossin_SharedCode.a: CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_graphics/juce_graphics.cpp.o
 Cossin_artefacts/Release/libES\ Cossin_SharedCode.a: CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_events/juce_events.cpp.o
 Cossin_artefacts/Release/libES\ Cossin_SharedCode.a: CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_data_structures/juce_data_structures.cpp.o
-Cossin_artefacts/Release/libES\ Cossin_SharedCode.a: CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_provider/jaut_provider.cpp.o
+Cossin_artefacts/Release/libES\ Cossin_SharedCode.a: CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_gui/jaut_gui.cpp.o
 Cossin_artefacts/Release/libES\ Cossin_SharedCode.a: CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_core/jaut_core.cpp.o
+Cossin_artefacts/Release/libES\ Cossin_SharedCode.a: CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.cpp.o
+Cossin_artefacts/Release/libES\ Cossin_SharedCode.a: CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_provider/jaut_provider.cpp.o
+Cossin_artefacts/Release/libES\ Cossin_SharedCode.a: CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_util/jaut_util.cpp.o
 Cossin_artefacts/Release/libES\ Cossin_SharedCode.a: CMakeFiles/Cossin.dir/externals/jaut/modules/jaut_audio/jaut_audio.cpp.o
 Cossin_artefacts/Release/libES\ Cossin_SharedCode.a: CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_processors/juce_audio_processors.cpp.o
-Cossin_artefacts/Release/libES\ Cossin_SharedCode.a: CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_gui_extra/juce_gui_extra.cpp.o
+Cossin_artefacts/Release/libES\ Cossin_SharedCode.a: CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_devices/juce_audio_devices.cpp.o
+Cossin_artefacts/Release/libES\ Cossin_SharedCode.a: CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_utils/juce_audio_utils.cpp.o
+Cossin_artefacts/Release/libES\ Cossin_SharedCode.a: CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_audio_formats/juce_audio_formats.cpp.o
+Cossin_artefacts/Release/libES\ Cossin_SharedCode.a: CMakeFiles/Cossin.dir/usr/local/include/JUCE-6.0.0/modules/juce_opengl/juce_opengl.cpp.o
 Cossin_artefacts/Release/libES\ Cossin_SharedCode.a: CMakeFiles/Cossin.dir/build.make
 Cossin_artefacts/Release/libES\ Cossin_SharedCode.a: CMakeFiles/Cossin.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Linking CXX static library \"Cossin_artefacts/Release/libES Cossin_SharedCode.a\""
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Linking CXX static library \"Cossin_artefacts/Release/libES Cossin_SharedCode.a\""
 	$(CMAKE_COMMAND) -P CMakeFiles/Cossin.dir/cmake_clean_target.cmake
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/Cossin.dir/link.txt --verbose=$(VERBOSE)
 
@@ -438,7 +502,7 @@ CMakeFiles/Cossin.dir/clean:
 	$(CMAKE_COMMAND) -P CMakeFiles/Cossin.dir/cmake_clean.cmake
 .PHONY : CMakeFiles/Cossin.dir/clean
 
-CMakeFiles/Cossin.dir/depend:
+CMakeFiles/Cossin.dir/depend: Cossin_artefacts/JuceLibraryCode/JuceHeader.h
 	cd /home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/elanda/Documents/Development/Juce/Plugins/Cossin /home/elanda/Documents/Development/Juce/Plugins/Cossin /home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release /home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release /home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-release/CMakeFiles/Cossin.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/Cossin.dir/depend
 

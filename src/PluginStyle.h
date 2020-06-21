@@ -3,7 +3,7 @@
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    (at your option) any internal version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -44,10 +44,12 @@ protected:
     void drawButtonBackground(juce::Graphics&, juce::Button&, const juce::Colour&, bool, bool) override;
     void drawButtonText(juce::Graphics&, juce::TextButton&, bool, bool) override;
     void drawComboBox(juce::Graphics&, int, int, bool, int, int, int, int, juce::ComboBox&) override;
+    juce::Label* createComboBoxTextBox(juce::ComboBox&) override;
+    juce::Font getComboBoxFont(juce::ComboBox&) override;
     void drawToggleButton(juce::Graphics&, juce::ToggleButton&, bool, bool) override;
     void drawBubble(juce::Graphics&, juce::BubbleComponent&, const juce::Point<float>&,
                     const juce::Rectangle<float>&) override;
-
+    
     //==================================================================================================================
     void drawPopupMenuBackground(juce::Graphics&, int, int) override;
     void drawPopupMenuItem(juce::Graphics&, const juce::Rectangle<int>&, bool, bool, bool, bool, bool,
@@ -68,11 +70,11 @@ protected:
 public:
     //==================================================================================================================
     void reset(const jaut::ThemePointer&) noexcept;
-    const jaut::ThemePointer getTheme() const noexcept;
+    jaut::ThemePointer &getTheme() noexcept;
 
     //==================================================================================================================
     const juce::Font &getFont() const noexcept;
-    juce::Font getFont(float, int = 0, float = 1.0f, float = 0.0f) const noexcept;
+    juce::Font getFont(float, int = 0, float = 1.0f, float = 0.0f) const;
 
 private:
     jaut::ThemePointer theme;

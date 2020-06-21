@@ -3,7 +3,7 @@
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    (at your option) any internal version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,36 +26,37 @@
 #pragma once
 
 #include <jaut_provider/jaut_provider.h>
-#include <juce_gui_basics/juce_gui_basics.h>
 #include <juce_audio_devices/juce_audio_devices.h>
+#include <juce_opengl/juce_opengl.h>
 
 #include "ReloadListener.h"
 #include "Resources.h"
+#include "CossinDef.h"
 
 class CossinAudioProcessorEditor;
 class SharedData;
-
 class OptionCategory : public juce::Component, public ReloadListener
 {
 public:
-    OptionCategory(CossinAudioProcessorEditor &editor, jaut::Localisation &locale) : editor(editor), locale(locale) {}
-    virtual ~OptionCategory() {}
+    OptionCategory(CossinAudioProcessorEditor &editor, jaut::Localisation &locale)
+        : editor(editor), locale(locale)
+    {}
 
     //==================================================================================================================
     virtual bool saveState(SharedData&) const = 0;
     virtual void loadState(const SharedData&) = 0;
 
     //==================================================================================================================
-    virtual void reloadConfig(const jaut::Config&) override {}
-    virtual void reloadTheme (const jaut::ThemePointer&) override {}
-    virtual void reloadLocale(const jaut::Localisation&) override {}
+    void reloadConfig(const jaut::Config&)       override {}
+    void reloadTheme (const jaut::ThemePointer&) override {}
+    void reloadLocale(const jaut::Localisation&) override {}
 
 protected:
     CossinAudioProcessorEditor &editor;
     jaut::Localisation &locale;
 };
 
-/* Holds general and default settings*/
+/* Holds general and default settings */
 class OptionPanelGeneral final : public OptionCategory, public juce::ListBoxModel
 {
 public:
@@ -87,7 +88,7 @@ private:
         juce::TextEditor boxWindowHeight;
 
         //==============================================================================================================
-        PanelDefaults(OptionPanelGeneral&);
+        explicit PanelDefaults(OptionPanelGeneral&);
 
         //==============================================================================================================
         void paint(juce::Graphics&) override;
@@ -166,7 +167,7 @@ private:
             juce::Label labelNoPreview;
 
             //==========================================================================================================
-            ThemePreview(ThemePanel&);
+            explicit ThemePreview(ThemePanel&);
 
             //==========================================================================================================
             void paint(juce::Graphics&) override;
@@ -191,7 +192,7 @@ private:
         juce::ListBox themeList;
 
         //==============================================================================================================
-        ThemePanel(OptionPanelThemes&);
+        explicit ThemePanel(OptionPanelThemes&);
 
         //==============================================================================================================
         void paint(juce::Graphics&) override;
@@ -206,10 +207,6 @@ private:
         //==============================================================================================================
         void buttonClicked(juce::Button*) override;
         void changeButtonState();
-
-        //==============================================================================================================
-        void selectThemeRow(const jaut::ThemePointer&);
-        void resetThemeList(const std::vector<jaut::ThemePointer>&);
 
         JUCE_DECLARE_NON_COPYABLE(ThemePanel)
     };
@@ -231,7 +228,7 @@ class OptionPanelPerformance final : public OptionCategory, private juce::Toggle
 {
 public:
     OptionPanelPerformance(CossinAudioProcessorEditor&, jaut::Localisation&);
-    ~OptionPanelPerformance();
+    ~OptionPanelPerformance() override;
 
     //==================================================================================================================
     void resized() override;
@@ -247,9 +244,9 @@ private:
     juce::ToggleButton tickEffects;
 
 #if COSSIN_USE_OPENGL
-    ToggleButton tickHardwareAcceleration;
-    ToggleButton tickMultisampling;
-    ToggleButton tickSmoothing;
+    juce::ToggleButton tickHardwareAcceleration;
+    juce::ToggleButton tickMultisampling;
+    juce::ToggleButton tickSmoothing;
 #endif
     
     juce::Font font;
@@ -265,12 +262,11 @@ private:
 };
 
 class CossinPluginWrapper;
-
 class OptionPanelStandalone final : public OptionCategory
 {
 public:
     OptionPanelStandalone(CossinAudioProcessorEditor&, jaut::Localisation&);
-    ~OptionPanelStandalone();
+    ~OptionPanelStandalone() override;
 
     //==================================================================================================================
     void resized() override;
@@ -297,8 +293,8 @@ private:
         juce::Label labelLatency;
 
         //==============================================================================================================
-        DevicePanel(OptionPanelStandalone&);
-        ~DevicePanel();
+        explicit DevicePanel(OptionPanelStandalone&);
+        ~DevicePanel() override;
 
         //==============================================================================================================
         void resized() override;

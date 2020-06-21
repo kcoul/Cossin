@@ -3,7 +3,7 @@
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    (at your option) any internal version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -49,18 +49,6 @@ juce::String getLocaleName(const jaut::Localisation &locale)
     return locale.getInternalLocalisation().getLanguageName()
          + locale.getInternalLocalisation().getCountryCodes().joinIntoString("-");
 }
-
-void cLog(const juce::String &message)
-{
-    const juce::Time   time        = juce::Time::getCurrentTime();
-    const juce::String thread_name = juce::MessageManager::getInstance()->isThisTheMessageThread() ? "MESSAGE "
-                                                                                                   : "AUDIO ";
-
-    juce::String prependix;
-    prependix << "[" << thread_name << time.toString(false, true) << "] ";
-
-    juce::Logger::writeToLog(prependix + message);
-}
 }
 //======================================================================================================================
 // endregion Namespace
@@ -78,11 +66,10 @@ CossinAudioProcessorEditor::CossinAudioProcessorEditor(CossinAudioProcessor &p, 
       locale(sharedData->getDefaultLocale()), needsUpdate(false),
       buttonPanningLawSelection("ButtonPanningLawSelection", juce::DrawableButton::ImageRaw),
       buttonSettings("ButtonSettings", juce::DrawableButton::ButtonStyle::ImageRaw),
-      metreLevel(foleys::LevelMeter::Horizontal), optionsPanel(*this, locale),
-      parameterAttachments(createAttachments(vts))
+      metreLevel(foleys::LevelMeter::Horizontal), optionsPanel(*this, locale)
 {
     addMouseListener(this, true);
-
+    
     COSSIN_IS_STANDALONE
     (
         setDefaultLookAndFeel(&lookAndFeel);
@@ -101,7 +88,13 @@ CossinAudioProcessorEditor::CossinAudioProcessorEditor(CossinAudioProcessor &p, 
     initialized = true;
     resized();
     
-    ::cLog("Done initializing Cossin.");
+    parameterAttachments.attach(ParameterIds::MasterLevel,         vts, sliderLevel,      nullptr);
+    parameterAttachments.attach(ParameterIds::MasterMix,           vts, sliderMix,        nullptr);
+    parameterAttachments.attach(ParameterIds::MasterPan,           vts, sliderPanning,    nullptr);
+    parameterAttachments.attach(ParameterIds::PropertyPanningMode, vts, valuePanningMode, nullptr);
+    //TODO parameterAttachments.attach(ParameterIds::PropertyProcessMode, vts, valueProcessMode, nullptr);
+    
+    sendLog("Done initializing Cossin.");
 }
 
 CossinAudioProcessorEditor::~CossinAudioProcessorEditor()
@@ -183,23 +176,23 @@ void CossinAudioProcessorEditor::initializeData(CossinMainEditorWindow &parent, 
     }
     
     juce::String message;
-    message << "**********************************************************"  << juce::newLine
-            << "                        --Program--                       "  << juce::newLine
-            << "App:        " << res::App_Name                               << juce::newLine
-            << "Version:    " << res::App_Version                            << juce::newLine
-            << "Session-ID: " << session_id                                  << juce::newLine
-            << "**********************************************************"  << juce::newLine
-            << "                        --Machine--                       "  << juce::newLine
-            << "System:     " << juce::SystemStats::getOperatingSystemName() << juce::newLine
-            << "Memory:     " << memory_size                                 << juce::newLine
-            << "CPU:        " << cpu_model << cpu_vendor                     << juce::newLine
-            << "Graphics:   " << gpuInfo                                     << juce::newLine
-            << "**********************************************************"  << juce::newLine;
+    message << "**********************************************************"  << jaut::newLine
+            << "                        --Program--                       "  << jaut::newLine
+            << "App:        " << res::App_Name                               << jaut::newLine
+            << "Version:    " << res::App_Version                            << jaut::newLine
+            << "Session-ID: " << session_id                                  << jaut::newLine
+            << "**********************************************************"  << jaut::newLine
+            << "                        --Machine--                       "  << jaut::newLine
+            << "System:     " << juce::SystemStats::getOperatingSystemName() << jaut::newLine
+            << "Memory:     " << memory_size                                 << jaut::newLine
+            << "CPU:        " << cpu_model << cpu_vendor                     << jaut::newLine
+            << "Graphics:   " << gpuInfo                                     << jaut::newLine
+            << "**********************************************************"  << jaut::newLine;
 
     JAUT_NDEBUGGING(if(sharedData->Configuration().getProperty("logToFile", res::Cfg_Standalone).getValue()
                        && juce::JUCEApplication::isStandaloneApp()))
     {
-        const juce::File file = sharedData->AppData().getChildFile("logs/session-" + session_id + ".log");
+        const juce::File file = sharedData->AppData().dirDataLogs.getChildFile("session-" + session_id + ".log");
 
         if (file.getParentDirectory().exists())
         {
@@ -208,7 +201,7 @@ void CossinAudioProcessorEditor::initializeData(CossinMainEditorWindow &parent, 
     }
     
     juce::Logger::writeToLog(message);
-    ::cLog("Initializing Cossin user interface...");
+    sendLog("Initializing Cossin user interface...");
 
     // Load all data elements
     reloadConfig(sharedData->Configuration());
@@ -406,7 +399,7 @@ void CossinAudioProcessorEditor::paintBasicInterface(juce::Graphics &g) const
 //======================================================================================================================
 void CossinAudioProcessorEditor::reloadConfig(const jaut::Config &config)
 {
-    ::cLog("Reloading config...");
+    sendLog("Reloading config...");
     
     auto property_animations      = config.getProperty("animations", res::Cfg_Optimization);
     const int  animation_mode     = property_animations->getProperty("mode")  ->getValue();
@@ -437,8 +430,8 @@ void CossinAudioProcessorEditor::reloadConfig(const jaut::Config &config)
     {
         listener.reloadConfig(config);
     });
-
-    ::cLog("Config successfully reloaded.");
+    
+    sendLog("Config successfully reloaded.");
 }
 
 void CossinAudioProcessorEditor::reloadLocale(const jaut::Localisation &localisation)
@@ -449,7 +442,7 @@ void CossinAudioProcessorEditor::reloadLocale(const jaut::Localisation &localisa
     if(lastLocale != locale_name)
     {
         lastLocale = locale_name;
-        ::cLog("Loading localisation '" + localisation.getLanguageFile().getFileNameWithoutExtension() + "'...");
+        sendLog("Loading localisation '" + localisation.getLanguageFile().getFileNameWithoutExtension() + "'...");
         locale.setCurrentLanguage(localisation);
         
         listeners.call([&localisation](ReloadListener &listener)
@@ -458,7 +451,7 @@ void CossinAudioProcessorEditor::reloadLocale(const jaut::Localisation &localisa
         });
     }
     
-    ::cLog("Language successfully set.");
+    sendLog("Language successfully set.");
 }
 
 void CossinAudioProcessorEditor::reloadTheme(const jaut::ThemePointer &theme)
@@ -468,7 +461,7 @@ void CossinAudioProcessorEditor::reloadTheme(const jaut::ThemePointer &theme)
     if(lastTheme != theme_id)
     {
         lastTheme = theme_id;
-        ::cLog("Loading resources of theme pack '" + theme->getThemeMeta()->getName() + "'...");
+        sendLog("Loading resources of theme pack '" + theme->getThemeMeta()->getName() + "'...");
 
         imgBackground  = theme->getImage(res::Png_ContBack);
         imgHeader      = theme->getImage(res::Png_HeadCover);
@@ -483,11 +476,12 @@ void CossinAudioProcessorEditor::reloadTheme(const jaut::ThemePointer &theme)
         {
             listener.reloadTheme(theme);
         });
-
+    
+        fontTheme = theme->getThemeFont();
         sendLookAndFeelChange();
     }
-
-    ::cLog("Resources successfully reloaded.");
+    
+    sendLog("Resources successfully reloaded.");
 }
 
 //======================================================================================================================
@@ -496,14 +490,14 @@ bool CossinAudioProcessorEditor::getOption(int flag) const noexcept
     const bool flag_is_valid = flag >= 0 && flag < Flag_Num;
     jassert(flag_is_valid);
 
-    return flag_is_valid ? options[flag] : false;
+    return flag_is_valid ? options[static_cast<std::size_t>(flag)] : false;
 }
 
 void CossinAudioProcessorEditor::setOption(int flag, bool value) noexcept
 {    
     if(flag >= 0 && flag < Flag_Num)
     {
-        options[flag] = value;
+        options[static_cast<std::size_t>(flag)] = value;
     }
     else
     {
@@ -662,8 +656,10 @@ void CossinAudioProcessorEditor::drawDrawableButton(juce::Graphics &g, juce::Dra
 
         g.setColour(colour_container_background);
         g.drawRect(0, 1, 1, button.getHeight() - 2);
-
-        for (int i = 0; i < res::List_PanModes.size(); ++i)
+        
+        constexpr int pan_modes_length = static_cast<int>(res::List_PanModes.size());
+        
+        for (int i = 0; i < pan_modes_length; ++i)
         {
             g.drawImage(imgPanningLaw, 15 * i + 2, 3, 10, 10, i * 10, 0, 10, 10);
         }
@@ -729,19 +725,6 @@ void CossinAudioProcessorEditor::reloadAllData()
     juce::MouseCursor::hideWaitCursor();
 }
 
-CossinAudioProcessorEditor::AttachmentVector
-  CossinAudioProcessorEditor::createAttachments(juce::AudioProcessorValueTreeState &vts)
-{
-    return {
-        AttachmentTypes::attach(*vts.getParameter(ParameterIds::MasterLevel),         sliderLevel,      nullptr),
-        AttachmentTypes::attach(*vts.getParameter(ParameterIds::MasterMix),           sliderMix,        nullptr),
-        AttachmentTypes::attach(*vts.getParameter(ParameterIds::MasterPan),           sliderPanning,    nullptr),
-        AttachmentTypes::attach(*vts.getParameter(ParameterIds::MasterLevel),         sliderMix,        nullptr),
-        AttachmentTypes::attach(*vts.getParameter(ParameterIds::PropertyPanningMode), valuePanningMode, nullptr),
-        AttachmentTypes::attach(*vts.getParameter(ParameterIds::PropertyProcessMode), valueProcessMode, nullptr)
-    };
-}
-
 #if COSSIN_USE_OPENGL
 //======================================================================================================================
 void CossinAudioProcessorEditor::newOpenGLContextCreated()
@@ -756,7 +739,7 @@ void CossinAudioProcessorEditor::openGLContextClosing()
 // endregion CossinAudioProcessorEditor
 //**********************************************************************************************************************
 // region CossinMainEditorWindow
-#pragma region CossinMainEditorWindow
+//======================================================================================================================
 CossinMainEditorWindow::CossinMainEditorWindow(CossinAudioProcessor &processor, juce::AudioProcessorValueTreeState &vts,
                                                foleys::LevelMeterSource &metreSource)
     : AudioProcessorEditor(processor),
@@ -862,5 +845,6 @@ void CossinMainEditorWindow::handleAsyncUpdate()
 #endif
     resized();
 }
+//======================================================================================================================
 // endregion CossinMainEditorWindow
 //**********************************************************************************************************************

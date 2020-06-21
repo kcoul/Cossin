@@ -6,11 +6,11 @@
 
 #IncludeRegexTransform: 
 
-/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData.h
+/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/Assets.h
 
 /home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData1.cpp
-BinaryData.h
-/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData.h
+Assets.h
+/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/Assets.h
 
 /home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData10.cpp
 

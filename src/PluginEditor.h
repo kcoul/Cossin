@@ -3,7 +3,7 @@
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    (at your option) any internal version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,7 +16,7 @@
     Copyright (c) 2019 ElandaSunshine
     ===============================================================
     
-    @author Elanda (elanda@elandasunshine.xyz)
+    @author Elanda
     @file   PluginEditor.h
     @date   05, October 2019
     
@@ -69,7 +69,8 @@ struct PluginSession final
 {
     const juce::Time startTime;
     const juce::Uuid id;
-
+    
+    //==================================================================================================================
     PluginSession() noexcept
         : startTime(juce::Time::getCurrentTime())
     {}
@@ -79,11 +80,10 @@ class CossinAudioProcessorEditor final : public juce::Component, public juce::Ac
                                          private juce::Button::Listener, private juce::Slider::Listener,
                                          private juce::LookAndFeel_V4, private juce::Timer
 #if COSSIN_USE_OPENGL
-                                   , public juce::OpenGLRenderer
+                                         , public juce::OpenGLRenderer
 #endif
 {
 public:
-    
     enum ColourIds
     {
         ColourComponentBackgroundId = 0x2000100,
@@ -98,16 +98,7 @@ public:
     };
     
     //==================================================================================================================
-    using AttachmentTypes = AttachmentList<
-        AttachmentEntry<juce::Button,   juce::ButtonParameterAttachment>,
-        AttachmentEntry<juce::Slider,   juce::SliderParameterAttachment>,
-        AttachmentEntry<juce::ComboBox, juce::ComboBoxParameterAttachment>,
-        AttachmentEntry<juce::Value,    jaut::ValueParameterAttachment>
-        // FUTURE mappings
-    >;
-    
-    using VariantType      = AttachmentTypes::UnpackAttachments<std::variant>;
-    using AttachmentVector = std::vector<VariantType>;
+    using AttachmentTypes = DefaultAttachmentList<AttachmentEntry<juce::Value, jaut::ValueParameterAttachment>>;
     
     //==================================================================================================================
     CossinAudioProcessorEditor(CossinAudioProcessor&, juce::AudioProcessorValueTreeState&, foleys::LevelMeterSource&,
@@ -156,8 +147,6 @@ private:
     friend class CossinMainEditorWindow;
     
     //==================================================================================================================
-    
-    //==================================================================================================================
     // General
     PluginSession session;
     juce::SharedResourcePointer<SharedData> sharedData;
@@ -192,7 +181,7 @@ private:
     juce::Slider sliderTabControl;
     
     // Processor data
-    AttachmentVector parameterAttachments;
+    AttachmentTypes::Array parameterAttachments;
     juce::Value valuePanningMode;
     juce::Value valueProcessMode;
     
@@ -222,7 +211,6 @@ private:
     void timerCallback() override;
     void actionListenerCallback(const juce::String&) override;
     void reloadAllData();
-    std::vector<VariantType> createAttachments(juce::AudioProcessorValueTreeState&);
     
 #if COSSIN_USE_OPENGL
     //==================================================================================================================

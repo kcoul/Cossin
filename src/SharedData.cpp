@@ -3,7 +3,7 @@
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    (at your option) any internal version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,17 +16,17 @@
     Copyright (c) 2019 ElandaSunshine
     ===============================================================
     
-    @author Elanda (elanda@elandasunshine.xyz)
+    @author Elanda
     @file   SharedData.cpp
     @date   05, October 2019
     
     ===============================================================
  */
 
+#include "Assets.h"
 #include "SharedData.h"
 #include "PluginEditor.h"
 #include "ThemeFolder.h"
-#include "Assets.h"
 #include "Resources.h"
 
 //**********************************************************************************************************************
@@ -35,9 +35,9 @@
 namespace
 {
 // Main routine for initializing new theme packs!
-jaut::IThemeDefinition* initializeThemePack(const juce::File &file, std::unique_ptr<jaut::IMetadata>)
+jaut::IThemeDefinition* initializeThemePack(const juce::File &file, std::unique_ptr<jaut::IMetadata> metadata)
 {
-    auto theme = std::make_unique<ThemeFolder>(file);
+    auto theme = std::make_unique<ThemeFolder>(file, metadata.release());
     return theme->isValid() ? theme.release() : nullptr;
 }
 }
@@ -53,7 +53,6 @@ juce::SharedResourcePointer<SharedData> SharedData::getInstance()
 
 //======================================================================================================================
 SharedData::SharedData() noexcept
-    : initialized(false)
 {
     initialize();
 }
@@ -61,11 +60,6 @@ SharedData::SharedData() noexcept
 SharedData::~SharedData() = default;
 
 //======================================================================================================================
-const SharedData::ApplicationData& SharedData::AppData() const noexcept
-{
-    return appData;
-}
-
 jaut::Config& SharedData::Configuration() noexcept
 {
     return *appConfig;
@@ -77,6 +71,26 @@ jaut::ThemeManager& SharedData::ThemeManager() noexcept
 }
 
 jaut::Localisation& SharedData::Localisation() noexcept
+{
+    return *appLocale;
+}
+
+const SharedData::ApplicationData& SharedData::AppData() const noexcept
+{
+    return appData;
+}
+
+const jaut::Config& SharedData::Configuration() const noexcept
+{
+    return *appConfig;
+}
+
+const jaut::ThemeManager& SharedData::ThemeManager() const noexcept
+{
+    return *appThemes;
+}
+
+const jaut::Localisation& SharedData::Localisation() const noexcept
 {
     return *appLocale;
 }
@@ -227,11 +241,13 @@ void SharedData::initConfig()
 
     prop_animations = config->createProperty(res::Prop_OptAnimations, {}, res::Cfg_Optimization);
     prop_animations.setComment("Turn on/off specific or all animations.");
-    prop_animations.createProperty(res::Prop_OptAnimationsMode, 3).setComment("The level of activated animations:\n"
-                                                                              "All: Activate all animations\n"
-                                                                              "Reduced: Activate only crucial animations\n"
-                                                                              "Custom: Activate only custom set animations\n"
-                                                                              "None: Deactivate all animations");
+    prop_animations.createProperty(res::Prop_OptAnimationsMode, 3)
+                   .setComment("The level of activated animations:\n"
+                               "3: Activate all animations\n"
+                               "2: Activate only crucial animations\n"
+                               "1: Activate only custom set animations\n"
+                               "0: Deactivate all animations");
+    
     prop_animations_custom = prop_animations.createProperty(res::Prop_OptAnimationsCustom, {});
     prop_animations_custom.createProperty(res::Prop_OptAnimationsEffects,    true);
     prop_animations_custom.createProperty(res::Prop_OptAnimationsComponents, true);
@@ -258,7 +274,7 @@ void SharedData::initConfig()
     prop_double_precision = config->createProperty(res::Prop_StandaloneDoublePrecision, false, res::Cfg_Standalone);
     prop_double_precision.setComment("Determines whether to use single or double precision sample processing.");
 
-    if(!config->load())
+    if(config->load() == jaut::Config::ErrorCodes::FileNotFound)
     {
         // If there is a problem with config saving, we've got a problem in general!
         // Maybe you don't have any access rights?

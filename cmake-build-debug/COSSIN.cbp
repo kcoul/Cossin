@@ -89,7 +89,7 @@
 					<Add option="-DJucePlugin_VersionCode=0x100"/>
 					<Add option="-DJucePlugin_VSTUniqueID=JucePlugin_PluginCode"/>
 					<Add option="-DJucePlugin_VSTCategory=kPlugCategEffect"/>
-					<Add option="-DJucePlugin_Vst3Category=&quot;Fx|Fx &quot;"/>
+					<Add option="-DJucePlugin_Vst3Category=&quot;Fx&quot;"/>
 					<Add option="-DJucePlugin_AUMainType=&apos;aufx&apos;"/>
 					<Add option="-DJucePlugin_AUSubType=JucePlugin_PluginCode"/>
 					<Add option="-DJucePlugin_AUExportPrefix=ES_CossinAU"/>
@@ -182,7 +182,7 @@
 					<Add option="-DJucePlugin_VersionCode=0x100"/>
 					<Add option="-DJucePlugin_VSTUniqueID=JucePlugin_PluginCode"/>
 					<Add option="-DJucePlugin_VSTCategory=kPlugCategEffect"/>
-					<Add option="-DJucePlugin_Vst3Category=&quot;Fx|Fx &quot;"/>
+					<Add option="-DJucePlugin_Vst3Category=&quot;Fx&quot;"/>
 					<Add option="-DJucePlugin_AUMainType=&apos;aufx&apos;"/>
 					<Add option="-DJucePlugin_AUSubType=JucePlugin_PluginCode"/>
 					<Add option="-DJucePlugin_AUExportPrefix=ES_CossinAU"/>
@@ -276,7 +276,7 @@
 					<Add option="-DJucePlugin_VersionCode=0x100"/>
 					<Add option="-DJucePlugin_VSTUniqueID=JucePlugin_PluginCode"/>
 					<Add option="-DJucePlugin_VSTCategory=kPlugCategEffect"/>
-					<Add option="-DJucePlugin_Vst3Category=&quot;Fx|Fx &quot;"/>
+					<Add option="-DJucePlugin_Vst3Category=&quot;Fx&quot;"/>
 					<Add option="-DJucePlugin_AUMainType=&apos;aufx&apos;"/>
 					<Add option="-DJucePlugin_AUSubType=JucePlugin_PluginCode"/>
 					<Add option="-DJucePlugin_AUExportPrefix=ES_CossinAU"/>
@@ -371,7 +371,7 @@
 					<Add option="-DJucePlugin_VersionCode=0x100"/>
 					<Add option="-DJucePlugin_VSTUniqueID=JucePlugin_PluginCode"/>
 					<Add option="-DJucePlugin_VSTCategory=kPlugCategEffect"/>
-					<Add option="-DJucePlugin_Vst3Category=&quot;Fx|Fx &quot;"/>
+					<Add option="-DJucePlugin_Vst3Category=&quot;Fx&quot;"/>
 					<Add option="-DJucePlugin_AUMainType=&apos;aufx&apos;"/>
 					<Add option="-DJucePlugin_AUSubType=JucePlugin_PluginCode"/>
 					<Add option="-DJucePlugin_AUExportPrefix=ES_CossinAU"/>
@@ -475,7 +475,7 @@
 					<Add option="-DJucePlugin_VersionCode=0x100"/>
 					<Add option="-DJucePlugin_VSTUniqueID=JucePlugin_PluginCode"/>
 					<Add option="-DJucePlugin_VSTCategory=kPlugCategEffect"/>
-					<Add option="-DJucePlugin_Vst3Category=&quot;Fx|Fx &quot;"/>
+					<Add option="-DJucePlugin_Vst3Category=&quot;Fx&quot;"/>
 					<Add option="-DJucePlugin_AUMainType=&apos;aufx&apos;"/>
 					<Add option="-DJucePlugin_AUSubType=JucePlugin_PluginCode"/>
 					<Add option="-DJucePlugin_AUExportPrefix=ES_CossinAU"/>
@@ -568,7 +568,7 @@
 					<Add option="-DJucePlugin_VersionCode=0x100"/>
 					<Add option="-DJucePlugin_VSTUniqueID=JucePlugin_PluginCode"/>
 					<Add option="-DJucePlugin_VSTCategory=kPlugCategEffect"/>
-					<Add option="-DJucePlugin_Vst3Category=&quot;Fx|Fx &quot;"/>
+					<Add option="-DJucePlugin_Vst3Category=&quot;Fx&quot;"/>
 					<Add option="-DJucePlugin_AUMainType=&apos;aufx&apos;"/>
 					<Add option="-DJucePlugin_AUSubType=JucePlugin_PluginCode"/>
 					<Add option="-DJucePlugin_AUExportPrefix=ES_CossinAU"/>
@@ -910,6 +910,12 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Cossin_artefacts/JuceLibraryCode/JuceHeader.h">
+			<Option target="Cossin"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/Cossin_artefacts/JuceLibraryCode/JuceHeader.h.rule">
+			<Option target="Cossin"/>
+		</Unit>
 		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/src/juce_binarydata_PluginAssets/JuceLibraryCode/BinaryData.h">
 			<Option target="PluginAssets"/>
 		</Unit>
@@ -1178,18 +1184,6 @@
 			<Option target="Cossin"/>
 		</Unit>
 		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/src/CossinMain.h">
-			<Option target="Cossin"/>
-		</Unit>
-		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/src/EffectModuleGuis.cpp">
-			<Option target="Cossin"/>
-		</Unit>
-		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/src/EffectModuleGuis.h">
-			<Option target="Cossin"/>
-		</Unit>
-		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/src/EffectModules.cpp">
-			<Option target="Cossin"/>
-		</Unit>
-		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/src/EffectModules.h">
 			<Option target="Cossin"/>
 		</Unit>
 		<Unit filename="/home/elanda/Documents/Development/Juce/Plugins/Cossin/src/MetreLookAndFeel.cpp">

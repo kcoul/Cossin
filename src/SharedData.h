@@ -3,7 +3,7 @@
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    (at your option) any internal version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -48,7 +48,7 @@ public:
         juce::File dirAppData { juce::File::getSpecialLocation(juce::File::userApplicationDataDirectory) };
         
         // The plugin data root
-        juce::File dirRoot    { dirRoot.getChildFile("/ElandaSunshine/Cossin") };
+        juce::File dirRoot    { dirAppData.getChildFile("ElandaSunshine/Cossin") };
         
         juce::File dirLang    { dirRoot.getChildFile("Lang")    };
         juce::File dirThemes  { dirRoot.getChildFile("Themes")  };
@@ -145,10 +145,14 @@ public:
     ~SharedData() override;
 
     //==================================================================================================================
-    const ApplicationData& AppData() const noexcept;
-    jaut::Config&          Configuration() noexcept;
-    jaut::ThemeManager&    ThemeManager()  noexcept;
-    jaut::Localisation&    Localisation()  noexcept;
+    jaut::Config&       Configuration() noexcept;
+    jaut::ThemeManager& ThemeManager()  noexcept;
+    jaut::Localisation& Localisation()  noexcept;
+    
+    const ApplicationData&    AppData()       const noexcept;
+    const jaut::Config&       Configuration() const noexcept;
+    const jaut::ThemeManager& ThemeManager()  const noexcept;
+    const jaut::Localisation& Localisation()  const noexcept;
 
     //==================================================================================================================
     const jaut::ThemePointer& getDefaultTheme()  const noexcept;
@@ -172,7 +176,7 @@ private:
 
     // Misc
     mutable juce::ReadWriteLock rwLock;
-    bool initialized;
+    bool initialized { false };
 
     //==================================================================================================================
     void initialize();

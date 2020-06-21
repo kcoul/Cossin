@@ -3,7 +3,7 @@
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    (at your option) any internal version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -43,12 +43,9 @@ inline constexpr int Resolution_LookupTable = 200;
 
 //======================================================================================================================
 template<class Member, class ...Args>
-std::unique_ptr<std::remove_pointer_t<Member>> newParameter(Member &member, Args &&...args)
+std::unique_ptr<Member> newParameter(Member *&member, Args &&...args)
 {
-    using Param = std::remove_pointer_t<Member>;
-    
-    member = new Param(std::forward<Args>(args)...);
-    return std::unique_ptr<Param>(member);
+    return std::unique_ptr<Member>((member = new Member(std::forward<Args>(args)...)));
 }
 
 auto createSineTable() noexcept
@@ -97,8 +94,8 @@ void CossinAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
     const float gain   = parGain->get();
     const int pan_mode = parPanMode->get();
-    previousGain[0] = gain * calculatePanningGain(pan_mode, 0);
-    previousGain[1] = gain * calculatePanningGain(pan_mode, 1);
+    previousGain[0]    = gain * calculatePanningGain(pan_mode, 0);
+    previousGain[1]    = gain * calculatePanningGain(pan_mode, 1);
     
     metreSource.resize(getMainBusNumOutputChannels(), static_cast<int>(0.02f * sampleRate / samplesPerBlock));
 }
@@ -239,7 +236,7 @@ float CossinAudioProcessor::calculatePanningGain(int panMode, int channel) const
     static auto SineLookupTable   = ::createSineTable();
     static auto SquareLookupTable = ::createSquareTable();
     
-    jassert(jaut::fit(panMode, 0, res::List_PanModes.size()));
+    jassert(jaut::fit<int>(panMode, 0, res::List_PanModes.size()));
 
     if (panMode == 0) // linear
     {
@@ -264,9 +261,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout CossinAudioProcessor::getPar
     const int last_process_mode = res::List_ProcessModes.size() - 1;
     
     const jaut::Config &config  = sharedData->Configuration();
-    const int default_pan_mode  = std::clamp<int>(config.getProperty(res::Prop_PanningMode, res::Cfg_Defaults)
+    const int default_pan_mode  = std::clamp<int>(config.getProperty(res::Prop_DefaultsPanningMode, res::Cfg_Defaults)
                                                   ->getValue(), 0, last_panning_mode);
-    const int default_processor = std::clamp<int>(config.getProperty(res::Prop_ProcessMode, res::Cfg_Defaults)
+    const int default_processor = std::clamp<int>(config.getProperty(res::Prop_DefaultsProcessMode, res::Cfg_Defaults)
                                                   ->getValue(), 0, last_process_mode);
     
     return {
@@ -276,7 +273,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout CossinAudioProcessor::getPar
                        [](float value, int maximumStringLength)
                        {
                            const juce::String db(std::round(juce::Decibels::gainToDecibels(value) * 100.0f) / 100.0f);
-                           return ((value > 0 ? db : "-Inf") + "dB").substring(maximumStringLength) + "...";
+                           return ((value > 0 ? db : "-INF") + "dB").substring(maximumStringLength);
                        }),
         
         // Mix parameter
@@ -285,7 +282,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout CossinAudioProcessor::getPar
                        [](float value, int maximumStringLength)
                        {
                             return (juce::String(static_cast<int>(value * 100)) + "%")
-                                    .substring(maximumStringLength) + "...";
+                                    .substring(maximumStringLength);
                        }),
         
         // Panning parameter
@@ -300,7 +297,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout CossinAudioProcessor::getPar
     
                            const int mod = static_cast<int>(value * 100.0f);
                            return (juce::String(100 - mod) + "% Left, " + juce::String(100 + mod) + "% Right")
-                                   .substring(maximumStringLength) + "...";
+                                   .substring(maximumStringLength);
                        }),
                        
         // Panning law parameter
@@ -308,16 +305,16 @@ juce::AudioProcessorValueTreeState::ParameterLayout CossinAudioProcessor::getPar
                        default_pan_mode, "",
                        [](int value, int maximumStringLength)
                        {
-                           return juce::String(res::List_PanModes[value]).substring(maximumStringLength) + "...";
-                       }),
+                           return juce::String(res::List_PanModes[value]).substring(maximumStringLength);
+                       })
     
-        // Processor mode parameter
-        ::newParameter(parProcMode, ParameterIds::PropertyProcessMode, "Process mode", 0, last_process_mode,
+        // TODO Processor mode parameter
+        /*::newParameter(parProcMode, ParameterIds::PropertyProcessMode, "Process mode", 0, last_process_mode,
                        default_processor, "",
                        [](int value, int maximumStringLength)
                        {
-                           return juce::String(res::List_PanModes[value]).substring(maximumStringLength) + "...";
-                       })
+                           return juce::String(res::List_PanModes[value]).substring(maximumStringLength);
+                       })*/
     };
 }
 

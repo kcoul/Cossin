@@ -3,7 +3,7 @@
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    (at your option) any internal version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,19 +16,18 @@
     Copyright (c) 2019 ElandaSunshine
     ===============================================================
     
-    @author Elanda (elanda@elandasunshine.xyz)
+    @author Elanda
     @file   CossinMain.cpp
     @date   20, October 2019
     
     ===============================================================
  */
 
+#include "CossinMain.h"
+
 #include <juce_audio_plugin_client/juce_audio_plugin_client.h>
 
-#include <memory>
-
 #include "CossinDef.h"
-#include "CossinMain.h"
 #include "SharedData.h"
 #include "Resources.h"
 
@@ -270,7 +269,8 @@ void CossinPluginWrapper::valueChanged(juce::Value &value)
 //======================================================================================================================
 juce::File CossinPluginWrapper::getLastFile() const
 {
-    return cossinCache->getValue("lastStateFile", sharedData->AppData().getChildFile("Data/Saves").getFullPathName());
+    return cossinCache->getValue("lastStateFile", sharedData->AppData().dirData.getChildFile("Saves")
+                                                                               .getFullPathName());
 }
 
 void CossinPluginWrapper::setLastFile(const juce::File &file)
@@ -445,8 +445,8 @@ bool CossinPluginWrapper::reloadPluginCache()
         juce::PropertiesFile::Options opts;
         opts.storageFormat = juce::PropertiesFile::storeAsCompressedBinary;
         opts.processLock   = cacheLock.get();
-        cossinCache        = std::make_unique<juce::PropertiesFile>(sharedData->AppData().getChildFile(".cache"),
-                                                                    opts);
+        cossinCache        = std::make_unique<juce::PropertiesFile>(sharedData->AppData().dirRoot
+                                                                                         .getChildFile(".cache"), opts);
         return true;
     }
 

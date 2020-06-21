@@ -3,7 +3,7 @@
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    (at your option) any internal version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,7 +24,48 @@
  */
 
 #include "ThemeFolder.h"
+#include "Assets.h"
+#include "CossinDef.h"
 
+//**********************************************************************************************************************
+// region Namespace
+//======================================================================================================================
+namespace
+{
+juce::Font getDefaultFont()
+{
+    return juce::Font("<Sans-Serif>", 14.0, 0);
+}
+
+juce::Font getFontFromFile(const juce::File &themesDir)
+{
+    const juce::File font_file = themesDir.getChildFile("font.ttf");
+    juce::Font default_font    = getDefaultFont();
+    
+    DBG(juce::Font::findAllTypefaceNames().joinIntoString(";"));
+    
+    if (font_file.exists())
+    {
+        juce::FileInputStream file_stream(font_file);
+        
+        if (!file_stream.isExhausted())
+        {
+            juce::MemoryBlock font_data;
+            file_stream.readIntoMemoryBlock(font_data);
+            
+            if (const juce::Typeface::Ptr font_ptr = juce::Typeface::createSystemTypefaceFor(font_data.getData(),
+                                                                                             font_data.getSize()))
+            {
+                default_font = juce::Font(font_ptr);
+            }
+        }
+    }
+    
+    return default_font;
+}
+}
+//======================================================================================================================
+// endregion Namespace
 //**********************************************************************************************************************
 // region ThemeMetaReader
 //======================================================================================================================
@@ -88,59 +129,39 @@ juce::StringArray ThemeMeta::getScreenshots() const
 {
     return juce::StringArray(metaData["screenshots"]);
 }
-
-
-
-//==============================================================================
-//============================  ThemeDefinition ================================
-//==============================================================================
-
-ThemeDefinition::ThemeDefinition(jaut::IMetadata *metaData) noexcept
+//======================================================================================================================
+// endregion ThemeMeta
+//**********************************************************************************************************************
+// region ThemeDefinition
+//======================================================================================================================
+ThemeDefinition::ThemeDefinition(jaut::IMetadata *metaData)
     : meta(metaData)
 {
-    juce::MemoryInputStream input_stream(Assets::colourmap_json, Assets::colourmap_jsonSize, false);
+    juce::MemoryInputStream memory_stream(Assets::colourmap_json, Assets::colourmap_jsonSize, false);
     juce::var json;
     
-    if (!input_stream.isExhausted() && juce::JSON::parse(input_stream.readEntireStreamAsString(), json).wasOk())
+    if (juce::JSON::parse(memory_stream.readEntireStreamAsString(), json).wasOk())
     {
         juce::DynamicObject *const json_root = json.getDynamicObject();
-
-        if (!json_root)
+        
+        for (auto &[key, point] : json_root->getProperties())
         {
-            return;
-        }
-
-        for (auto &[key, coords] : json_root->getProperties())
-        {
-            juce::StringArray color_coords;
-            color_coords.addTokens(coords.toString(), ":", "\"");
-            colours.emplace(key.toString().trim().toLowerCase(), std::make_pair(color_coords[0].getIntValue(),
-                                                                                color_coords[1].getIntValue()));
+            juce::StringArray color_point;
+            color_point.addTokens(point.toString(), ":", "\"");
+            colours.emplace(key.toString().trim().toLowerCase(), std::make_pair(color_point[0].getIntValue(),
+                                                                                color_point[1].getIntValue()));
         }
     }
-}
-
-ThemeDefinition::ThemeDefinition(ThemeDefinition &&other)
-    : meta(std::move(other.meta)),
-      colours(std::move(other.colours)),
-      cachedFont(std::move(cachedFont))
-{
-    other.meta = nullptr;
-}
-
-//=====================================================================================================================
-ThemeDefinition &ThemeDefinition::operator=(ThemeDefinition &&other)
-{
-    swap(*this, other);
-    other.meta = nullptr;
-
-    return *this;
+    else
+    {
+        JAUT_ASSERTFALSE("Invalid format of default colour mapping file: Cossin/src/assets/colourmap.json");
+    }
 }
 
 //=====================================================================================================================
 juce::String ThemeDefinition::getThemeRootPath() const
 {
-    return "";
+    return {};
 }
 
 juce::Image ThemeDefinition::getThemeThumbnail() const
@@ -168,240 +189,190 @@ juce::Image ThemeDefinition::getImage(const juce::String &imageName) const
     return img;
 }
 
-const String ThemeDefinition::getImageExtension() const
+juce::String ThemeDefinition::getImageExtension() const
 {
     return "png";
 }
 
-Font ThemeDefinition::getThemeFont() const
+juce::Font ThemeDefinition::getThemeFont() const
 {
-    if(cachedFont == Font())
+    return ::getDefaultFont();
+}
+
+juce::Image ThemeDefinition::getMissingImage() const
+{
+    return juce::ImageCache::getFromMemory(Assets::missing_png, Assets::missing_pngSize);
+}
+
+juce::Colour ThemeDefinition::getThemeColour(const juce::String &colourMappingKey) const
+{
+    if (colours.find(colourMappingKey) != colours.end())
     {
-        cachedFont.setTypefaceName("Arial");
-        File fontfile = getFile("font.ttf");
-
-        if(fontfile.exists())
-        {
-            FileInputStream fis(fontfile);
-
-            if(!fis.isExhausted())
-            {
-                MemoryBlock fontdata;
-                fis.readIntoMemoryBlock(fontdata);
-
-                if(Typeface::Ptr fontptr = Typeface::createSystemTypefaceFor(fontdata.getData(), fontdata.getSize()))
-                {
-                    Typeface::clearTypefaceCache();
-                    cachedFont = std::move(Font(fontptr));
-                }
-            }
-        }
-
-        cachedFont.setSizeAndStyle(14.0f, 0, 1.0f, 0.0f);
+        const auto &[x, y] = colours.at(colourMappingKey);
+        return getThemeColourFromPixel(x, y);
     }
 
-    return cachedFont;
+    return juce::Colours::transparentBlack;
 }
 
-Image ThemeDefinition::getMissingImage() const
+juce::Colour ThemeDefinition::getThemeColourFromPixel(int x, int y) const
 {
-    return ImageCache::getFromMemory(Assets::png000_png, Assets::png000_pngSize);
+    const juce::Image colour_map = juce::ImageCache::getFromMemory(Assets::colourmap_png, Assets::colourmap_pngSize);
+    return colour_map.getPixelAt(x, y);
 }
 
-Colour ThemeDefinition::getThemeColour(const String &colorMappingKey) const
-{
-    if (colours.find(colorMappingKey) != colours.end())
-    {
-        std::tuple<int, int> paircolour = colours.at(colorMappingKey);
-        return getThemeColourFromPixel(std::get<0>(paircolour), std::get<1>(paircolour));
-    }
-
-    return Colours::black;
-}
-
-Colour ThemeDefinition::getThemeColourFromPixel(int x, int y) const
-{
-    const Colour colour = getImage("colourmap").getPixelAt(x, y);
-    return colour != Colours::transparentBlack ? colour : Colours::black;
-}
-
-const jaut::IMetadata *ThemeDefinition::getThemeMeta() const
+jaut::IMetadata* ThemeDefinition::getThemeMeta() const
 {
     return meta.get();
 }
 
-const bool ThemeDefinition::isImageValid(const Image &image) const
+bool ThemeDefinition::isImageValid(const juce::Image &image) const
 {
     return image.isValid() && image != getMissingImage();
 }
 
-const bool ThemeDefinition::isValid() const
+bool ThemeDefinition::isValid() const
 {
-    return meta != nullptr && !meta->getName().isEmpty() && !meta->getVersion().isEmpty();
+    return meta != nullptr && !meta->getName().isEmpty();
 }
 
-const bool ThemeDefinition::fileExists(const String &filePath) const
+bool ThemeDefinition::fileExists(const juce::String &filePath) const
 {
     return Assets::getNamedResourceOriginalFilename(filePath.toRawUTF8());
 }
 
-const bool ThemeDefinition::imageExists(const String &imageName) const
+bool ThemeDefinition::imageExists(const juce::String &imageName) const
 {
     return Assets::getNamedResourceOriginalFilename((imageName + "_" + getImageExtension()).toRawUTF8());
 }
-
-
-
-//==============================================================================
-//===============================  ThemeFolder  ================================
-//==============================================================================
-
-ThemeFolder::ThemeFolder(const File &themeFolderPath) noexcept
-    : themeFolderPath(themeFolderPath)
+//======================================================================================================================
+// endregion ThemeDefinition
+//**********************************************************************************************************************
+// region ThemeFolder
+//======================================================================================================================
+ThemeFolder::ThemeFolder(const juce::File &themeFolderPath, jaut::IMetadata *metadata)
+    : ThemeDefinition(metadata),
+      themeFolderPath(themeFolderPath),
+      themeFont(::getFontFromFile(themeFolderPath)),
+      colourMap(juce::ImageFileFormat::loadFrom(Assets::colourmap_png, Assets::colourmap_pngSize)),
+      themeThumbnail(juce::ImageFileFormat::loadFrom(Assets::missing_png, Assets::missing_pngSize))
 {
-    if (themeFolderPath.exists())
     {
-        File metadata_file   = themeFolderPath.getChildFile("theme.meta");
-        File colour_map_file = themeFolderPath.getChildFile("colourmap.json");
-
-        if (metadata_file.exists())
-        {
-            FileInputStream input_stream(metadata_file);
-
-            if (input_stream.openedOk())
-            {
-                meta.reset(new ThemeMeta(jaut::MetadataHelper::readMetaToNamedValueSet(input_stream)));
-            }
-        }
+        const juce::File colour_map_file = themeFolderPath.getChildFile("colourmap.json");
         
-        String colour_data;
-        var json;
-
-        if (colour_map_file.exists())
+        if (colour_map_file.existsAsFile())
         {
-            FileInputStream input_stream(colour_map_file);
-
-            if (input_stream.openedOk() && !input_stream.isExhausted())
+            juce::FileInputStream file_stream(colour_map_file);
+            juce::var json;
+            
+            if (!file_stream.isExhausted() && juce::JSON::parse(file_stream.readEntireStreamAsString(), json).wasOk())
             {
-                colour_data = input_stream.readEntireStreamAsString();
+                juce::DynamicObject *const json_root = json.getDynamicObject();
+                
+                if (!json_root)
+                {
+                    return;
+                }
+                
+                for (const auto &[key, point] : json_root->getProperties())
+                {
+                    juce::StringArray colour_point;
+                    colour_point.addTokens(point.toString(), ":", "\"");
+                    
+                    const juce::String colour_id = key.toString().trim().toLowerCase();
+                    
+                    if (colours.find(colour_id) != colours.end() && colour_point.size() == 2 &&
+                        colour_point[0].containsOnly("0123456789") && colour_point[1].containsOnly("0123456789"))
+                    {
+                        colours.emplace(colour_id, std::make_pair(colour_point[0].getIntValue(),
+                                                                  colour_point[1].getIntValue()));
+                    }
+                    else
+                    {
+                        sendLog("Invalid colour '" + key + "': Either is not a valid colour-id or "
+                                "mapped value is invalid, will be skipped.", "WARNING");
+                    }
+                }
+            }
+            else
+            {
+                sendLog("Problem loading colourmap.json for theme '" + themeFolderPath.getFileName() +
+                        "': Invalid format, using default colourmap.json instead.", "ERROR");
             }
         }
-
-        if(colour_data.isEmpty())
+    }
+    
+    {
+        const juce::File colour_map_file = themeFolderPath.getChildFile("colourmap.png");
+        juce::Image      colour_map      = juce::ImageFileFormat::loadFrom(colour_map_file);
+    
+        if (colour_map.isValid())
         {
-            MemoryInputStream input_stream(Assets::colourmap_json, Assets::colourmap_jsonSize, false);
-            colour_data = input_stream.readEntireStreamAsString();
+            std::swap(colourMap, colour_map);
         }
-
-        if (JSON::parse(colour_data, json).wasOk())
+        else
         {
-            DynamicObject *root = json.getDynamicObject();
-
-            if (!root)
-            {
-                return;
-            }
-
-            for (auto &[key, coords] : root->getProperties())
-            {
-                StringArray colour_coords;
-                colour_coords.addTokens(coords.toString(), ":", "\"");
-                colours.emplace(key.toString().trim().toLowerCase(),
-                                std::make_pair(colour_coords[0].getIntValue(), colour_coords[1].getIntValue()));
-            }
+            sendLog("Problem loading colourmap.png for theme '" + themeFolderPath.getFileName() +
+                    "': Either not found or not an image, using default colour map image instead.", "ERROR");
+        }
+    
+        const juce::File thumbnail_file = themeFolderPath.getChildFile("theme.png");
+        juce::Image      thumbnail      = juce::ImageFileFormat::loadFrom(colour_map_file);
+    
+        if (thumbnail.isValid())
+        {
+            std::swap(themeThumbnail, thumbnail);
+        }
+        else
+        {
+            sendLog("Problem loading theme thumbnail for theme '" + themeFolderPath.getFileName() +
+                    "': Either not found or not an image, empty image will be used instead.", "ERROR");
         }
     }
 }
 
-const String ThemeFolder::getThemeRootPath() const
+juce::String ThemeFolder::getThemeRootPath() const
 {
     return themeFolderPath.getFullPathName();
 }
 
-Image ThemeFolder::getThemeThumbnail() const
+juce::Image ThemeFolder::getThemeThumbnail() const
 {
-    File thumbnail_file = themeFolderPath.getChildFile("theme." + getImageExtension());
-
-    if (thumbnail_file.exists())
-    {
-        Image thumbnail = ImageCache::getFromFile(thumbnail_file);
-
-        if(thumbnail.isValid())
-        {
-            return thumbnail;
-        }
-    }
-
-    return getImage("png003");
+    return themeThumbnail;
 }
 
-File ThemeFolder::getFile(const String &filePath) const
+juce::File ThemeFolder::getFile(const juce::String &filePath) const
 {
     return themeFolderPath.getChildFile(filePath);
 }
 
-Image ThemeFolder::getImage(const String &imageName) const
+juce::Image ThemeFolder::getImage(const juce::String &imageName) const
 {
-    File image_file = themeFolderPath.getChildFile("object/" + imageName + "." + getImageExtension());
-    Image image;
-
-    if (image_file.exists())
-    {
-        image = ImageFileFormat::loadFrom(image_file);
-    }
+    const juce::File image_file = themeFolderPath.getChildFile("object/" + imageName + "." + getImageExtension());
+    juce::Image image           = juce::ImageFileFormat::loadFrom(image_file);
 
     if (image.isNull())
     {
-        image = ThemeDefinition::getImage(imageName);
+        return ThemeDefinition::getImage(imageName);
     }
 
     return image;
 }
 
-Image ThemeFolder::getMissingImage() const
-{
-    File image_file = themeFolderPath.getChildFile("object/png-000." + getImageExtension());
-    Image image;
-
-    if (image_file.exists())
-    {
-        image = ImageCache::getFromFile(image_file);
-    }
-
-    if (image.isNull())
-    {
-        image = ThemeDefinition::getMissingImage();
-    }
-
-    return image;
-}
-
-const bool ThemeFolder::fileExists(const String &filePath) const
+bool ThemeFolder::fileExists(const juce::String &filePath) const
 {
     return themeFolderPath.getChildFile(filePath).exists();
 }
 
-const bool ThemeFolder::imageExists(const String &imageName) const
+bool ThemeFolder::imageExists(const juce::String &imageName) const
 {
     return fileExists("object/" + imageName + "." + getImageExtension());
 }
 
-Colour ThemeFolder::getThemeColourFromPixel(int x, int y) const
+juce::Colour ThemeFolder::getThemeColourFromPixel(int x, int y) const
 {
-    const File colour_map_file = getFile("colourmap.png");
-    Colour colour;
-
-    if(colour_map_file.exists())
-    {
-        Image colour_map = ImageFileFormat::loadFrom(colour_map_file);
-
-        if(!colour_map.isValid())
-        {
-            colour_map = ThemeDefinition::getImage("colourmap");
-        }
-
-        colour = colour_map.getPixelAt(x, y);
-    }
-
-    return colour != Colours::transparentBlack ? colour : Colours::black;
+    return colourMap.getPixelAt(x, y);
 }
+//======================================================================================================================
+// endregion ThemeFolder
+//**********************************************************************************************************************

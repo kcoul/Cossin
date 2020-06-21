@@ -3,7 +3,7 @@
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    (at your option) any internal version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -34,7 +34,7 @@ using CString = const char*;
 
 /** App info */
 inline constexpr CString App_Name    = "Cossin";
-inline constexpr CString App_Version = "1.0.0 Alpha";
+inline constexpr CString App_Version = "0.1.0";
 inline constexpr CString App_Author  = "Elanda";
 inline constexpr CString App_Vendor  = "ElandaSunshine";
 inline constexpr CString App_Website = "iamelsa.xyz";

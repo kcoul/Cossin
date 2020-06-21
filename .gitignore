@@ -341,3 +341,4 @@ logs/
 .project
 *.kdev4
 plugin*.xml
+cmake-build*

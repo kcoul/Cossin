@@ -46,6 +46,10 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/ElandaSunshine/jaut-0.1.0" TYPE DIRECTORY FILES "/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules/jaut_gui")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/ElandaSunshine/jaut-0.1.0" TYPE DIRECTORY FILES "/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules/jaut_message")
 endif()
 
@@ -55,5 +59,9 @@ endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/ElandaSunshine/jaut-0.1.0" TYPE DIRECTORY FILES "/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules/jaut_reflect")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/ElandaSunshine/jaut-0.1.0" TYPE DIRECTORY FILES "/home/elanda/Documents/Development/Juce/Plugins/Cossin/externals/jaut/modules/jaut_util")
 endif()
 

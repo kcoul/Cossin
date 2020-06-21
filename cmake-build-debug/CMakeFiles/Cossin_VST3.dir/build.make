@@ -217,6 +217,7 @@ Cossin_artefacts/Debug/VST3/ES\ Cossin.vst3/Contents/x86_64-linux/ES\ Cossin.so:
 Cossin_artefacts/Debug/VST3/ES\ Cossin.vst3/Contents/x86_64-linux/ES\ Cossin.so: Cossin_artefacts/Debug/libES\ Cossin_SharedCode.a
 Cossin_artefacts/Debug/VST3/ES\ Cossin.vst3/Contents/x86_64-linux/ES\ Cossin.so: src/libPluginAssets.a
 Cossin_artefacts/Debug/VST3/ES\ Cossin.vst3/Contents/x86_64-linux/ES\ Cossin.so: externals/yaml-cpp/libyaml-cppd.a
+Cossin_artefacts/Debug/VST3/ES\ Cossin.vst3/Contents/x86_64-linux/ES\ Cossin.so: /usr/lib/x86_64-linux-gnu/libasound.so
 Cossin_artefacts/Debug/VST3/ES\ Cossin.vst3/Contents/x86_64-linux/ES\ Cossin.so: /usr/lib/x86_64-linux-gnu/libfreetype.so
 Cossin_artefacts/Debug/VST3/ES\ Cossin.vst3/Contents/x86_64-linux/ES\ Cossin.so: CMakeFiles/Cossin_VST3.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/elanda/Documents/Development/Juce/Plugins/Cossin/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Linking CXX shared module \"Cossin_artefacts/Debug/VST3/ES Cossin.vst3/Contents/x86_64-linux/ES Cossin.so\""
