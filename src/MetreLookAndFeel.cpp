@@ -242,7 +242,7 @@ void MetreLookAndFeel::drawMeterBarBackground(juce::Graphics &g, foleys::LevelMe
 }
 
 void MetreLookAndFeel::drawMaxNumber(juce::Graphics &g, foleys::LevelMeter::MeterFlags,
-                                     juce::Rectangle<float> bounds, float maxGain)
+                                     juce::Rectangle<float> bounds, float)
 {
     const float maxDb = juce::Decibels::gainToDecibels(lastUpdate.getPeak(), infinity);
     g.setFont(font);

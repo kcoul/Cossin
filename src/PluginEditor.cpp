@@ -43,12 +43,6 @@ constexpr int constHeightBody(int height) noexcept
 {
     return height - Const_HeightHeader - Const_HeightFooter - Const_PanelMargin * 2;
 }
-
-juce::String getLocaleName(const jaut::Localisation &locale)
-{
-    return locale.getInternalLocalisation().getLanguageName()
-         + locale.getInternalLocalisation().getCountryCodes().joinIntoString("-");
-}
 }
 //======================================================================================================================
 // endregion Namespace
@@ -603,9 +597,9 @@ void CossinAudioProcessorEditor::buttonClicked(juce::Button *button)
     }
 }
 
-void CossinAudioProcessorEditor::sliderValueChanged(juce::Slider *slider) {}
+void CossinAudioProcessorEditor::sliderValueChanged(juce::Slider*) {}
 
-void CossinAudioProcessorEditor::sliderDragEnded(juce::Slider *slider)
+void CossinAudioProcessorEditor::sliderDragEnded(juce::Slider*)
 {
     /*if (slider == &sliderTabControl)
     {

@@ -96,9 +96,9 @@ const std::vector<OptionCategory*>& OptionPanel::OptionsContainer::getCategories
 //======================================================================================================================
 OptionPanel::OptionPanel(CossinAudioProcessorEditor &editor, jaut::Localisation &locale)
     : editor(editor), closeCallback(nullptr), lastSelectedRow(0), bttClose("X"),
-      optionContainer(*this), optionTabs("OptionTabs", this), locale(locale),
-      optionsGeneral(editor, locale), optionsThemes(editor, locale),
-      optionsPerformance(editor, locale)
+      optionContainer(*this), optionsGeneral(editor, locale),
+      optionsThemes(editor, locale), optionsPerformance(editor, locale),
+      optionTabs("OptionTabs", this), locale(locale)
 {
     // About resources
     imgCossinAbout   = juce::ImageCache::getFromMemory(Assets::png011_png,         Assets::png011_pngSize);
@@ -328,7 +328,7 @@ void OptionPanel::paintListBoxItem(int rowNumber, juce::Graphics &g, int width, 
                juce::Justification::centredLeft);
 }
 
-void OptionPanel::listBoxItemClicked(int row, const juce::MouseEvent &e)
+void OptionPanel::listBoxItemClicked(int row, const juce::MouseEvent&)
 {
     if(row == lastSelectedRow)
     {

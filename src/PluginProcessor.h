@@ -47,7 +47,10 @@ class CossinAudioProcessor final : public juce::AudioProcessor
 public:
     CossinAudioProcessor();
     ~CossinAudioProcessor() override;
-
+    
+    //==================================================================================================================
+    using juce::AudioProcessor::processBlock;
+    
     //==================================================================================================================
     void prepareToPlay(double, int) override;
     void releaseResources() override;

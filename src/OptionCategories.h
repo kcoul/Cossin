@@ -280,10 +280,6 @@ private:
     class DevicePanel final : public Component, private juce::ChangeListener
     {
     public:
-        juce::AudioDeviceManager &deviceManager;
-        OptionPanelStandalone &panel;
-        juce::String audioDeviceSettingsCompType;
-    
         juce::TextButton buttonControlPanel;
         juce::ComboBox boxBufferSize;
         juce::ComboBox boxDevice;
@@ -291,6 +287,10 @@ private:
         juce::ComboBox boxOutput;
         juce::ComboBox boxSampleRate;
         juce::Label labelLatency;
+    
+        OptionPanelStandalone &panel;
+        juce::AudioDeviceManager &deviceManager;
+        juce::String audioDeviceSettingsCompType;
 
         //==============================================================================================================
         explicit DevicePanel(OptionPanelStandalone&);
