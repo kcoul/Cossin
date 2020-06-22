@@ -1,0 +1,1 @@
+juce_add_module(ff_meters ALIAS_NAMESPACE foleys)
