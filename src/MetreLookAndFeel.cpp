@@ -3,7 +3,7 @@
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    (at your option) any internal version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,7 +16,7 @@
     Copyright (c) 2019 ElandaSunshine
     ===============================================================
     
-    @author Elanda (elanda@elandasunshine.xyz)
+    @author Elanda
     @file   MetreLookAndFeel.cpp
     @date   05, October 2019
     
@@ -24,14 +24,14 @@
  */
 
 #include "MetreLookAndFeel.h"
-
 #include "PluginStyle.h"
-#include <jaut/fontformat.h>
 
+//======================================================================================================================
 MetreLookAndFeel::MetreLookAndFeel(PluginStyle &pluginStyle, float infinity, int metreRefreshRateInMiliseconds) noexcept
     : pluginStyle(pluginStyle), infinity(infinity), lastUpdate(metreRefreshRateInMiliseconds)
 {}
 
+//======================================================================================================================
 void MetreLookAndFeel::setupDefaultMeterColours()
 {}
 
@@ -40,19 +40,18 @@ void MetreLookAndFeel::updateMeterGradients()
     horizontalGradient.clearColours();
 }
 
-// inner metre bounds
-juce::Rectangle<float> MetreLookAndFeel::getMeterInnerBounds(const juce::Rectangle<float>,
-                                                             const FFAU::LevelMeter::MeterFlags) const
+//======================================================================================================================
+juce::Rectangle<float> MetreLookAndFeel::getMeterInnerBounds(juce::Rectangle<float>, FFAU::LevelMeter::MeterFlags) const
 {
     return {};
 }
 
 // full metre bounds outside
-juce::Rectangle<float> MetreLookAndFeel::getMeterBounds(const juce::Rectangle<float> bounds,
-                                                        const FFAU::LevelMeter::MeterFlags meterType,
-                                                        const int, const int channel) const
+juce::Rectangle<float> MetreLookAndFeel::getMeterBounds(juce::Rectangle<float> bounds,
+                                                        foleys::LevelMeter::MeterFlags meterType, int,
+                                                        int channel) const
 {
-    if (meterType & FFAU::LevelMeter::SingleChannel)
+    if (meterType & foleys::LevelMeter::SingleChannel)
     {
         return bounds.withHeight(32.0f);
     }
@@ -63,46 +62,46 @@ juce::Rectangle<float> MetreLookAndFeel::getMeterBounds(const juce::Rectangle<fl
 }
 
 // full metre bounds
-juce::Rectangle<float> MetreLookAndFeel::getMeterBarBounds(const juce::Rectangle<float> bounds,
-                                                           const FFAU::LevelMeter::MeterFlags) const
+juce::Rectangle<float> MetreLookAndFeel::getMeterBarBounds(juce::Rectangle<float> bounds,
+                                                           foleys::LevelMeter::MeterFlags) const
 {
     const float margin = 2.0f;
     return {bounds.getX() + margin, bounds.getY() + margin, bounds.getWidth() - 4.0f, bounds.getHeight() - 4.0f};
 }
 
 // tick marks bounds
-juce::Rectangle<float> MetreLookAndFeel::getMeterTickmarksBounds(const juce::Rectangle<float>,
-                                                                 const FFAU::LevelMeter::MeterFlags) const
+juce::Rectangle<float> MetreLookAndFeel::getMeterTickmarksBounds(juce::Rectangle<float>,
+                                                                 foleys::LevelMeter::MeterFlags) const
 {
     return {};
 }
 
 // clip indicator
-juce::Rectangle<float> MetreLookAndFeel::getMeterClipIndicatorBounds(const juce::Rectangle<float>,
-                                                                     const FFAU::LevelMeter::MeterFlags) const
+juce::Rectangle<float> MetreLookAndFeel::getMeterClipIndicatorBounds(juce::Rectangle<float>,
+                                                                     foleys::LevelMeter::MeterFlags) const
 {
     return {};
 }
 
 // peak display
-juce::Rectangle<float> MetreLookAndFeel::getMeterMaxNumberBounds(const juce::Rectangle<float> bounds,
-                                                                 const FFAU::LevelMeter::MeterFlags) const
+juce::Rectangle<float> MetreLookAndFeel::getMeterMaxNumberBounds(juce::Rectangle<float> bounds,
+                                                                 foleys::LevelMeter::MeterFlags) const
 {
     return {0.0f, 36.0f, bounds.getWidth(), 14.0f};
 }
 
-juce::Rectangle<float> MetreLookAndFeel::drawBackground(juce::Graphics &g, const FFAU::LevelMeter::MeterFlags,
-                                                        const juce::Rectangle<float> bounds)
+juce::Rectangle<float> MetreLookAndFeel::drawBackground(juce::Graphics &g, foleys::LevelMeter::MeterFlags,
+                                                        juce::Rectangle<float> bounds)
 {
-    g.setColour(pluginStyle.findColour(FFAU::LevelMeter::lmBackgroundColour));
+    g.setColour(pluginStyle.findColour(foleys::LevelMeter::lmBackgroundColour));
     g.fillRect(bounds);
     
     return bounds;
 }
 
-void MetreLookAndFeel::drawMeterBars(juce::Graphics &g, const FFAU::LevelMeter::MeterFlags meterType,
-                                     const juce::Rectangle<float> bounds, const FFAU::LevelMeterSource *source,
-                                     const int, const int selectedChannel)
+void MetreLookAndFeel::drawMeterBars(juce::Graphics &g, foleys::LevelMeter::MeterFlags meterType,
+                                     juce::Rectangle<float> bounds, const foleys::LevelMeterSource *source,
+                                     int, int selectedChannel)
 {
     if (source)
     {
@@ -110,7 +109,7 @@ void MetreLookAndFeel::drawMeterBars(juce::Graphics &g, const FFAU::LevelMeter::
         juce::Rectangle<float> maxes = getMeterMaxNumberBounds(bounds, meterType);
         float peak                   = 0.0f;
 
-        if (meterType & FFAU::LevelMeter::SingleChannel)
+        if (meterType & foleys::LevelMeter::SingleChannel)
         {
             const int channel    = selectedChannel < 0 || selectedChannel >= source->getNumChannels() ? 0
                                    : selectedChannel;
@@ -141,10 +140,10 @@ void MetreLookAndFeel::drawMeterBars(juce::Graphics &g, const FFAU::LevelMeter::
     }
 }
 
-void MetreLookAndFeel::drawMeterBarsBackground(juce::Graphics &g, FFAU::LevelMeter::MeterFlags meterType,
-                                               const juce::Rectangle<float> bounds, const int numChannels, const int)
+void MetreLookAndFeel::drawMeterBarsBackground(juce::Graphics &g, foleys::LevelMeter::MeterFlags meterType,
+                                               juce::Rectangle<float> bounds, int numChannels, int)
 {
-    if (meterType & FFAU::LevelMeter::SingleChannel)
+    if (meterType & foleys::LevelMeter::SingleChannel)
     {
         drawMeterChannelBackground(g, meterType, getMeterBounds(bounds, meterType, 0, 0));
     }
@@ -158,9 +157,9 @@ void MetreLookAndFeel::drawMeterBarsBackground(juce::Graphics &g, FFAU::LevelMet
 }
 
 
-void MetreLookAndFeel::drawMeterChannel(juce::Graphics &g, const FFAU::LevelMeter::MeterFlags meterType,
-                                        const juce::Rectangle<float> bounds, const FFAU::LevelMeterSource *source,
-                                        const int selectedChannel)
+void MetreLookAndFeel::drawMeterChannel(juce::Graphics &g, foleys::LevelMeter::MeterFlags meterType,
+                                        juce::Rectangle<float> bounds, const foleys::LevelMeterSource *source,
+                                        int selectedChannel)
 {
     if (source)
     {
@@ -172,8 +171,8 @@ void MetreLookAndFeel::drawMeterChannel(juce::Graphics &g, const FFAU::LevelMete
     }
 }
 
-void MetreLookAndFeel::drawMeterChannelBackground(juce::Graphics &g, const FFAU::LevelMeter::MeterFlags meterType,
-                                                  const juce::Rectangle<float> bounds)
+void MetreLookAndFeel::drawMeterChannelBackground(juce::Graphics &g, foleys::LevelMeter::MeterFlags meterType,
+                                                  juce::Rectangle<float> bounds)
 {
     juce::Rectangle<float> clip = getMeterClipIndicatorBounds(bounds, meterType);
     juce::Rectangle<float> ticks = getMeterTickmarksBounds(bounds, meterType);
@@ -197,85 +196,66 @@ void MetreLookAndFeel::drawMeterChannelBackground(juce::Graphics &g, const FFAU:
     }
 }
 
-void MetreLookAndFeel::drawMeterBar(juce::Graphics &g, const FFAU::LevelMeter::MeterFlags,
-                                    const juce::Rectangle<float> bounds, const float, const float peak)
+void MetreLookAndFeel::drawMeterBar(juce::Graphics &g, foleys::LevelMeter::MeterFlags,
+                                    juce::Rectangle<float> bounds, float, float peak)
 {
-    const float skew      = 0.5f;
+    constexpr float skew  = 0.5f;
     const float skewedfac = bounds.getWidth() * std::pow(peak, skew);
-    const auto dest       = bounds.withRight(jmin(bounds.getWidth(), skewedfac));
+    const auto dest       = bounds.withRight(juce::jmin(bounds.getWidth(), skewedfac));
 
     if (horizontalGradient.getNumColours() < 2)
     {
-        horizontalGradient = juce::ColourGradient(pluginStyle.findColour(FFAU::LevelMeter::lmMeterGradientLowColour),
+        horizontalGradient = juce::ColourGradient(pluginStyle.findColour(foleys::LevelMeter::lmMeterGradientLowColour),
                                                   bounds.getX(), bounds.getY(),
-                                                  pluginStyle.findColour(FFAU::LevelMeter::lmMeterGradientMaxColour),
+                                                  pluginStyle.findColour(foleys::LevelMeter::lmMeterGradientMaxColour),
                                                   bounds.getRight(), bounds.getY(), false);
-        horizontalGradient.addColour(0.5, pluginStyle.findColour(FFAU::LevelMeter::lmMeterGradientLowColour));
-        horizontalGradient.addColour(0.75, pluginStyle.findColour(FFAU::LevelMeter::lmMeterGradientMidColour));
+        horizontalGradient.addColour(0.5, pluginStyle.findColour(foleys::LevelMeter::lmMeterGradientLowColour));
+        horizontalGradient.addColour(0.75, pluginStyle.findColour(foleys::LevelMeter::lmMeterGradientMidColour));
     }
 
     g.setGradientFill(horizontalGradient);
     g.fillRect(dest);
 
-    float value = jlimit(2.0f, bounds.getWidth(), lastUpdate.getUpdateMultiplier(jmin(bounds.getWidth(), skewedfac)
-                                                                                 + 2.0f, peak, bounds.getWidth(),
-                                                                                 skew));
+    float value = juce::jlimit(2.0f, bounds.getWidth(),
+                               lastUpdate.getUpdateMultiplier(juce::jmin(bounds.getWidth(), skewedfac) + 2.0f,
+                                                              peak, bounds.getWidth(), skew));
     
     if (value > 2.0f)
     {
-        g.setColour(pluginStyle.findColour(FFAU::LevelMeter::lmTextColour));
+        g.setColour(pluginStyle.findColour(foleys::LevelMeter::lmTextColour));
     }
     else
     {
-        g.setColour(pluginStyle.findColour(FFAU::LevelMeter::lmTextDeactiveColour));
+        g.setColour(pluginStyle.findColour(foleys::LevelMeter::lmTextDeactiveColour));
     }
 
     g.drawRect(value, bounds.getY(), 2.0f, bounds.getHeight());
 }
 
-void MetreLookAndFeel::drawMeterReduction(juce::Graphics &g, const FFAU::LevelMeter::MeterFlags meterType,
-                                          const juce::Rectangle<float> bounds, const float reduction)
-{}
-
-void MetreLookAndFeel::drawMeterBarBackground(juce::Graphics &g, const FFAU::LevelMeter::MeterFlags,
-                                              const juce::Rectangle<float> bounds)
+void MetreLookAndFeel::drawMeterBarBackground(juce::Graphics &g, foleys::LevelMeter::MeterFlags,
+                                              juce::Rectangle<float> bounds)
 {
-    g.setColour(pluginStyle.findColour(FFAU::LevelMeter::lmMeterBackgroundColour));
+    g.setColour(pluginStyle.findColour(foleys::LevelMeter::lmMeterBackgroundColour));
     g.fillRect(bounds);
-    g.setColour(pluginStyle.findColour(FFAU::LevelMeter::lmMeterOutlineColour));
+    g.setColour(pluginStyle.findColour(foleys::LevelMeter::lmMeterOutlineColour));
     g.drawRect(bounds, 1.0f);
 }
 
-void MetreLookAndFeel::drawTickMarks(juce::Graphics &g, const FFAU::LevelMeter::MeterFlags meterType,
-                                     const juce::Rectangle<float> bounds)
-{}
-
-void MetreLookAndFeel::drawClipIndicator(juce::Graphics &g, const FFAU::LevelMeter::MeterFlags,
-                                         const juce::Rectangle<float> bounds, const bool hasClipped)
-{}
-
-void MetreLookAndFeel::drawClipIndicatorBackground(juce::Graphics &g, const FFAU::LevelMeter::MeterFlags,
-                                                   const juce::Rectangle<float> bounds)
-{}
-
-void MetreLookAndFeel::drawMaxNumber(juce::Graphics &g, const FFAU::LevelMeter::MeterFlags,
-                                     const juce::Rectangle<float> bounds, const float maxGain)
+void MetreLookAndFeel::drawMaxNumber(juce::Graphics &g, foleys::LevelMeter::MeterFlags,
+                                     juce::Rectangle<float> bounds, float)
 {
     const float maxDb = juce::Decibels::gainToDecibels(lastUpdate.getPeak(), infinity);
     g.setFont(font);
-    g.setColour(pluginStyle.findColour(FFAU::LevelMeter::lmTextColour));
-    jaut::FontFormat::drawSmallCaps(g, "Peak", bounds, Justification::bottomLeft);
-    g.drawText((maxDb <= infinity ? "-INF" : juce::String(maxDb, 2) + " ") + "dB", bounds, Justification::bottomRight);
+    g.setColour(pluginStyle.findColour(foleys::LevelMeter::lmTextColour));
+    jaut::FontFormat::drawSmallCaps(g, "Peak", bounds, juce::Justification::bottomLeft);
+    g.drawText((maxDb <= infinity ? "-INF" : juce::String(maxDb, 2) + " ") + "dB", bounds,
+               juce::Justification::bottomRight);
 }
 
-void MetreLookAndFeel::drawMaxNumberBackground(juce::Graphics&, const FFAU::LevelMeter::MeterFlags,
-                                               const juce::Rectangle<float>)
-{}
-
-int MetreLookAndFeel::hitTestClipIndicator(const juce::Point<int> position,
-                                           const FFAU::LevelMeter::MeterFlags meterType,
-                                           const juce::Rectangle<float> bounds,
-                                           const FFAU::LevelMeterSource *source) const
+int MetreLookAndFeel::hitTestClipIndicator(juce::Point<int> position,
+                                           foleys::LevelMeter::MeterFlags meterType,
+                                           juce::Rectangle<float> bounds,
+                                           const foleys::LevelMeterSource *source) const
 {
     if (source)
     {
@@ -294,8 +274,8 @@ int MetreLookAndFeel::hitTestClipIndicator(const juce::Point<int> position,
     return -1;
 }
 
-int MetreLookAndFeel::hitTestMaxNumber(const juce::Point<int> position, const FFAU::LevelMeter::MeterFlags meterType,
-                                       const juce::Rectangle<float> bounds, const FFAU::LevelMeterSource *source) const
+int MetreLookAndFeel::hitTestMaxNumber(juce::Point<int> position, foleys::LevelMeter::MeterFlags meterType,
+                                       juce::Rectangle<float> bounds, const foleys::LevelMeterSource *source) const
 {
     if (source)
     {

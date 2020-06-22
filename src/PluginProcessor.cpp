@@ -3,7 +3,7 @@
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    (at your option) any internal version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,7 +16,7 @@
     Copyright (c) 2019 ElandaSunshine
     ===============================================================
     
-    @author Elanda (elanda@elandasunshine.xyz)
+    @author Elanda
     @file   PluginProcessor.cpp
     @date   05, October 2019
     
@@ -24,37 +24,67 @@
  */
 
 #include "PluginProcessor.h"
-
 #include "PluginEditor.h"
+#include "CossinDef.h"
 #include "SharedData.h"
 #include "Resources.h"
 
-#include <jaut/appdata.h>
-#include <jaut/config.h>
+#include <jaut_provider/jaut_provider.h>
 
+namespace
+{
+//======================================================================================================================
 inline constexpr float Const_Pi                        = 3.14159f;
 inline constexpr float Const_LinearPanningCompensation = 2.0f;
 inline constexpr float Const_SquarePanningCompensation = 1.41421356238f;
 inline constexpr float Const_SinePanningCompensation   = 1.41421356238f;
 
+inline constexpr int Resolution_LookupTable = 200;
+
 //======================================================================================================================
-CossinAudioProcessor::CossinAudioProcessor()
-     : AudioProcessor (BusesProperties().withInput ("Input",     AudioChannelSet::stereo())
-                                        .withOutput("Output",    AudioChannelSet::stereo())
-                                        .withInput ("Sidechain", AudioChannelSet::mono())),
-       atcd(JT_IS_STANDALONE_INLINE(nullptr, new jaut::ScopedATCD)),
-       parameters(*this, nullptr),
-       topUnitRack(*this, &parameters, &undoManager),
-       previousGain{0.0f, 0.0f}
+template<class Member, class ...Args>
+std::unique_ptr<Member> newParameter(Member *&member, Args &&...args)
 {
-    initialize();
-    makeParameters();
+    return std::unique_ptr<Member>((member = new Member(std::forward<Args>(args)...)));
 }
 
-CossinAudioProcessor::~CossinAudioProcessor() {}
+auto createSineTable() noexcept
+{
+    std::array<float, Resolution_LookupTable + 1> table {};
+
+    for (int i = 0; i < table.size(); ++i)
+    {
+        table[i] = std::sqrt(static_cast<float>(i) / 100.0f) * Const_SquarePanningCompensation;
+    }
+    
+    return table;
+}
+
+auto createSquareTable() noexcept
+{
+    std::array<float, ::Resolution_LookupTable + 1> table {};
+    
+    for (int i = 0; i < table.size(); ++i)
+    {
+        table[i] = std::sin((static_cast<float>(i) / 100.0f) * (Const_Pi / 2.0f)) * Const_SinePanningCompensation;
+    }
+    
+    return table;
+}
+}
 
 //======================================================================================================================
-const String CossinAudioProcessor::getName() const
+CossinAudioProcessor::CossinAudioProcessor()
+     : AudioProcessor(getDefaultBusesLayout()),
+       parameters(*this, nullptr, "CossinState", getParameters())
+{
+    initialize();
+}
+
+CossinAudioProcessor::~CossinAudioProcessor() = default;
+
+//======================================================================================================================
+const juce::String CossinAudioProcessor::getName() const
 {
     return "Cossin";
 }
@@ -62,24 +92,24 @@ const String CossinAudioProcessor::getName() const
 //======================================================================================================================
 void CossinAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
-    previousGain[0] = parGain->getValue() * calculatePanningGain(0);
-    previousGain[1] = parGain->getValue() * calculatePanningGain(1);
+    const float gain   = parGain->get();
+    const int pan_mode = parPanMode->get();
+    previousGain[0]    = gain * calculatePanningGain(pan_mode, 0);
+    previousGain[1]    = gain * calculatePanningGain(pan_mode, 1);
+    
     metreSource.resize(getMainBusNumOutputChannels(), static_cast<int>(0.02f * sampleRate / samplesPerBlock));
-
-    topUnitRack.beginPlayback(sampleRate, samplesPerBlock);
 }
 
 void CossinAudioProcessor::releaseResources()
 {
-    topUnitRack.finishPlayback();
 }
 
 bool CossinAudioProcessor::isBusesLayoutSupported(const BusesLayout &layouts) const
 {
-    const AudioChannelSet main_bus = layouts.getMainOutputChannelSet();
+    const juce::AudioChannelSet main_bus = layouts.getMainOutputChannelSet();
 
-    if((main_bus != AudioChannelSet::mono() && main_bus != AudioChannelSet::stereo())
-       || main_bus == AudioChannelSet::disabled())
+    if((main_bus != juce::AudioChannelSet::mono() && main_bus != juce::AudioChannelSet::stereo())
+       || main_bus == juce::AudioChannelSet::disabled())
     {
         return false;
     }
@@ -87,13 +117,16 @@ bool CossinAudioProcessor::isBusesLayoutSupported(const BusesLayout &layouts) co
     return main_bus == layouts.getMainInputChannelSet();
 }
 
-void CossinAudioProcessor::processBlock(AudioBuffer<float> &buffer, MidiBuffer &midi)
+void CossinAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce::MidiBuffer &midi)
 {
-    ScopedNoDenormals no_denormals;
+    juce::ScopedNoDenormals denormals;
 
+    const float gain   = parGain->get();
+    const int pan_mode = parPanMode->get();
+    
     for (auto i = 0; i < buffer.getNumChannels(); ++i)
     {
-        float current_gain = parGain->getValue() * calculatePanningGain(i);
+        const float current_gain = gain * calculatePanningGain(pan_mode, i);
         
         if (current_gain == previousGain[i])
         {
@@ -106,7 +139,6 @@ void CossinAudioProcessor::processBlock(AudioBuffer<float> &buffer, MidiBuffer &
         }
     }
 
-    topUnitRack.process(buffer, midi);
     metreSource.measureBlock(buffer);
 }
 
@@ -116,20 +148,20 @@ bool CossinAudioProcessor::hasEditor() const
     return true;
 }
 
-AudioProcessorEditor *CossinAudioProcessor::createEditor()
+juce::AudioProcessorEditor* CossinAudioProcessor::createEditor()
 {
-    return new CossinMainEditorWindow(*this, parameters, properties, metreSource, topUnitRack);
+    return new CossinMainEditorWindow(*this, parameters, metreSource);
 }
 
 //======================================================================================================================
-void CossinAudioProcessor::getStateInformation(MemoryBlock &destData)
+void CossinAudioProcessor::getStateInformation(juce::MemoryBlock &destData)
 {
-    ValueTree state = parameters.copyState();
+    juce::ValueTree state = parameters.copyState();
 
     if (state.isValid())
     {
-        JT_IS_STANDALONE({})
-        JT_STANDALONE_ELSE
+        COSSIN_IS_STANDALONE({})
+        COSSIN_STANDALONE_ELSE
         (
             // Gui data
             state.setProperty("GuiWidth",  windowBounds.getWidth(), nullptr);
@@ -137,40 +169,36 @@ void CossinAudioProcessor::getStateInformation(MemoryBlock &destData)
         )
 
         // Property data
-        ValueTree property_tree = state.getOrCreateChildWithName("Properties", nullptr);
-        property_tree.copyPropertiesAndChildrenFrom(properties.writeTo("Properties"), nullptr);
+        juce::ValueTree property_tree = state.getOrCreateChildWithName("Properties", nullptr);
 
         // Dump data
-        std::unique_ptr<XmlElement> state_xml(std::move(state.createXml()));
-        this->copyXmlToBinary(*state_xml, destData);
+        std::unique_ptr<juce::XmlElement> state_xml(std::move(state.createXml()));
+        copyXmlToBinary(*state_xml, destData);
 
         // Store output debug information
       #ifdef JUCE_DEBUG
-        state_xml->writeTo(File::getCurrentWorkingDirectory().getChildFile("../../plugin_state.xml"));
+        state_xml->writeTo(juce::File::getCurrentWorkingDirectory().getChildFile("../../plugin_state.xml"));
       #endif
     }
 }
 
 void CossinAudioProcessor::setStateInformation(const void *data, int sizeInBytes)
 {
-    std::unique_ptr<XmlElement> state_xml(getXmlFromBinary(data, sizeInBytes));
+    std::unique_ptr<juce::XmlElement> state_xml(getXmlFromBinary(data, sizeInBytes));
 
     if (state_xml.get() && state_xml->hasTagName(parameters.state.getType()))
     {
-        const ValueTree state = ValueTree::fromXml(*state_xml);
+        const juce::ValueTree state = juce::ValueTree::fromXml(*state_xml);
 
         if (state.isValid())
         {
-            JT_IS_STANDALONE({})
-            JT_STANDALONE_ELSE
+            COSSIN_IS_STANDALONE()
+            COSSIN_STANDALONE_ELSE
             (
                 // Gui data
                 windowBounds.setBounds(0, 0, state.getProperty("GuiWidth", -1), state.getProperty("GuiHeight", -1));
             )
-
-            // Property data
-            properties.readFrom(state.getChildWithName("Properties"));
-
+            
             // Contain data
             parameters.replaceState(state);
         }
@@ -178,7 +206,7 @@ void CossinAudioProcessor::setStateInformation(const void *data, int sizeInBytes
 }
 
 //======================================================================================================================
-Rectangle<int> &CossinAudioProcessor::getWindowSize() noexcept
+juce::Rectangle<int> &CossinAudioProcessor::getWindowSize() noexcept
 {
     return windowBounds;
 }
@@ -190,95 +218,108 @@ void CossinAudioProcessor::initialize()
 
     // Default init properties
     const jaut::Config &config = sharedData->Configuration();
-    const jaut::Config::Property property_window_size = config.getProperty("size", res::Cfg_Defaults);
-    const jaut::Config::Property property_panning     = config.getProperty("panning", res::Cfg_Defaults);
-    const jaut::Config::Property property_processor   = config.getProperty("processor", res::Cfg_Defaults);
+    auto property_window_size  = config.getProperty("size", res::Cfg_Defaults);
 
-    properties.createProperty("PanningLaw",        property_panning.getValue());
-    properties.createProperty("SelectedProcessor", property_processor.getValue());
-
-    JT_IS_STANDALONE({})
-    JT_STANDALONE_ELSE
+    COSSIN_IS_STANDALONE({})
+    COSSIN_STANDALONE_ELSE
     (
-        windowBounds.setBounds(0, 0, property_window_size.getProperty("width").getValue(),
-                                     property_window_size.getProperty("height").getValue());
+        windowBounds.setBounds(0, 0, property_window_size->getProperty("width") ->getValue(),
+                                     property_window_size->getProperty("height")->getValue());
     )
 
     // Misc
     metreSource.setMaxHoldMS(50);
-
-    jaut::JAUT_DISABLE_THREAD_DIST_EXPLICIT(false);
 }
 
-void CossinAudioProcessor::makeParameters()
+float CossinAudioProcessor::calculatePanningGain(int panMode, int channel) const noexcept
 {
-    using Parameter = AudioProcessorValueTreeState::Parameter;
+    static auto SineLookupTable   = ::createSineTable();
+    static auto SquareLookupTable = ::createSquareTable();
+    
+    jassert(jaut::fit<int>(panMode, 0, res::List_PanModes.size()));
 
-    parGain = parameters.createAndAddParameter(std::make_unique<Parameter>("par_master_level", "Global level", "",
-                                               NormalisableRange(0.0f, 1.0f, 0.0f, 0.5f), 1.0f,
-    [](float value)
+    if (panMode == 0) // linear
     {
-        const String db       = String(round(Decibels::gainToDecibels(value) * 100.0f) / 100.0f);
-        const String floating = String(round(value * 100.0f) / 100.0f);
-
-        return (value > 0 ? db : "-Inf") + "dB " + floating;
-    },
-    nullptr));
-
-    parameters.createAndAddParameter(std::make_unique<Parameter>("par_master_mix", "Global mix", "",
-                                     NormalisableRange(0.0f, 1.0f), 1.0f,
-    [](float value)
-    {
-        return String(static_cast<int>(value * 100)) + "%";
-    },
-    nullptr));
-
-    parPanning = parameters.createAndAddParameter(std::make_unique<Parameter>("par_master_panning", "Global panning",
-                                                  "", NormalisableRange<float>(-1.0f, 1.0f, 0.0f, 0.5f, true), 0.0f,
-    [](float value)
-    {
-        const int abs_value    = static_cast<int>(abs(value * 100));
-        const int lesser_value = 100 - abs_value;
-        const int bigger_value = 100 + abs_value;
-        const String mixedText = value < 0.0f ? (String(bigger_value) + "% Left, " + String(lesser_value) + "% Right")
-                                               : (String(lesser_value) + "% Left, " + String(bigger_value) + "% Right");
-        const String end = value == 1.0f ? "Right" : (value == -1.0f ? "Left" : (value == 0.0f ? "Center" : mixedText));
-
-        return end;
-    },
-    nullptr));
-
-    // Create and finish new state object
-    parameters.state = ValueTree("PluginState");
-}
-
-float CossinAudioProcessor::calculatePanningGain(int channel) const noexcept
-{
-    const float panning_p     = parPanning->convertFrom0to1(parPanning->getValue()) / 2.0 + 0.5;
-    const float channel_pan   = channel == 0 ? 1.0 - panning_p : panning_p;
-    const int    panning_mode = properties.getProperty("PanningLaw");
-    double       result       = 1.0f;
-
-    jassert(jaut::fit_s(panning_mode, 0, res::Pan_Modes_Num));
-
-    if (panning_mode == 0) // linear
-    {
-        result = channel_pan * Const_LinearPanningCompensation;
+        const float panning_p    = parPanning->get() / 2.0f + 0.5f;
+        const float channel_mod  = channel == 0 ? 1.0f - panning_p : panning_p;
+        return channel_mod * Const_LinearPanningCompensation;
     }
-    else if (panning_mode == 1) // square
+    else
     {
-        result = std::sqrt(channel_pan) * Const_SquarePanningCompensation;
+        const int panning_p   = juce::roundToInt(parPanning->get() * 100.0f) + 100;
+        const int table_index = channel == 0 ? 200 - panning_p : panning_p;
+        return panMode == 1 ? SquareLookupTable[table_index] : SineLookupTable[table_index];
     }
-    else if (panning_mode == 2) // sine
-    {
-        result = std::sin(channel_pan * (Const_Pi / 2.0)) * Const_SinePanningCompensation;
-    }
-
-    return result;
 }
 
 //======================================================================================================================
-AudioProcessor *JUCE_CALLTYPE createPluginFilter()
+juce::AudioProcessorValueTreeState::ParameterLayout CossinAudioProcessor::getParameters()
+{
+    using Range = juce::NormalisableRange<float>;
+    
+    const int last_panning_mode = res::List_PanModes.size()     - 1;
+    const int last_process_mode = res::List_ProcessModes.size() - 1;
+    
+    const jaut::Config &config  = sharedData->Configuration();
+    const int default_pan_mode  = std::clamp<int>(config.getProperty(res::Prop_DefaultsPanningMode, res::Cfg_Defaults)
+                                                  ->getValue(), 0, last_panning_mode);
+    const int default_processor = std::clamp<int>(config.getProperty(res::Prop_DefaultsProcessMode, res::Cfg_Defaults)
+                                                  ->getValue(), 0, last_process_mode);
+    
+    return {
+        // Volume parameter
+        ::newParameter(parGain, ParameterIds::MasterLevel, "Global level", Range(0.0f, 1.0f, 0.0f, 0.5f), 1.0f, "",
+                       juce::AudioProcessorParameter::Category::genericParameter,
+                       [](float value, int maximumStringLength)
+                       {
+                           const juce::String db(std::round(juce::Decibels::gainToDecibels(value) * 100.0f) / 100.0f);
+                           return ((value > 0 ? db : "-INF") + "dB").substring(maximumStringLength);
+                       }),
+        
+        // Mix parameter
+        ::newParameter(parMix, ParameterIds::MasterMix, "Global mix", Range(0.0f, 1.0f), 1.0f, "",
+                       juce::AudioProcessorParameter::Category::genericParameter,
+                       [](float value, int maximumStringLength)
+                       {
+                            return (juce::String(static_cast<int>(value * 100)) + "%")
+                                    .substring(maximumStringLength);
+                       }),
+        
+        // Panning parameter
+        ::newParameter(parPanning, ParameterIds::MasterPan, "Global pan", Range(-1.0f, 1.0f, 0.01f, 0.5f, true), 0.0f,
+                       "", juce::AudioProcessorParameter::Category::genericParameter,
+                       [](float value, int maximumStringLength) -> juce::String
+                       {
+                           if (std::fmod(value, 1.0f) == 0.0f)
+                           {
+                               return value == 0.0f ? "Center" : (value == 1.0f ? "Right" : "Left");
+                           }
+    
+                           const int mod = static_cast<int>(value * 100.0f);
+                           return (juce::String(100 - mod) + "% Left, " + juce::String(100 + mod) + "% Right")
+                                   .substring(maximumStringLength);
+                       }),
+                       
+        // Panning law parameter
+        ::newParameter(parPanMode, ParameterIds::PropertyPanningMode, "Pan mode", 0, last_panning_mode,
+                       default_pan_mode, "",
+                       [](int value, int maximumStringLength)
+                       {
+                           return juce::String(res::List_PanModes[value]).substring(maximumStringLength);
+                       })
+    
+        // TODO Processor mode parameter
+        /*::newParameter(parProcMode, ParameterIds::PropertyProcessMode, "Process mode", 0, last_process_mode,
+                       default_processor, "",
+                       [](int value, int maximumStringLength)
+                       {
+                           return juce::String(res::List_PanModes[value]).substring(maximumStringLength);
+                       })*/
+    };
+}
+
+//======================================================================================================================
+juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new CossinAudioProcessor();
 }

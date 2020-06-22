@@ -3,7 +3,7 @@
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    (at your option) any internal version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,7 +16,7 @@
     Copyright (c) 2019 ElandaSunshine
     ===============================================================
     
-    @author Elanda (elanda@elandasunshine.xyz)
+    @author Elanda
     @file   MetreLookAndFeel.h
     @date   05, October 2019
     
@@ -25,82 +25,47 @@
 
 #pragma once
 
-#include "JuceHeader.h"
+#include <ff_meters/ff_meters.h>
+#include <juce_gui_basics/juce_gui_basics.h>
 
 class PluginStyle;
-class MetreLookAndFeel : public FFAU::LevelMeter::LookAndFeelMethods
+class MetreLookAndFeel : public foleys::LevelMeter::LookAndFeelMethods
 {
 public:
-    using MeterFlags       = FFAU::LevelMeter::MeterFlags;
-    using LevelMeterSource = FFAU::LevelMeterSource;
-
-    MetreLookAndFeel(PluginStyle &pluginStyle, float infinity = -80.0f, int metreRefreshRateInMiliseconds = 50) noexcept;
-
+    using MeterFlags       = foleys::LevelMeter::MeterFlags;
+    using LevelMeterSource = foleys::LevelMeterSource;
+    
+    //==================================================================================================================
+    explicit MetreLookAndFeel(PluginStyle&, float = -80.0f, int = 50) noexcept;
+    
+    //==================================================================================================================
     void setupDefaultMeterColours() override;
     void updateMeterGradients() override;
-
-    juce::Rectangle<float> getMeterInnerBounds(const juce::Rectangle<float> bounds,
-                                               const MeterFlags meterType) const override;
-                                               
-    juce::Rectangle<float> getMeterBounds(const juce::Rectangle<float> bounds, const MeterFlags meterType,
-                                          const int numChannels, const int channel) const override;
-                                          
-    juce::Rectangle<float> getMeterBarBounds(const juce::Rectangle<float> bounds,
-                                             const MeterFlags meterType) const override;
-                                             
-    juce::Rectangle<float> getMeterTickmarksBounds(const juce::Rectangle<float> bounds,
-                                                   const MeterFlags meterType) const override;
-                                                   
-    juce::Rectangle<float> getMeterClipIndicatorBounds(const juce::Rectangle<float> bounds,
-                                                       const MeterFlags meterType) const override;
-                                                       
-    juce::Rectangle<float> drawBackground(juce::Graphics &, const MeterFlags meterType,
-                                          const juce::Rectangle<float> bounds) override;
-                                          
-    juce::Rectangle<float> getMeterMaxNumberBounds(const juce::Rectangle<float> bounds,
-                                                   const MeterFlags meterType) const override;
-
-    int hitTestClipIndicator(const juce::Point<int> position, const MeterFlags meterType,
-                             const juce::Rectangle<float> bounds, const LevelMeterSource *source) const override;
-                             
-    int hitTestMaxNumber(const juce::Point<int> position, const MeterFlags meterType,
-                         const juce::Rectangle<float> bounds, const LevelMeterSource *source) const override;
-
-    void drawMeterBars(juce::Graphics &, const MeterFlags meterType, const juce::Rectangle<float> bounds,
-                       const LevelMeterSource *source, const int fixedNumChannels = -1,
-                       const int selectedChannel = -1) override;
-                       
-    void drawMeterBarsBackground(juce::Graphics &, const MeterFlags meterType, const juce::Rectangle<float> bounds,
-                                 const int numChannels, const int fixedNumChannels = -1) override;
-                                 
-    void drawMeterChannel(juce::Graphics &, const MeterFlags meterType, const juce::Rectangle<float> bounds,
-                          const LevelMeterSource *source, const int selectedChannel) override;
-                          
-    void drawMeterChannelBackground(juce::Graphics &, const MeterFlags meterType,
-                                    const juce::Rectangle<float> bounds) override;
-                                    
-    void drawMeterBar(juce::Graphics &, const MeterFlags meterType, const juce::Rectangle<float> bounds,
-                      const float rms, const float peak) override;
-                      
-    void drawMeterReduction(juce::Graphics &g, const FFAU::LevelMeter::MeterFlags meterType,
-                            const juce::Rectangle<float> bounds, const float reduction) override;
-                            
-    void drawMeterBarBackground(juce::Graphics &, const MeterFlags meterType,
-                                const juce::Rectangle<float> bounds) override;
-                                
-    void drawTickMarks(juce::Graphics &, const MeterFlags meterType, const juce::Rectangle<float> bounds) override;
     
-    void drawClipIndicator(juce::Graphics &, const MeterFlags meterType, const juce::Rectangle<float> bounds,
-                           const bool hasClipped) override;
-                           
-    void drawClipIndicatorBackground(juce::Graphics &, const MeterFlags meterType,
-                                     const juce::Rectangle<float> bounds) override;
-                                     
-    void drawMaxNumber(juce::Graphics &, const MeterFlags meterType, const juce::Rectangle<float> bounds,
-                       const float maxGain) override;
-                       
-    void drawMaxNumberBackground(juce::Graphics &, const MeterFlags meterType,
-                                 const juce::Rectangle<float> bounds) override;
+    //==================================================================================================================
+    void drawMeterReduction(juce::Graphics&, foleys::LevelMeter::MeterFlags, juce::Rectangle<float>, float) override {}
+    void drawTickMarks(juce::Graphics&, MeterFlags, juce::Rectangle<float>) override {}
+    void drawClipIndicator(juce::Graphics&, MeterFlags, juce::Rectangle<float>, bool) override {}
+    void drawClipIndicatorBackground(juce::Graphics&, MeterFlags, juce::Rectangle<float>) override {}
+    void drawMaxNumberBackground(juce::Graphics&, MeterFlags, juce::Rectangle<float>) override {}
+    
+    //==================================================================================================================
+    juce::Rectangle<float> getMeterInnerBounds(juce::Rectangle<float>, MeterFlags) const override;
+    juce::Rectangle<float> getMeterBounds(juce::Rectangle<float>, MeterFlags, int, int) const override;
+    juce::Rectangle<float> getMeterBarBounds(juce::Rectangle<float>, MeterFlags) const override;
+    juce::Rectangle<float> getMeterTickmarksBounds(juce::Rectangle<float>, MeterFlags) const override;
+    juce::Rectangle<float> getMeterClipIndicatorBounds(juce::Rectangle<float>, MeterFlags) const override;
+    juce::Rectangle<float> drawBackground(juce::Graphics&, MeterFlags, juce::Rectangle<float>) override;
+    juce::Rectangle<float> getMeterMaxNumberBounds(juce::Rectangle<float>, MeterFlags) const override;
+    int hitTestClipIndicator(juce::Point<int>, MeterFlags, juce::Rectangle<float>, const LevelMeterSource*) const override;
+    int hitTestMaxNumber(juce::Point<int>, MeterFlags, juce::Rectangle<float>, const LevelMeterSource*) const override;
+    void drawMeterBars(juce::Graphics&, MeterFlags, juce::Rectangle<float>, const LevelMeterSource*, int, int) override;
+    void drawMeterBarsBackground(juce::Graphics&, MeterFlags, juce::Rectangle<float>, int, int) override;
+    void drawMeterChannel(juce::Graphics&, MeterFlags, juce::Rectangle<float>, const LevelMeterSource*, int) override;
+    void drawMeterChannelBackground(juce::Graphics&, MeterFlags, juce::Rectangle<float>) override;
+    void drawMeterBar(juce::Graphics&, MeterFlags, juce::Rectangle<float>, float, float) override;
+    void drawMeterBarBackground(juce::Graphics&, MeterFlags, juce::Rectangle<float>) override;
+    void drawMaxNumber(juce::Graphics&, MeterFlags, juce::Rectangle<float>, float) override;
 
     //==================================================================================================================
     void reloadResources() noexcept;
@@ -109,7 +74,7 @@ private:
     class LastUpdate final
     {
     public:
-        LastUpdate(int refreshTicks) noexcept
+        explicit LastUpdate(int refreshTicks) noexcept
             : currchannel(0),
               lastValue{0, 0},
               peak{0.0f, 0.0f},
@@ -117,7 +82,8 @@ private:
               refreshTicks(refreshTicks),
               speedGain{1.0f, 1.0f}
         {}
-
+    
+        //==============================================================================================================
         float getUpdateMultiplier(float value, float peakVal, float maxVal, float skew) noexcept
         {
             if (value > lastValue[currchannel])
@@ -151,7 +117,7 @@ private:
 
         float getPeak() const noexcept
         {
-            return jmax(peak[0], peak[1]);
+            return juce::jmax(peak[0], peak[1]);
         }
 
     private:
@@ -162,11 +128,12 @@ private:
         const int refreshTicks;
         float speedGain[2];
     };
-
+    
+    //==================================================================================================================
     PluginStyle &pluginStyle;
     const float infinity;
-    Font font;
-    ColourGradient horizontalGradient;
+    juce::Font font;
+    juce::ColourGradient horizontalGradient;
     LastUpdate lastUpdate;
 
 };

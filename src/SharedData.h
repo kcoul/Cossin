@@ -3,7 +3,7 @@
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    (at your option) any internal version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,44 +25,52 @@
 
 #pragma once
 
-#include "JuceHeader.h"
-#include <jaut/thememanager.h>
-
-namespace jaut
-{
-    class AppData;
-    class Config;
-    class IThemeDefinition;
-    class Localisation;
-    class ThemeManager;
-    class ThemePointer;
-}
+#include <juce_events/juce_events.h>
+#include <jaut_provider/jaut_provider.h>
 
 class CossinAudioProcessorEditor;
 
-class SharedData final : public ActionBroadcaster
+class SharedData final : public juce::ActionBroadcaster
 {
 public:
-    enum LockPriority
+    JAUT_CREATE_EXCEPTION_WITH_STRING(AppDataFolderCreationException, "Couldn't create plugin data folders: ");
+    
+    enum class LockPriority
     {
         HIGH,
         LOW,
         NONE
     };
-
-    class ReadLock final
+    
+    struct ApplicationData
+    {
+        // The users app data dir
+        juce::File dirAppData { juce::File::getSpecialLocation(juce::File::userApplicationDataDirectory) };
+        
+        // The plugin data root
+        juce::File dirRoot    { dirAppData.getChildFile("ElandaSunshine/Cossin") };
+        
+        juce::File dirLang    { dirRoot.getChildFile("Lang")    };
+        juce::File dirThemes  { dirRoot.getChildFile("Themes")  };
+        juce::File dirPresets { dirRoot.getChildFile("Presets") };
+    
+        juce::File dirData      { dirRoot.getChildFile("Data")  };
+        juce::File dirDataLogs  { dirData.getChildFile("Logs")  };
+        juce::File dirDataSaves { dirData.getChildFile("Saves") };
+    };
+    
+    class ReadLock
     {
     public:
-        ReadLock(SharedData &sharedData, LockPriority priority = HIGH)
-            : sharedData(sharedData),
-              lockWasSuccessful(priority == HIGH)
+        explicit ReadLock(SharedData &sharedData, LockPriority priority = LockPriority::HIGH)
+            : sharedData(sharedData), lockWasSuccessful(priority == LockPriority::HIGH)
         {
-            if(JUCEApplication::isStandaloneApp() || priority == NONE)
+            if(juce::JUCEApplicationBase::isStandaloneApp() || priority == LockPriority::NONE)
             {
                 return;
             }
 
-            if(priority == HIGH)
+            if(priority == LockPriority::HIGH)
             {
                 sharedData.rwLock.enterRead();
             }
@@ -74,7 +82,7 @@ public:
 
         ~ReadLock()
         {
-            if(JUCEApplication::isStandaloneApp())
+            if(juce::JUCEApplicationBase::isStandaloneApp())
             {
                 return;
             }
@@ -90,19 +98,18 @@ public:
         bool lockWasSuccessful;
     };
 
-    class WriteLock final
+    class WriteLock
     {
     public:
-        WriteLock(SharedData &sharedData, LockPriority priority = HIGH)
-            : sharedData(sharedData),
-              lockWasSuccessful(priority == HIGH)
+        explicit WriteLock(SharedData &sharedData, LockPriority priority = LockPriority::HIGH)
+            : sharedData(sharedData), lockWasSuccessful(priority == LockPriority::HIGH)
         {
-            if(JUCEApplication::isStandaloneApp() || priority == NONE)
+            if(juce::JUCEApplicationBase::isStandaloneApp() || priority == LockPriority::NONE)
             {
                 return;
             }
 
-            if(priority == HIGH)
+            if(priority == LockPriority::HIGH)
             {
                 sharedData.rwLock.enterWrite();
             }
@@ -114,7 +121,7 @@ public:
 
         ~WriteLock()
         {
-            if(JUCEApplication::isStandaloneApp())
+            if(juce::JUCEApplicationBase::isStandaloneApp())
             {
                 return;
             }
@@ -131,21 +138,25 @@ public:
     };
     
     //==================================================================================================================
-    static SharedResourcePointer<SharedData> getInstance();
+    static juce::SharedResourcePointer<SharedData> getInstance();
 
     //==================================================================================================================
     SharedData() noexcept;
-    ~SharedData();
+    ~SharedData() override;
 
     //==================================================================================================================
-    jaut::AppData      &AppData()       const noexcept;
-    jaut::Config       &Configuration() const noexcept;
-    jaut::ThemeManager &ThemeManager()  const noexcept;
-    jaut::Localisation &Localisation()  const noexcept;
+    jaut::Config&       Configuration() noexcept;
+    jaut::ThemeManager& ThemeManager()  noexcept;
+    jaut::Localisation& Localisation()  noexcept;
+    
+    const ApplicationData&    AppData()       const noexcept;
+    const jaut::Config&       Configuration() const noexcept;
+    const jaut::ThemeManager& ThemeManager()  const noexcept;
+    const jaut::Localisation& Localisation()  const noexcept;
 
     //==================================================================================================================
-    const jaut::ThemePointer &getDefaultTheme()  const noexcept;
-    const jaut::Localisation &getDefaultLocale() const noexcept;
+    const jaut::ThemePointer& getDefaultTheme()  const noexcept;
+    const jaut::Localisation& getDefaultLocale() const noexcept;
 
     //==================================================================================================================
     void sendChangeToAllInstancesExcept(CossinAudioProcessorEditor* = nullptr) const;
@@ -154,7 +165,7 @@ private:
     friend class ReadLock;
 
     // Data
-    std::unique_ptr<jaut::AppData>      appData;
+    ApplicationData                     appData;
     std::unique_ptr<jaut::Config>       appConfig;
     std::unique_ptr<jaut::ThemeManager> appThemes;
     std::unique_ptr<jaut::Localisation> appLocale;
@@ -164,12 +175,12 @@ private:
     std::unique_ptr<jaut::Localisation> defaultLocale;
 
     // Misc
-    mutable ReadWriteLock rwLock;
-    bool initialized;
+    mutable juce::ReadWriteLock rwLock;
+    bool initialized { false };
 
     //==================================================================================================================
     void initialize();
-    void initAppdata();
+    void initAppdata() const;
     void initConfig();
     void initDefaults();
     void initLangs();

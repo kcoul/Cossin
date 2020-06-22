@@ -3,7 +3,9 @@ countries: GB
 
 # General
 "general.none" = "None"
-
+"general.pan.linear" = "Linear"
+"general.pan.square" = "Square"
+"general.pan.sinusoidal" = "Sinusoidal"
 
 # Alerts
 "alert.cancel" = "Cancel"

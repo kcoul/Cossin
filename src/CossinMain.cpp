@@ -3,7 +3,7 @@
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    (at your option) any internal version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,7 +16,7 @@
     Copyright (c) 2019 ElandaSunshine
     ===============================================================
     
-    @author Elanda (elanda@elandasunshine.xyz)
+    @author Elanda
     @file   CossinMain.cpp
     @date   20, October 2019
     
@@ -25,39 +25,37 @@
 
 #include "CossinMain.h"
 
+#include <juce_audio_plugin_client/juce_audio_plugin_client.h>
+
+#include "CossinDef.h"
 #include "SharedData.h"
 #include "Resources.h"
-#include <jaut/appdata.h>
-#include <jaut/localisation.h>
-#include <jaut/config.h>
 
+//**********************************************************************************************************************
+// region Namespace
+//======================================================================================================================
 namespace
 {
-    static constexpr char const *Id_Cache = "73783927-4465-43c1-8612-0f87be2b37ce";
-
-    inline int yncAlert(const jaut::Localisation &locale, const String& title, const String& message, 
-                        std::function<void(bool)> callback = nullptr,
-                        AlertWindow::AlertIconType icon    = AlertWindow::WarningIcon) noexcept
+    inline constexpr char const *Id_Cache = "73783927-4465-43c1-8612-0f87be2b37ce";
+    
+    //==================================================================================================================
+    int yncAlert(const jaut::Localisation &locale, const juce::String& title, const juce::String& message,
+                 juce::AlertWindow::AlertIconType icon = juce::AlertWindow::WarningIcon) noexcept
     {
-        const int result = AlertWindow::showYesNoCancelBox(icon, locale.translate(title), locale.translate(message),
-                                                           locale.translate("alert.yes"), locale.translate("alert.no"),
-                                                           locale.translate("alert.cancel"));
-
-        if(callback)
-        {
-            callback(result == 1);
-        }
-
+        const int result = juce::AlertWindow::showYesNoCancelBox(icon, locale.translate(title),
+                                                                       locale.translate(message),
+                                                                       locale.translate("alert.yes"),
+                                                                       locale.translate("alert.no"),
+                                                                       locale.translate("alert.cancel"));
+        
         return result;
     }
 }
-
-
-
-/* ==================================================================================
- * ===================================== Cossin =====================================
- * ================================================================================== */
-#if(1)
+//======================================================================================================================
+// endregion Namespace
+//**********************************************************************************************************************
+// region Cossin
+//======================================================================================================================
 Cossin *JUCE_CALLTYPE Cossin::getInstance() noexcept
 {
     return dynamic_cast<Cossin*>(JUCEApplicationBase::getInstance());
@@ -66,34 +64,33 @@ Cossin *JUCE_CALLTYPE Cossin::getInstance() noexcept
 //======================================================================================================================
 Cossin::Cossin()
 {
-    PluginHostType::jucePlugInClientCurrentWrapperType = AudioProcessor::wrapperType_Standalone;
-    jaut::JAUT_DISABLE_THREAD_DIST_EXPLICIT(true);
+    juce::PluginHostType::jucePlugInClientCurrentWrapperType = juce::AudioProcessor::wrapperType_Standalone;
 }
 
 Cossin::~Cossin()
 {
-    Logger::setCurrentLogger(nullptr);
+    juce::Logger::setCurrentLogger(nullptr);
 }
 
 //======================================================================================================================
-const String Cossin::getApplicationName()
+const juce::String Cossin::getApplicationName() // NOLINT
 {
     return res::App_Name;
 }
 
-const String Cossin::getApplicationVersion()
+const juce::String Cossin::getApplicationVersion() // NOLINT
 {
     return res::App_Version;
 }
 
-//==================================================================================================================
-const bool Cossin::isInputMuted() const noexcept
+//======================================================================================================================
+bool Cossin::isInputMuted() const noexcept
 {
     return static_cast<bool>(mainWindow->pluginHolder->getMuteInputValue().getValue());
 }
 
 //======================================================================================================================
-void Cossin::initialise(const String&)
+void Cossin::initialise(const juce::String&)
 {
     mainWindow.reset(createWindow());
 
@@ -124,9 +121,9 @@ void Cossin::systemRequestedQuit()
         }
     }
 
-    if (ModalComponentManager::getInstance()->cancelAllModalComponents())
+    if (juce::ModalComponentManager::getInstance()->cancelAllModalComponents())
     {
-        Timer::callAfterDelay(100, []()
+        juce::Timer::callAfterDelay(100, []()
         {
             if (auto app = JUCEApplicationBase::getInstance())
             {
@@ -141,20 +138,17 @@ void Cossin::systemRequestedQuit()
 }
 
 //======================================================================================================================
-CossinPluginWindow *Cossin::createWindow()
+CossinPluginWindow* Cossin::createWindow()
 {
     return new CossinPluginWindow();
 }
-#endif
-
-
-
-/* ==================================================================================
- * =============================== CossinPluginWrapper ==============================
- * ================================================================================== */
-#if(1)
+//======================================================================================================================
+// endregion Cossin
+//**********************************************************************************************************************
+// region CossinPluginWrapper
+//======================================================================================================================
 CossinPluginWrapper::CossinPluginWrapper()
-    : cacheLock(std::make_unique<InterProcessLock>("COSSIN_" + String(Id_Cache))),
+    : cacheLock(std::make_unique<juce::InterProcessLock>("COSSIN_" + juce::String(Id_Cache))),
 #ifdef JucePlugin_PreferredChannelConfigurations
       channelConfiguration(juce::Array<StandalonePluginHolder::PluginInOuts>
                            (channels, juce::numElementsInArray(channels))),
@@ -169,24 +163,24 @@ CossinPluginWrapper::CossinPluginWrapper()
     int inChannels = (channelConfiguration.size() > 0 ? channelConfiguration[0].numIns
                                                       : processor->getMainBusNumInputChannels());
 
-    const String prefdefdevice    = "";
-    const bool audioInputRequired = inChannels > 0;
+    const juce::String pref_device = "";
+    const bool audioInputRequired  = inChannels > 0;
 
-    if (audioInputRequired && RuntimePermissions::isRequired(RuntimePermissions::recordAudio)
-        && !RuntimePermissions::isGranted(RuntimePermissions::recordAudio))
+    if (audioInputRequired && juce::RuntimePermissions::isRequired(juce::RuntimePermissions::recordAudio) &&
+        !juce::RuntimePermissions::isGranted(juce::RuntimePermissions::recordAudio))
     {
-        RuntimePermissions::request(RuntimePermissions::recordAudio, [this, prefdefdevice](bool granted)
+        juce::RuntimePermissions::request(juce::RuntimePermissions::recordAudio, [this, pref_device](bool granted)
         {
-            init(granted, prefdefdevice);
+            init(granted, pref_device);
         });
     }
     else
     {
-        init(audioInputRequired, prefdefdevice);
+        init(audioInputRequired, pref_device);
     }
 }
 
-void CossinPluginWrapper::init(bool enableAudioInput, const String &preferredDefaultDeviceName)
+void CossinPluginWrapper::init(bool enableAudioInput, const juce::String &preferredDefaultDeviceName)
 {
     reloadPluginCache();
     currentSaveFile = getLastFile();
@@ -212,11 +206,11 @@ CossinPluginWrapper::~CossinPluginWrapper()
 void CossinPluginWrapper::createPlugin(bool loadInitialState)
 {
 #if JUCE_MODULE_AVAILABLE_juce_audio_plugin_client
-    processor.reset(::createPluginFilterOfType (AudioProcessor::wrapperType_Standalone));
+    processor.reset(juce::createPluginFilterOfType(juce::AudioProcessor::wrapperType_Standalone));
 #else
-    AudioProcessor::setTypeOfNextNewPlugin(AudioProcessor::wrapperType_Standalone);
-    processor.reset(createPluginFilter());
-    AudioProcessor::setTypeOfNextNewPlugin(AudioProcessor::wrapperType_Undefined);
+    juce::AudioProcessor::setTypeOfNextNewPlugin(juce::AudioProcessor::wrapperType_Standalone);
+    processor.reset(juce::createPluginFilter());
+    juce::AudioProcessor::setTypeOfNextNewPlugin(juce::AudioProcessor::wrapperType_Undefined);
 #endif
 
     jassert(processor != nullptr);
@@ -234,7 +228,7 @@ void CossinPluginWrapper::createPlugin(bool loadInitialState)
 
     if(loadInitialState)
     {
-        MemoryBlock data;
+        juce::MemoryBlock data;
         processor->getStateInformation(data);
         lastLoadedState = data.toBase64Encoding();
     }
@@ -246,7 +240,7 @@ void CossinPluginWrapper::deletePlugin()
     processor = nullptr;
 }
 
-String CossinPluginWrapper::getFilePatterns(const String &fileSuffix)
+juce::String CossinPluginWrapper::getFilePatterns(const juce::String &fileSuffix)
 {
     if (fileSuffix.isEmpty())
     {
@@ -257,7 +251,7 @@ String CossinPluginWrapper::getFilePatterns(const String &fileSuffix)
 }
 
 //======================================================================================================================
-Value &CossinPluginWrapper::getMuteInputValue()
+juce::Value& CossinPluginWrapper::getMuteInputValue()
 {
     return shouldMuteInput;
 
@@ -267,36 +261,36 @@ bool CossinPluginWrapper::getProcessorHasPotentialFeedbackLoop() const
     return processorHasPotentialFeedbackLoop;
 }
 
-void CossinPluginWrapper::valueChanged(Value &value)
+void CossinPluginWrapper::valueChanged(juce::Value &value)
 {
     muteInput = static_cast<bool>(value.getValue());
 }
 
 //======================================================================================================================
-File CossinPluginWrapper::getLastFile() const
+juce::File CossinPluginWrapper::getLastFile() const
 {
-    const String defaultloc = sharedData->AppData().getDir("Data").getDir("Saves").toString(true);
-    return File(cossinCache->getValue("lastStateFile", defaultloc));
+    return cossinCache->getValue("lastStateFile", sharedData->AppData().dirData.getChildFile("Saves")
+                                                                               .getFullPathName());
 }
 
-void CossinPluginWrapper::setLastFile(const File &file)
+void CossinPluginWrapper::setLastFile(const juce::File &file)
 {
     cossinCache->setValue("lastStateFile", file.getFullPathName());
     savePluginCache();
 }
 
-bool CossinPluginWrapper::askUserToSaveState(const String &fileSuffix)
+bool CossinPluginWrapper::askUserToSaveState(const juce::String &fileSuffix)
 {
 #if JUCE_MODAL_LOOPS_PERMITTED
     const jaut::Localisation &locale = sharedData->Localisation();
-    FileChooser fc(locale.translate("state.chooser.save.title"), getLastFile(), getFilePatterns(fileSuffix));
+    juce::FileChooser chooser(locale.translate("state.chooser.save.title"), getLastFile(), getFilePatterns(fileSuffix));
 
-    if (fc.browseForFileToSave(true))
+    if (chooser.browseForFileToSave(true))
     {
-        MemoryBlock data;
-        const File file(fc.getResult());
+        juce::MemoryBlock data;
+        const juce::File file = chooser.getResult();
         processor->getStateInformation(data);
-
+        
         if (file.create().wasOk() && file.replaceWithText(data.toBase64Encoding()))
         {
             setLastFile(file);
@@ -304,8 +298,8 @@ bool CossinPluginWrapper::askUserToSaveState(const String &fileSuffix)
         }
         else
         {
-            const int result = ::yncAlert(locale, "state.save.err.title", "state.save.err.text", nullptr,
-                                          AlertWindow::QuestionIcon);
+            const int result = ::yncAlert(locale, "state.save.err.title", "state.save.err.text",
+                                          juce::AlertWindow::QuestionIcon);
 
             if(result == 1)
             {
@@ -323,17 +317,17 @@ bool CossinPluginWrapper::askUserToSaveState(const String &fileSuffix)
 #endif
 }
 
-bool CossinPluginWrapper::askUserToLoadState(const String &fileSuffix)
+bool CossinPluginWrapper::askUserToLoadState(const juce::String &fileSuffix)
 {
 #if JUCE_MODAL_LOOPS_PERMITTED
     const jaut::Localisation &locale = sharedData->Localisation();
-    FileChooser fc(locale.translate("state.chooser.load.title"), getLastFile(), getFilePatterns(fileSuffix));
+    juce::FileChooser chooser(locale.translate("state.chooser.load.title"), getLastFile(), getFilePatterns(fileSuffix));
 
-    if (fc.browseForFileToOpen())
+    if (chooser.browseForFileToOpen())
     {
-        MemoryBlock data;
-        const File file(fc.getResult());
-        const String base64 = file.loadFileAsString();
+        juce::MemoryBlock data;
+        const juce::File file = chooser.getResult();
+        const juce::String base64 = file.loadFileAsString();
 
         if (data.fromBase64Encoding(base64))
         {
@@ -346,9 +340,9 @@ bool CossinPluginWrapper::askUserToLoadState(const String &fileSuffix)
         }
         else
         {
-            const int result = AlertWindow::showOkCancelBox(AlertWindow::WarningIcon,
-                                                            locale.translate("state.chooser.load.err.title"),
-                                                            locale.translate("state.chooser.load.err.text"));
+            const int result = juce::AlertWindow::showOkCancelBox(juce::AlertWindow::WarningIcon,
+                                                                  locale.translate("state.chooser.load.err.title"),
+                                                                  locale.translate("state.chooser.load.err.text"));
 
             if(result == 1)
             {
@@ -372,7 +366,7 @@ void CossinPluginWrapper::startPlaying()
     player.setProcessor(processor.get());
 
 #if JucePlugin_Enable_IAA && JUCE_IOS
-    if (auto device = dynamic_cast<iOSAudioIODevice*> (deviceManager.getCurrentAudioDevice()))
+    if (auto device = dynamic_cast<juce::iOSAudioIODevice*> (deviceManager.getCurrentAudioDevice()))
     {
         processor->setPlayHead(device->getAudioPlayHead());
         device->setMidiMessageCollector(&player.getMidiMessageCollector());
@@ -386,29 +380,24 @@ void CossinPluginWrapper::stopPlaying()
 }
 
 //======================================================================================================================
-bool CossinPluginWrapper::saveAudioDeviceState()
+bool CossinPluginWrapper::reloadAudioDeviceState(bool enableAudioInput, const juce::String &preferredDefaultDeviceName,
+                                                 const juce::AudioDeviceManager::AudioDeviceSetup *preferredSetupOptions)
 {
-    return true;
-}
+    const auto savedState = std::make_unique<juce::XmlElement>("DEVICESETUP");
+    auto &config          = sharedData->Configuration();
+    auto prop_devices     = config.getProperty("devices", res::Cfg_Standalone);
 
-bool CossinPluginWrapper::reloadAudioDeviceState(bool enableAudioInput, const String &preferredDefaultDeviceName,
-                                                 const AudioDeviceManager::AudioDeviceSetup *preferredSetupOptions)
-{
-    std::unique_ptr<XmlElement> savedState(std::make_unique<XmlElement>("DEVICESETUP"));
-    auto &config = sharedData->Configuration();
-    auto propdev = config.getProperty("devices", res::Cfg_Standalone);
+    const juce::String output_device = prop_devices.getProperty("output").getValue();
+    const juce::String input_device  = prop_devices.getProperty("input") .getValue();
+    const juce::String device_type   = config.getProperty("deviceType", res::Cfg_Standalone).getValue();
+    const double sample_rate         = config.getProperty("sampleRate", res::Cfg_Standalone).getValue();
+    const int    buffer_size         = config.getProperty("bufferSize", res::Cfg_Standalone).getValue();
 
-    const String outputdev  = propdev.getProperty("output").getValue();
-    const String inputdev   = propdev.getProperty("input") .getValue();
-    const String devtype    = config.getProperty("deviceType", res::Cfg_Standalone).getValue();
-    const double samplerate = config.getProperty("sampleRate", res::Cfg_Standalone).getValue();
-    const int buffersize    = config.getProperty("bufferSize", res::Cfg_Standalone).getValue();
-
-    savedState->setAttribute("audioOutputDeviceName", outputdev.isEmpty() ? "default" : outputdev);
-    savedState->setAttribute("audioInputDeviceName",  inputdev.isEmpty()  ? "default" : inputdev);
-    savedState->setAttribute("deviceType",            devtype.isEmpty()   ? "default" : devtype);
-    savedState->setAttribute("audioDeviceRate",       samplerate);
-    savedState->setAttribute("audioDeviceBufferSize", buffersize);
+    savedState->setAttribute("audioOutputDeviceName", output_device.isEmpty() ? "default" : output_device);
+    savedState->setAttribute("audioInputDeviceName",  input_device.isEmpty()  ? "default" : input_device);
+    savedState->setAttribute("deviceType",            device_type.isEmpty()   ? "default" : device_type);
+    savedState->setAttribute("audioDeviceRate",       sample_rate);
+    savedState->setAttribute("audioDeviceBufferSize", buffer_size);
 
 #if !(JUCE_IOS || JUCE_ANDROID)
     shouldMuteInput.setValue(static_cast<bool>(config.getProperty("muteInput", res::Cfg_Standalone).getValue()));
@@ -424,15 +413,14 @@ bool CossinPluginWrapper::reloadAudioDeviceState(bool enableAudioInput, const St
         totalOutChannels   = defaultConfig.numOuts;
     }
 
-    const String result = deviceManager.initialise(enableAudioInput ? totalInChannels : 0, totalOutChannels,
-                                                   savedState.get(), true, preferredDefaultDeviceName,
-                                                   preferredSetupOptions);
+    const juce::String result = deviceManager.initialise(enableAudioInput ? totalInChannels : 0, totalOutChannels,
+                                                         savedState.get(), true, preferredDefaultDeviceName,
+                                                         preferredSetupOptions);
 
-    if(!result.isEmpty())
+    if (!result.isEmpty())
     {
-
-        Logger::getCurrentLogger()->writeToLog("An exception occurred while trying to initialize the main"
-                                               "audio device:\n" + result);
+    
+        juce::Logger::writeToLog("An exception occurred while trying to initialize the main audio device:\n" + result);
         
         return false;
     }
@@ -440,9 +428,9 @@ bool CossinPluginWrapper::reloadAudioDeviceState(bool enableAudioInput, const St
     return true;
 }
 
-bool CossinPluginWrapper::savePluginCache()
+bool CossinPluginWrapper::savePluginCache() // NOLINT
 {
-    if(cossinCache)
+    if (cossinCache)
     {
         return cossinCache->save();
     }
@@ -452,48 +440,40 @@ bool CossinPluginWrapper::savePluginCache()
 
 bool CossinPluginWrapper::reloadPluginCache()
 {
-    if(!cossinCache)
+    if (!cossinCache)
     {
-        try
-        {
-            PropertiesFile::Options opts;
-            opts.storageFormat = PropertiesFile::storeAsCompressedBinary;
-            opts.processLock   = cacheLock.get();
-            cossinCache.reset(new PropertiesFile(sharedData->AppData().getFile(".cache"), opts));
-            
-            return true;
-        }
-        catch(std::bad_alloc&){}
-    }
-    else
-    {
-        return cossinCache->reload();
+        juce::PropertiesFile::Options opts;
+        opts.storageFormat = juce::PropertiesFile::storeAsCompressedBinary;
+        opts.processLock   = cacheLock.get();
+        cossinCache        = std::make_unique<juce::PropertiesFile>(sharedData->AppData().dirRoot
+                                                                                         .getChildFile(".cache"), opts);
+        return true;
     }
 
-    return false;
+    return cossinCache->reload();
 }
 
 bool CossinPluginWrapper::savePluginState(bool askToSave, bool askIfNotSuccessful, bool notifyOnFail)
 {
-    if(!processor)
+    if (!processor)
     {
         return false;
     }
-
-    MemoryBlock data;
+    
+    juce::MemoryBlock data;
     processor->getStateInformation(data);
-    const String base64 = data.toBase64Encoding();
+    const juce::String base64 = data.toBase64Encoding();
     const auto &locale  = sharedData->Localisation();
 
-    if(base64 == lastLoadedState)
+    if (base64 == lastLoadedState)
     {
         return true;
     }
 
-    if(askToSave)
+    if (askToSave)
     {
-        const int result = ::yncAlert(locale, "state.save.new.title", "state.save.new.text", nullptr,
-                                      AlertWindow::QuestionIcon);
+        const int result = ::yncAlert(locale, "state.save.new.title", "state.save.new.text",
+                                      juce::AlertWindow::QuestionIcon);
 
         if(result != 1)
         {
@@ -501,19 +481,19 @@ bool CossinPluginWrapper::savePluginState(bool askToSave, bool askIfNotSuccessfu
         }
     }
 
-    if(!currentSaveFile.isDirectory() && currentSaveFile.replaceWithText(base64))
+    if (!currentSaveFile.isDirectory() && currentSaveFile.replaceWithText(base64))
     {
         if(cossinCache)
         {
             cossinCache->setValue("lastStateFile", currentSaveFile.getFullPathName());
         }
     }
-    else if(askIfNotSuccessful || askToSave)
+    else if (askIfNotSuccessful || askToSave)
     {
         if(!askToSave)
         {
-            const int result = ::yncAlert(locale, "state.save.err.title", "state.save.err.text", nullptr,
-                                      AlertWindow::WarningIcon);
+            const int result = ::yncAlert(locale, "state.save.err.title", "state.save.err.text",
+                                          juce::AlertWindow::WarningIcon);
 
             if(result == 1)
             {
@@ -525,10 +505,10 @@ bool CossinPluginWrapper::savePluginState(bool askToSave, bool askIfNotSuccessfu
 
         return askUserToSaveState(".dat");
     }
-    else if(notifyOnFail)
+    else if (notifyOnFail)
     {
-        AlertWindow::showMessageBox(AlertWindow::NoIcon, locale.translate("state.save.fail.title"),
-                                    locale.translate("state.save.fail.text"), locale.translate("alert.ok"));
+        juce::AlertWindow::showMessageBox(juce::AlertWindow::NoIcon, locale.translate("state.save.fail.title"),
+                                          locale.translate("state.save.fail.text"), locale.translate("alert.ok"));
 
         return false;
     }
@@ -538,19 +518,19 @@ bool CossinPluginWrapper::savePluginState(bool askToSave, bool askIfNotSuccessfu
 
 bool CossinPluginWrapper::reloadPluginState(bool askToLoad, bool askIfNotSuccessful, bool notifyOnFail)
 {
-    if(!processor)
+    if (!processor)
     {
         return false;
     }
 
     const auto &locale  = sharedData->Localisation();
-    const String base64 = currentSaveFile.loadFileAsString();
-    MemoryBlock data;
+    const juce::String base64 = currentSaveFile.loadFileAsString();
+    juce::MemoryBlock data;
 
-    if(askToLoad)
+    if (askToLoad)
     {
-        const int result = ::yncAlert(locale, "state.load.file.title", "state.load.file.text", nullptr,
-                                      AlertWindow::QuestionIcon);
+        const int result = ::yncAlert(locale, "state.load.file.title", "state.load.file.text",
+                                      juce::AlertWindow::QuestionIcon);
 
         if(result != 1)
         {
@@ -558,20 +538,20 @@ bool CossinPluginWrapper::reloadPluginState(bool askToLoad, bool askIfNotSuccess
         }
     }
 
-    if(currentSaveFile.exists() && !currentSaveFile.isDirectory() && data.fromBase64Encoding(base64)
-       && data.getSize() > 0)
+    if (currentSaveFile.exists() && !currentSaveFile.isDirectory() && data.fromBase64Encoding(base64)
+        && data.getSize() > 0)
     {
         processor->setStateInformation(data.getData(), static_cast<int>(data.getSize()));
         lastLoadedState = base64;
     }
-    else if(askIfNotSuccessful || askToLoad)
+    else if (askIfNotSuccessful || askToLoad)
     {
-        if(!askToLoad)
+        if (!askToLoad)
         {
-            const int result = ::yncAlert(locale, "state.load.err.title", "state.load.err.text", nullptr,
-                                      AlertWindow::WarningIcon);
+            const int result = ::yncAlert(locale, "state.load.err.title", "state.load.err.text",
+                                          juce::AlertWindow::WarningIcon);
 
-            if(result == 1)
+            if (result == 1)
             {
                 return askUserToLoadState(".dat");
             }
@@ -581,11 +561,10 @@ bool CossinPluginWrapper::reloadPluginState(bool askToLoad, bool askIfNotSuccess
         
         return askUserToLoadState(".dat");
     }
-    else if(notifyOnFail)
+    else if (notifyOnFail)
     {
-        AlertWindow::showMessageBox(AlertWindow::NoIcon, locale.translate("state.load.fail.title"),
-                                    locale.translate("state.load.fail.text"), locale.translate("alert.ok"));
-
+        juce::AlertWindow::showMessageBox(juce::AlertWindow::NoIcon, locale.translate("state.load.fail.title"),
+                                          locale.translate("state.load.fail.text"), locale.translate("alert.ok"));
         return false;
     }
 
@@ -596,17 +575,17 @@ bool CossinPluginWrapper::reloadPluginState(bool askToLoad, bool askIfNotSuccess
 void CossinPluginWrapper::switchToHostApplication()
 {
 #if JUCE_IOS
-    if (auto device = dynamic_cast<iOSAudioIODevice*>(deviceManager.getCurrentAudioDevice()))
+    if (auto device = dynamic_cast<juce::iOSAudioIODevice*>(deviceManager.getCurrentAudioDevice()))
     {
         device->switchApplication();
     }
 #endif
 }
 
-bool CossinPluginWrapper::isInterAppAudioConnected()
+bool CossinPluginWrapper::isInterAppAudioConnected() // NOLINT
 {
 #if JUCE_IOS
-    if (auto device = dynamic_cast<iOSAudioIODevice*>(deviceManager.getCurrentAudioDevice()))
+    if (auto device = dynamic_cast<juce::iOSAudioIODevice*>(deviceManager.getCurrentAudioDevice()))
     {
         return device->isInterAppAudioConnected();
     }
@@ -616,15 +595,15 @@ bool CossinPluginWrapper::isInterAppAudioConnected()
 }
 
 #if JUCE_MODULE_AVAILABLE_juce_gui_basics
-Image CossinPluginWrapper::getIAAHostIcon(int size)
+juce::Image CossinPluginWrapper::getIAAHostIcon(int size) // NOLINT
 {
 #if JUCE_IOS && JucePlugin_Enable_IAA
-    if (auto device = dynamic_cast<iOSAudioIODevice*>(deviceManager.getCurrentAudioDevice()))
+    if (auto device = dynamic_cast<juce::iOSAudioIODevice*>(deviceManager.getCurrentAudioDevice()))
     {
         return device->getIcon(size);
     }
 #else
-    ignoreUnused (size);
+    juce::ignoreUnused (size);
 #endif
 
     return {};
@@ -635,14 +614,14 @@ Image CossinPluginWrapper::getIAAHostIcon(int size)
 CossinPluginWrapper *CossinPluginWrapper::getInstance()
 {
 #if JucePlugin_Enable_IAA || JucePlugin_Build_Standalone
-    if (PluginHostType::getPluginLoadedAs() == AudioProcessor::wrapperType_Standalone)
+    if (juce::PluginHostType::getPluginLoadedAs() == juce::AudioProcessor::wrapperType_Standalone)
     {
-        Desktop &desktop             = Desktop::getInstance();
+        const juce::Desktop &desktop = juce::Desktop::getInstance();
         const int numTopLevelWindows = desktop.getNumComponents();
 
         for (int i = 0; i < numTopLevelWindows; ++i)
         {
-            if (CossinPluginWindow *window = dynamic_cast<CossinPluginWindow*>(desktop.getComponent(i)))
+            if (auto *const window = dynamic_cast<CossinPluginWindow*>(desktop.getComponent(i)))
             {
                 return window->getPluginHolder();
             }
@@ -666,7 +645,7 @@ void CossinPluginWrapper::audioDeviceIOCallback(const float **inputChannelData, 
     player.audioDeviceIOCallback(inputChannelData, numInputChannels, outputChannelData, numOutputChannels, numSamples);
 }
 
-void CossinPluginWrapper::audioDeviceAboutToStart(AudioIODevice *device)
+void CossinPluginWrapper::audioDeviceAboutToStart(juce::AudioIODevice *device)
 {
     emptyBuffer.setSize(device->getActiveInputChannels().countNumberOfSetBits(), device->getCurrentBufferSizeSamples());
     emptyBuffer.clear();
@@ -682,8 +661,8 @@ void CossinPluginWrapper::audioDeviceStopped()
 }
 
 //======================================================================================================================
-void CossinPluginWrapper::setupAudioDevices(bool enableAudioInput, const String &preferredDefaultDeviceName,
-                                            const AudioDeviceManager::AudioDeviceSetup *preferredSetupOptions)
+void CossinPluginWrapper::setupAudioDevices(bool enableAudioInput, const juce::String &preferredDefaultDeviceName,
+                                            const juce::AudioDeviceManager::AudioDeviceSetup *preferredSetupOptions)
 {
     deviceManager.addAudioCallback(this);
     deviceManager.addMidiInputDeviceCallback ({}, &player);
@@ -699,7 +678,7 @@ void CossinPluginWrapper::shutDownAudioDevices()
 
 void CossinPluginWrapper::timerCallback()
 {
-    auto newMidiDevices = MidiInput::getAvailableDevices();
+    auto newMidiDevices = juce::MidiInput::getAvailableDevices();
 
     if (newMidiDevices != lastMidiDevices)
     {
@@ -722,16 +701,14 @@ void CossinPluginWrapper::timerCallback()
         lastMidiDevices = newMidiDevices;
     }
 }
-#endif
-
-
-
-/* ==================================================================================
- * =============================== CossinPluginWindow ===============================
- * ================================================================================== */
-#if(1)
+//======================================================================================================================
+// endregion CossinPluginWrapper
+//**********************************************************************************************************************
+// region CossinPluginWindow
+//======================================================================================================================
 CossinPluginWindow::CossinPluginWindow()
-    : DocumentWindow("Cossin", LookAndFeel::getDefaultLookAndFeel().findColour(ResizableWindow::backgroundColourId), 7)
+    : DocumentWindow("Cossin",
+                     juce::LookAndFeel::getDefaultLookAndFeel().findColour(ResizableWindow::backgroundColourId), 7)
 {
 #if JUCE_IOS || JUCE_ANDROID
     setTitleBarHeight(0);
@@ -740,7 +717,7 @@ CossinPluginWindow::CossinPluginWindow()
     setUsingNativeTitleBar(true);
 #endif
 
-    pluginHolder.reset(new CossinPluginWrapper());
+    pluginHolder = std::make_unique<CossinPluginWrapper>();
 
 #if JUCE_IOS || JUCE_ANDROID
     setFullScreen(true);
@@ -751,13 +728,13 @@ CossinPluginWindow::CossinPluginWindow()
 
     if (auto* cache = pluginHolder->cossinCache.get())
     {
-        auto shared_data (SharedData::getInstance());
+        auto shared_data = SharedData::getInstance();
 
-        const auto propsize = shared_data->Configuration().getProperty("size", res::Cfg_Defaults);
-        const int x         = cache->getIntValue("windowX", -100);
-        const int y         = cache->getIntValue("windowY", -100);
-        const int width     = cache->getIntValue("windowW", propsize.getProperty("width").getValue());
-        const int height    = cache->getIntValue("windowH", propsize.getProperty("height").getValue());
+        const auto prop_size = shared_data->Configuration().getProperty("size", res::Cfg_Defaults);
+        const int x          = cache->getIntValue("windowX", -100);
+        const int y          = cache->getIntValue("windowY", -100);
+        const int width      = cache->getIntValue("windowW", prop_size.getProperty("width") ->getValue());
+        const int height     = cache->getIntValue("windowH", prop_size.getProperty("height")->getValue());
 
         if (x != -100 && y != -100)
         {
@@ -793,12 +770,12 @@ CossinPluginWindow::~CossinPluginWindow()
 }
 
 //======================================================================================================================
-AudioProcessor *CossinPluginWindow::getAudioProcessor() const noexcept
+juce::AudioProcessor* CossinPluginWindow::getAudioProcessor() const noexcept
 {
     return pluginHolder->processor.get();
 }
 
-AudioDeviceManager &CossinPluginWindow::getDeviceManager() const noexcept
+juce::AudioDeviceManager& CossinPluginWindow::getDeviceManager() const noexcept
 {
     return pluginHolder->deviceManager;
 }
@@ -819,7 +796,7 @@ void CossinPluginWindow::closeButtonPressed()
 {
     if(pluginHolder->savePluginState(true, true))
     {
-        JUCEApplicationBase::quit();
+        juce::JUCEApplicationBase::quit();
     }
 }
 
@@ -827,18 +804,15 @@ CossinPluginWrapper *CossinPluginWindow::getPluginHolder()
 {
     return pluginHolder.get();
 }
-#endif
-
-
-
-/* ==================================================================================
- * ============================== MainContentComponent ==============================
- * ================================================================================== */
-#if(1)
+//======================================================================================================================
+// endregion CossinPluginWindow
+//**********************************************************************************************************************
+// region MainContentComponent
+//======================================================================================================================
 CossinPluginWindow::MainContentComponent::MainContentComponent(CossinPluginWindow &filterWindow)
     : owner(filterWindow),
       editor(owner.getAudioProcessor()->hasEditor() ? owner.getAudioProcessor()->createEditorIfNeeded()
-                                                    : new GenericAudioProcessorEditor(*owner.getAudioProcessor()))
+                                                    : new juce::GenericAudioProcessorEditor(*owner.getAudioProcessor()))
 {
     if (editor != nullptr)
     {
@@ -880,7 +854,7 @@ void CossinPluginWindow::MainContentComponent::componentMovedOrResized(Component
     }
 }
 
-Rectangle<int> CossinPluginWindow::MainContentComponent::getSizeToContainEditor() const
+juce::Rectangle<int> CossinPluginWindow::MainContentComponent::getSizeToContainEditor() const
 {
     if (editor != nullptr)
     {
@@ -889,40 +863,46 @@ Rectangle<int> CossinPluginWindow::MainContentComponent::getSizeToContainEditor(
         
     return {};
 }
-#endif
-
+//======================================================================================================================
+// endregion MainContentComponent
+//**********************************************************************************************************************
+// region Extern
+//======================================================================================================================
 #if JucePlugin_Build_Standalone && JUCE_IOS
-bool JUCE_CALLTYPE juce_isInterAppAudioConnected()
-{
-    if (auto holder = CossinPluginWrapper::getInstance())
+    bool JUCE_CALLTYPE juce_isInterAppAudioConnected()
     {
-        return holder->isInterAppAudioConnected();
+        if (auto holder = CossinPluginWrapper::getInstance())
+        {
+            return holder->isInterAppAudioConnected();
+        }
+    
+        return false;
+    }
+    
+    void JUCE_CALLTYPE juce_switchToHostApplication()
+    {
+        if (auto holder = CossinPluginWrapper::getInstance())
+        {
+            holder->switchToHostApplication();
+        }
     }
 
-    return false;
-}
-
-void JUCE_CALLTYPE juce_switchToHostApplication()
-{
-    if (auto holder = CossinPluginWrapper::getInstance())
-    {
-        holder->switchToHostApplication();
-    }
-}
-
-#if JUCE_MODULE_AVAILABLE_juce_gui_basics
-Image JUCE_CALLTYPE juce_getIAAHostIcon(int size)
-{
-    if (auto holder = CossinPluginWrapper::getInstance())
-    {
-        return holder->getIAAHostIcon(size);
-    }
-
-    return Image();
-}
-#endif
+#   if JUCE_MODULE_AVAILABLE_juce_gui_basics
+        Image JUCE_CALLTYPE juce_getIAAHostIcon(int size)
+        {
+            if (auto holder = CossinPluginWrapper::getInstance())
+            {
+                return holder->getIAAHostIcon(size);
+            }
+    
+            return Image();
+        }
+#   endif
 #endif
 
 #if JUCE_USE_CUSTOM_PLUGIN_STANDALONE_APP
-JUCE_CREATE_APPLICATION_DEFINE(Cossin)
+    JUCE_CREATE_APPLICATION_DEFINE(Cossin)
 #endif
+//======================================================================================================================
+// endregion Extern
+//**********************************************************************************************************************
