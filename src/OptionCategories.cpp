@@ -46,10 +46,11 @@ inline int getLanguageListIndex(const juce::File &languageFile,
                                 const std::vector<std::pair<juce::String, juce::String>> &languageList)
 {
     const juce::String language_name = languageFile.getFileNameWithoutExtension();
-
-    for(int i = 0; i < languageList.size(); ++i)
+    const int          size          = static_cast<int>(languageList.size());
+    
+    for(int i = 0; i < size; ++i)
     {
-        if(languageList.at(i).first.equalsIgnoreCase(language_name))
+        if(languageList.at(static_cast<std::size_t>(i)).first.equalsIgnoreCase(language_name))
         {
             return i;
         }
@@ -151,23 +152,23 @@ struct Resolution
     }
 
     //==================================================================================================================
-    inline bool canFit(const juce::String &name) const noexcept
+    bool canFit(const juce::String &name) const noexcept
     {
         const Resolution resolution = getResolutionFromName(name);
         return width >= resolution.width && height >= resolution.height;
     }
 
-    inline juce::String ratioToString() const noexcept
+    juce::String ratioToString() const noexcept
     {
         return juce::String(ratioWidth) + ":" + juce::String(ratioHeight);
     }
 
-    inline int getNewWidth(int newHeight) const noexcept
+    int getNewWidth(int newHeight) const noexcept
     {
         return newHeight / ratioHeight * ratioWidth;
     }
 
-    inline int getNewHeight(int newWidth) const noexcept
+    int getNewHeight(int newWidth) const noexcept
     {
         return newWidth / ratioWidth * ratioHeight;
     }
@@ -213,16 +214,22 @@ inline void addResolutionIfApplicable(juce::ComboBox &resolutionBox, const Resol
 OptionPanelGeneral::PanelDefaults::PanelDefaults(OptionPanelGeneral &panel)
     : panel(panel)
 {
-    for(int i = 0; i < res::List_PanModes.size(); ++i)
+    constexpr int panning_size = static_cast<int>(res::List_PanningModes.size());
+    
+    for(int i = 0; i < panning_size; ++i)
     {
-        boxPanningLaw.addItem(res::List_PanModes[i], i + 1);
+        boxPanningLaw.addItem(res::List_PanningModes[static_cast<std::size_t>(i)], i + 1);
     }
+    
     addAndMakeVisible(boxPanningLaw);
-
-    for(int i = 0; i < res::List_ProcessModes.size(); ++i)
+    
+    constexpr int process_size = static_cast<int>(res::List_ProcessModes.size());
+    
+    for(int i = 0; i < process_size; ++i)
     {
-        boxProcessor.addItem(res::List_ProcessModes[i], i + 1);
+        boxProcessor.addItem(res::List_ProcessModes[static_cast<std::size_t>(i)], i + 1);
     }
+    
     addAndMakeVisible(boxProcessor);
 
     const juce::Rectangle max_area = ::getMaxUseableArea();
@@ -251,26 +258,21 @@ OptionPanelGeneral::PanelDefaults::PanelDefaults(OptionPanelGeneral &panel)
     boxRatio.addListener(this);
     boxRatio.setInputFilter(this, false);
     addAndMakeVisible(boxRatio);
+    
+    labelDefaultPanning.setJustificationType(juce::Justification::centred);
+    addAndMakeVisible(labelDefaultPanning);
+    
+    labelDefaultUnit.setJustificationType(juce::Justification::centred);
+    addAndMakeVisible(labelDefaultUnit);
+    
+    labelDefaultSize.setJustificationType(juce::Justification::centred);
+    addAndMakeVisible(labelDefaultSize);
 }
 
 //======================================================================================================================
-void OptionPanelGeneral::PanelDefaults::paint(juce::Graphics &g)
-{
-    const juce::LookAndFeel &lf = getLookAndFeel();
-
-    g.setFont(panel.font.withHeight(13.0f));
-    g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourFontId));
-    jaut::FontFormat::drawSmallCaps(g, panel.locale.translate("options.category.general.default_panning"),
-                                    0, 0, getWidth(), 13, juce::Justification::centredLeft);
-    jaut::FontFormat::drawSmallCaps(g, panel.locale.translate("options.category.general.default_unit"),
-                                    0, 60, getWidth(), 13, juce::Justification::centredLeft);
-    jaut::FontFormat::drawSmallCaps(g, panel.locale.translate("options.category.general.default_size"),
-                                    0, 120, getWidth(), 13, juce::Justification::centredLeft);
-}
-
 void OptionPanelGeneral::PanelDefaults::paintOverChildren(juce::Graphics &g)
 {
-    if(boxSize.getSelectedItemIndex() != boxSize.getNumItems() - 1)
+    if (boxSize.getSelectedItemIndex() != boxSize.getNumItems() - 1)
     {
         const juce::LookAndFeel &lf = getLookAndFeel();
 
@@ -282,17 +284,17 @@ void OptionPanelGeneral::PanelDefaults::paintOverChildren(juce::Graphics &g)
 
 void OptionPanelGeneral::PanelDefaults::resized()
 {
-    boxPanningLaw.setBounds(0, 17, 200, 30);
-    boxProcessor .setBounds(0, 77, 200, 30);
-    boxSize      .setBounds(0, 137, 200, 30);
+    labelDefaultPanning.setBounds(0,   0, getWidth(), 13);
+    labelDefaultUnit   .setBounds(0,  60, getWidth(), 13);
+    labelDefaultSize   .setBounds(0, 120, getWidth(), 13);
+    
+    boxPanningLaw  .setBounds(0, 17, 200, 30);
+    boxProcessor   .setBounds(0, 77, 200, 30);
+    boxSize        .setBounds(0, 137, 200, 30);
     boxWindowWidth .setBounds(0, 172, 97, 25);
     boxWindowHeight.setBounds(103, 172, 97, 25);
     boxRatio       .setBounds(206, 172, 50, 25);
 }
-
-//======================================================================================================================
-void OptionPanelGeneral::PanelDefaults::mouseWheelMove(const juce::MouseEvent &e, const juce::MouseWheelDetails &wheel)
-{}
 
 //======================================================================================================================
 juce::String OptionPanelGeneral::PanelDefaults::filterNewText(juce::TextEditor &editor, const juce::String &newInput)
@@ -415,12 +417,19 @@ void OptionPanelGeneral::PanelDefaults::textEditorFocusLost(juce::TextEditor &ed
 //**********************************************************************************************************************
 // region OptionPanelGeneral
 //======================================================================================================================
-OptionPanelGeneral::OptionPanelGeneral(CossinAudioProcessorEditor &editor, jaut::Localisation &locale)
-    : OptionCategory(editor, locale), currentLanguageIndex(0), lastSelected(0),
-      defaultsBox(*this), languageList("", this)
+OptionPanelGeneral::OptionPanelGeneral(CossinAudioProcessorEditor &editor)
+    : OptionCategory(editor),
+      currentLanguageIndex(0), lastSelected(0), defaultsBox(*this),
+      languageList("", this), labelDefaultsTitle()
 {
     addAndMakeVisible(defaultsBox);
     addAndMakeVisible(languageList);
+    
+    labelDefaultsTitle.setJustificationType(juce::Justification::centred);
+    addAndMakeVisible(labelDefaultsTitle);
+    
+    labelSwitchLanguage.setJustificationType(juce::Justification::centred);
+    addAndMakeVisible(labelSwitchLanguage);
 }
 
 //======================================================================================================================
@@ -430,13 +439,6 @@ void OptionPanelGeneral::paint(juce::Graphics &g)
 
     g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourContainerBackgroundId));
     g.fillRect(languageList.getBoundsInParent().expanded(0, 1));
-
-    g.setFont(font);
-    g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourFontId));
-    jaut::FontFormat::drawSmallCaps(g, locale.translate("options.category.general.defaults_title"),
-                                    8, 0, getWidth() - 183, 27, juce::Justification::centred);
-    jaut::FontFormat::drawSmallCaps(g, locale.translate("options.category.general.select_language"),
-                                    getWidth() - 177, 0, 169, 27, juce::Justification::centred);
 }
 
 void OptionPanelGeneral::resized()
@@ -445,7 +447,10 @@ void OptionPanelGeneral::resized()
     const int defaults_width   = getWidth() - 183;
 
     languageList.setBounds(defaults_width + 6, 27, 169, component_height);
-    defaultsBox.setBounds(6, 27, defaults_width, component_height);
+    defaultsBox .setBounds(6, 27, defaults_width, component_height);
+    
+    labelDefaultsTitle .setBounds(8,                0, getWidth() - 183, 25);
+    labelSwitchLanguage.setBounds(getWidth() - 177, 0, 169,              27);
 }
 
 //======================================================================================================================
@@ -462,11 +467,23 @@ bool OptionPanelGeneral::saveState(SharedData &sharedData) const
     property_size.getProperty(res::Prop_DefaultsSizeWidth) .setValue(defaultsBox.boxWindowWidth .getText().getIntValue());
     property_size.getProperty(res::Prop_DefaultsSizeHeight).setValue(defaultsBox.boxWindowHeight.getText().getIntValue());
 
-    const juce::String selected_language = currentLanguageIndex <= 0 || currentLanguageIndex >= languages.size()
-                                           ? "default" : languages.at(currentLanguageIndex).first;
-    config.getProperty(res::Prop_GeneralLanguage).setValue(selected_language);
-    sharedData.Localisation().setCurrentLanguage(locale);
-
+    const juce::String selected_language = currentLanguageIndex <= 0 ||
+                                           currentLanguageIndex >= static_cast<int>(languages.size()) ? "default"
+                                           : languages.at(static_cast<std::size_t>(currentLanguageIndex)).first;
+        
+    if (selected_language == "default")
+    {
+        sharedData.Localisation().setFallbackToCurrent();
+        config.getProperty(res::Prop_GeneralLanguage).setValue(selected_language);
+    }
+    else
+    {
+        if (sharedData.Localisation().setCurrentLanguageFromDirectory(selected_language))
+        {
+            config.getProperty(res::Prop_GeneralLanguage).setValue(selected_language);
+        }
+    }
+    
     return true;
 }
 
@@ -479,22 +496,38 @@ void OptionPanelGeneral::loadState(const SharedData &sharedData)
 //======================================================================================================================
 void OptionPanelGeneral::reloadLocale(const jaut::Localisation &locale)
 {
-    juce::RangedDirectoryIterator iterator(locale.getRootDirectory(), false, "*.lang");
-
+    const juce::RangedDirectoryIterator iterator(locale.getRootDirectory(), false, "*.lang");
+    
     languages.clear();
     languages.emplace_back("default", "Default");
-
+    
     for (const auto &it : iterator)
     {
         const juce::File language_file = it.getFile();
         const juce::String file_name   = language_file.getFileNameWithoutExtension();
-        auto lang_data                 = jaut::Localisation::getLanguageFileData(language_file);
-        languages.emplace_back(file_name, lang_data.first + " - " + lang_data.second.joinIntoString(" "));
+        
+        if (file_name.matchesWildcard("??_??", true) &&
+            file_name.containsOnly("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_"))
+        {
+            const jaut::Localisation localisation(language_file);
+            const juce::String lang_name = localisation.translate("language", {});
+            
+            if (!lang_name.isEmpty())
+            {
+                const juce::String country_code = file_name.fromFirstOccurrenceOf("_", false, true);
+                languages.emplace_back(file_name, lang_name + " - " + country_code);
+            }
+        }
     }
 
     languageList.updateContent();
     selectLangRow(locale.getLanguageFile());
 
+    labelDefaultsTitle .setText(locale.translate("options.category.general.defaults_title"),
+                                juce::dontSendNotification);
+    labelSwitchLanguage.setText(locale.translate("options.category.general.select_language"),
+                                juce::dontSendNotification);
+    
     languageList               .setTooltip(locale.translate("tooltip.option.select_language"));
     defaultsBox.boxPanningLaw  .setTooltip(locale.translate("tooltip.option.default_panning"));
     defaultsBox.boxProcessor   .setTooltip(locale.translate("tooltip.option.default_processor"));
@@ -502,6 +535,13 @@ void OptionPanelGeneral::reloadLocale(const jaut::Localisation &locale)
     defaultsBox.boxWindowWidth .setTooltip(locale.translate("tooltip.option.default_size.width"));
     defaultsBox.boxWindowHeight.setTooltip(locale.translate("tooltip.option.default_size.height"));
     defaultsBox.boxRatio       .setTooltip(locale.translate("tooltip.option.default_size.ratio"));
+    
+    defaultsBox.labelDefaultPanning.setText(locale.translate("options.category.general.default_panning"),
+                                            juce::dontSendNotification);
+    defaultsBox.labelDefaultUnit   .setText(locale.translate("options.category.general.default_unit"),
+                                            juce::dontSendNotification);
+    defaultsBox.labelDefaultSize   .setText(locale.translate("options.category.general.default_size"),
+                                            juce::dontSendNotification);
 }
 
 void OptionPanelGeneral::reloadTheme(const jaut::ThemePointer &theme)
@@ -510,9 +550,15 @@ void OptionPanelGeneral::reloadTheme(const jaut::ThemePointer &theme)
 
     const juce::Font text_editor_font = font.withHeight(16.0f);
 
-    defaultsBox.boxWindowWidth .setFont(text_editor_font);
-    defaultsBox.boxWindowHeight.setFont(text_editor_font);
-    defaultsBox.boxRatio       .setFont(text_editor_font);
+    labelDefaultsTitle .setFont(text_editor_font);
+    labelSwitchLanguage.setFont(text_editor_font);
+    
+    defaultsBox.boxWindowWidth     .setFont(text_editor_font);
+    defaultsBox.boxWindowHeight    .setFont(text_editor_font);
+    defaultsBox.boxRatio           .setFont(text_editor_font);
+    defaultsBox.labelDefaultPanning.setFont(text_editor_font);
+    defaultsBox.labelDefaultUnit   .setFont(text_editor_font);
+    defaultsBox.labelDefaultSize   .setFont(text_editor_font);
 }
 
 void OptionPanelGeneral::reloadConfig(const jaut::Config &config)
@@ -605,7 +651,7 @@ void OptionPanelGeneral::paintListBoxItem(int row, juce::Graphics &g, int width,
     }
 
     g.setFont(font);
-    g.drawText(languages.at(row).second, 0, 0, width, height, juce::Justification::centred);
+    g.drawText(languages.at(static_cast<std::size_t>(row)).second, 0, 0, width, height, juce::Justification::centred);
 }
 
 void OptionPanelGeneral::listBoxItemClicked(int row, const juce::MouseEvent&)
@@ -619,35 +665,37 @@ void OptionPanelGeneral::listBoxItemDoubleClicked(int row, const juce::MouseEven
     {
         return;
     }
-
-    jaut::Localisation new_locale(locale);
-    const juce::String lang_name = languages.at(row).first;
-
-    if(row == 0 || lang_name == "default")
+    
+    jaut::Localisation locale({}, std::make_unique<jaut::Localisation>(SharedData::getInstance()->getDefaultLocale()));
+    
+    if(row == 0)
     {
-        new_locale.setCurrentLanguage(SharedData::getInstance()->getDefaultLocale());
-        editor.reloadLocale(new_locale);
+        locale.setFallbackToCurrent();
+        editor.reloadLocale(locale);
         editor.repaint();
         currentLanguageIndex = 0;
     }
-    else if(new_locale.setCurrentLanguage(languages.at(row).first))
-    {
-        editor.reloadLocale(new_locale);
-        editor.repaint();
-        currentLanguageIndex = row;
-    }
     else
     {
-        reloadLocale(locale);
+        if (locale.setCurrentLanguageFromDirectory(languages.at(static_cast<std::size_t>(row)).first))
+        {
+            editor.reloadLocale(locale);
+            editor.repaint();
+            currentLanguageIndex = row;
+        }
+        else
+        {
+            reloadLocale(locale);
+        }
     }
-
-    lastSelected = row;
+    
+    std::swap(lastSelected, row);
 }
 
 //======================================================================================================================
 void OptionPanelGeneral::selectLangRow(const juce::File &langFile)
 {
-    if(langFile.getFullPathName().isEmpty())
+    if (langFile.getFullPathName().isEmpty())
     {
         languageList.selectRow(0);
         currentLanguageIndex = 0;
@@ -687,6 +735,16 @@ OptionPanelThemes::ThemePanel::ThemePreview::ThemePreview(ThemePanel &panel)
     labelNoPreview.setJustificationType(juce::Justification::centred);
     labelNoPreview.setEditable(false);
     addAndMakeVisible(labelNoPreview);
+    
+    labelWebsite.setText("Website:", juce::dontSendNotification);
+    labelWebsite.setJustificationType(juce::Justification::left);
+    addAndMakeVisible(labelWebsite);
+    
+    labelLicense.setJustificationType(juce::Justification::left);
+    addAndMakeVisible(labelLicense);
+    
+    labelAuthors.setJustificationType(juce::Justification::left);
+    addAndMakeVisible(labelAuthors);
 }
 
 //======================================================================================================================
@@ -694,29 +752,17 @@ void OptionPanelThemes::ThemePanel::ThemePreview::paint(juce::Graphics &g)
 {
     if(theme && theme->isValid())
     {
-        const juce::LookAndFeel &lf    = getLookAndFeel();
-        const juce::Image thumbnail    = theme->getThemeThumbnail();
-        const juce::Font &panel_font   = panel.panel.font;
-        const juce::Font title_font    = panel_font.withHeight(18.0f).withStyle(juce::Font::bold);
-        const juce::Font version_font  = panel_font.withHeight(11.0f);
-        const juce::Font content_font  = panel_font.withHeight(14.0f);
-        const juce::String title       = theme->getThemeMeta()->getName();
-        const jaut::Version version    = theme->getThemeMeta()->getVersion();
-        const juce::String description = theme->getThemeMeta()->getDescription();
-        const juce::String author      = theme->getThemeMeta()->getAuthor();
-        const juce::String website     = buttonWebsiteLink.getURL().isEmpty() ? buttonWebsiteLink.getButtonText() : "";
-        const juce::String license     = buttonLicenseLink.getURL().isEmpty() ? buttonLicenseLink.getButtonText() : "";
-        const juce::String authors     = theme->getThemeMeta()->getAuthors().isEmpty() ? "-"
-                                         : theme->getThemeMeta()->getAuthors().joinIntoString(", ");
-        const int version_length = version_font.getStringWidth(version.toString());
-        const int max_text_width = getWidth() - 12;
-        const int description_w  = max_text_width - 72;
-        const int author_pos_y   = ::getAuthorPosY(description_w, content_font.getStringWidthFloat(description));
-
+        const juce::LookAndFeel &lf = getLookAndFeel();
         g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourContainerBackgroundId));
         g.fillAll();
 
         // Title
+        const juce::Font &panel_font  = panel.panel.font;
+        const juce::Font title_font   = panel_font.withHeight(18.0f).withStyle(juce::Font::bold);
+        const juce::Font version_font = panel_font.withHeight(11.0f);
+        const juce::String title      = theme->getThemeMeta()->getName();
+        const jaut::Version version   = theme->getThemeMeta()->getVersion();
+        const int version_length      = version_font.getStringWidth(version.toString());
         g.setOrigin(6, 6);
         g.setFont(title_font);
         g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourFontId));
@@ -726,23 +772,19 @@ void OptionPanelThemes::ThemePanel::ThemePreview::paint(juce::Graphics &g)
                    juce::Justification::bottomLeft);
 
         // Header
+        const juce::Image thumbnail    = theme->getThemeThumbnail();
+        const juce::String description = theme->getThemeMeta()->getDescription();
+        const juce::String author      = theme->getThemeMeta()->getAuthor();
+        const juce::Font content_font  = panel_font.withHeight(14.0f);
+        const int max_text_width       = getWidth() - 12;
+        const int description_w        = max_text_width - 72;
+        const int author_pos_y         = ::getAuthorPosY(description_w, content_font.getStringWidthFloat(description));
         g.drawImageWithin(thumbnail, 0, 24, 64, 64, juce::RectanglePlacement::stretchToFit);
         g.setFont(content_font);
         g.drawFittedText(description, 70, 24, description_w, 50, juce::Justification::topLeft, 3, 1.0f);
         g.setOpacity(0.5f);
         g.drawText(author, 70, 24 + author_pos_y, getWidth() - 70, 14, juce::Justification::bottomLeft);
         g.setOpacity(1.0f);
-        
-        // Body
-        const jaut::Localisation locale = panel.panel.locale;
-
-        g.drawText("Website: " + website, 0, 96,  max_text_width, 14, juce::Justification::left);
-        g.drawText(locale.translate("options.category.themes.license") + ": " + license, 0, 114, max_text_width, 14,
-                   juce::Justification::left);
-        g.drawText(locale.translate("options.category.themes.authors") + ": ", 0, 132, 100, 14,
-                   juce::Justification::left);
-        g.setOpacity(0.5f);
-        g.drawText(authors, 0, 148, max_text_width, 14, juce::Justification::left);
     }
 }
 
@@ -752,6 +794,11 @@ void OptionPanelThemes::ThemePanel::ThemePreview::resized()
     buttonLicenseLink.setBounds(56, 120, getWidth() - 62, 14);
     gallery.setBounds(6, getHeight() - 106, getWidth() - 12, 100);
     labelNoPreview.setBounds(6, getHeight() - 106, getWidth() - 12, 100);
+    
+    const int max_text_width  = getWidth() - 84;
+    labelWebsite.setBounds(0,  96, max_text_width, 14);
+    labelLicense.setBounds(0, 114, max_text_width, 14);
+    labelAuthors.setBounds(0, 132,            100, 14);
 }
 
 //======================================================================================================================
@@ -761,10 +808,6 @@ void OptionPanelThemes::ThemePanel::ThemePreview::updateContent(const jaut::Them
     {
         return;
     }
-    
-    theme = themePtr;
-
-    resized();
 
     const int ratio_height = gallery.getHeight() - 12;
     const int ratio_width  = ratio_height / 9 * 16;
@@ -772,25 +815,25 @@ void OptionPanelThemes::ThemePanel::ThemePreview::updateContent(const jaut::Them
 
     content.removeAllChildren();
 
-    if(theme.getId() != "default")
+    if (theme.getId() != "default")
     {
         const juce::StringArray screenshot_names = theme->getThemeMeta()->getScreenshots();
         int counter = 0;
 
         for (const auto &screenshot_name : screenshot_names)
         {
-            if(counter >= 5)
+            if (counter >= 5)
             {
                 break;
             }
 
             const juce::File screenshot_file = theme->getFile(screenshot_name);
 
-            if(screenshot_file.exists())
+            if (screenshot_file.exists())
             {
                 const juce::Image screenshot = juce::ImageFileFormat::loadFrom(screenshot_file);
 
-                if(screenshot.isValid())
+                if (screenshot.isValid())
                 {
                     screenshot.getProperties()->set("name", screenshot_file.getFileName());
     
@@ -806,7 +849,7 @@ void OptionPanelThemes::ThemePanel::ThemePreview::updateContent(const jaut::Them
     }
     else
     {        
-        for(int i = 0; i < 3; ++i)
+        for (int i = 0; i < 3; ++i)
         {
             int image_size;
             const juce::String screenshot_name = "screenshot00" + juce::String(i);
@@ -827,9 +870,12 @@ void OptionPanelThemes::ThemePanel::ThemePreview::updateContent(const jaut::Them
 
         content.setBounds(0, 0, ratio_width * 3 + 12, gallery.getHeight());
     }
-
+    
+    const juce::String authors_label = labelAuthors.getText().upToFirstOccurrenceOf(":", false, false);
+    labelAuthors.setText(authors_label + ": " + themePtr->getThemeMeta()->getAuthors().joinIntoString(", "),
+                         juce::dontSendNotification);
     labelNoPreview.setVisible(content.getNumChildComponents() < 1);
-
+    
     const juce::String website_url  = theme->getThemeMeta()->getWebsite();
     const juce::String license_url  = theme->getThemeMeta()->getLicense().second;
     const juce::String license_text = theme->getThemeMeta()->getLicense().first;
@@ -863,7 +909,8 @@ void OptionPanelThemes::ThemePanel::ThemePreview::updateContent(const jaut::Them
         buttonLicenseLink.setURL(juce::String());
         buttonLicenseLink.setVisible(false);
     }
-
+    
+    theme = themePtr;
     repaint();
 }
 //======================================================================================================================
@@ -911,7 +958,7 @@ int OptionPanelThemes::ThemePanel::getNumRows()
 void OptionPanelThemes::ThemePanel::paintListBoxItem(int row, juce::Graphics &g, int width, int height, bool selected)
 {
     const juce::LookAndFeel &lf = getLookAndFeel();
-    const auto theme      = themes.at(row);
+    const auto theme      = themes.at(static_cast<std::size_t>(row));
     
     if(theme && theme->isValid())
     {
@@ -956,7 +1003,7 @@ void OptionPanelThemes::ThemePanel::listBoxItemClicked(int row, const juce::Mous
 {
     if(selectedRow != row)
     {
-        previewBox.updateContent(themes.at(row));
+        previewBox.updateContent(themes.at(static_cast<std::size_t>(row)));
         changeButtonState();
         selectedRow = row;
     }
@@ -978,11 +1025,11 @@ void OptionPanelThemes::ThemePanel::buttonClicked(juce::Button*)
         return;
     }
 
-    if(themes.size() > selected_row)
+    if(static_cast<int>(themes.size()) > selected_row)
     {
         juce::MouseCursor::showWaitCursor();
 
-        panel.editor.reloadTheme(themes.at(selected_row));
+        panel.editor.reloadTheme(themes.at(static_cast<std::size_t>(selected_row)));
         selectedTheme = selected_row;
         buttonApply.setEnabled(false);
         panel.editor.repaint();
@@ -1003,8 +1050,9 @@ void OptionPanelThemes::ThemePanel::changeButtonState()
 //**********************************************************************************************************************
 // region OptionPanelThemes
 //======================================================================================================================
-OptionPanelThemes::OptionPanelThemes(CossinAudioProcessorEditor &editor, jaut::Localisation &locale)
-    : OptionCategory(editor, locale), themePanel(*this)
+OptionPanelThemes::OptionPanelThemes(CossinAudioProcessorEditor &editor)
+    : OptionCategory(editor),
+      themePanel(*this)
 {
     addAndMakeVisible(themePanel);
 }
@@ -1019,8 +1067,10 @@ void OptionPanelThemes::resized()
 bool OptionPanelThemes::saveState(SharedData &sharedData) const
 {
     const int selected_theme             = themePanel.selectedTheme;
-    const juce::String selected_theme_id = selected_theme <= 0 || selected_theme >= themePanel.themes.size()
-                                           ? "default" : themePanel.themes.at(themePanel.selectedTheme).getId();
+    const juce::String selected_theme_id = selected_theme <= 0 ||
+                                           selected_theme >= static_cast<int>(themePanel.themes.size()) ? "default"
+                                           : themePanel.themes.at(static_cast<std::size_t>(themePanel.selectedTheme))
+                                                              .getId();
             
     if(sharedData.ThemeManager().setCurrentTheme(selected_theme_id))
     {
@@ -1049,18 +1099,31 @@ void OptionPanelThemes::loadState(const SharedData &sharedData)
 void OptionPanelThemes::reloadLocale(const jaut::Localisation &locale)
 {
     themePanel.buttonApply.setButtonText(locale.translate("options.category.themes.apply"));
-    themePanel.previewBox.labelNoPreview.setText(locale.translate("options.category.themes.no_preview"),
-                                                 juce::sendNotificationAsync);
-
     themePanel.themeList.setTooltip(locale.translate("tooltip.option.select_theme"));
+    
+    themePanel.previewBox.labelNoPreview.setText(locale.translate("options.category.themes.no_preview"),
+                                                 juce::dontSendNotification);
+    
+    const juce::String authors = themePanel.previewBox.labelAuthors.getText(false)
+                                           .upToFirstOccurrenceOf(":", false, false);
+    
+    themePanel.previewBox.labelAuthors.setText(locale.translate("options.category.themes.authors") + ": " + authors,
+                                               juce::dontSendNotification);
+    themePanel.previewBox.labelLicense.setText(locale.translate("options.category.themes.license") + ":",
+                                               juce::dontSendNotification);
 }
 
 void OptionPanelThemes::reloadTheme(const jaut::ThemePointer &theme)
 {
     font = theme->getThemeFont();
+    
     themePanel.previewBox.buttonWebsiteLink.setFont(font, false, juce::Justification::left);
     themePanel.previewBox.buttonLicenseLink.setFont(font, false, juce::Justification::left);
     themePanel.previewBox.labelNoPreview   .setFont(font.withStyle(juce::Font::bold));
+    themePanel.previewBox.labelAuthors     .setFont(font);
+    themePanel.previewBox.labelLicense     .setFont(font);
+    themePanel.previewBox.labelWebsite     .setFont(font);
+    
     selectThemeRow(theme);
 
     auto iterator = std::find(themePanel.themes.begin(), themePanel.themes.end(), theme);
@@ -1101,13 +1164,13 @@ void OptionPanelThemes::selectThemeRow(const jaut::ThemePointer &theme)
 //**********************************************************************************************************************
 // region CategoryPerformance
 //======================================================================================================================
-OptionPanelPerformance::OptionPanelPerformance(CossinAudioProcessorEditor &editor, jaut::Localisation &locale)
-    : OptionCategory(editor, locale)
+OptionPanelPerformance::OptionPanelPerformance(CossinAudioProcessorEditor &editor)
+    : OptionCategory(editor)
 {
-    boxAnimationMode.addItem(locale.translate("options.category.optimization.animation.none"), 1);
-    boxAnimationMode.addItem(locale.translate("options.category.optimization.animation.user"), 2);
-    boxAnimationMode.addItem(locale.translate("options.category.optimization.animation.some"), 3);
-    boxAnimationMode.addItem(locale.translate("options.category.optimization.animation.all"),  4);
+    boxAnimationMode.addItem({}, 1);
+    boxAnimationMode.addItem({}, 2);
+    boxAnimationMode.addItem({}, 3);
+    boxAnimationMode.addItem({}, 4);
     boxAnimationMode.onChange = [this, &editor]()
     {
         const int id = boxAnimationMode.getSelectedId();
@@ -1118,25 +1181,29 @@ OptionPanelPerformance::OptionPanelPerformance(CossinAudioProcessorEditor &edito
     addAndMakeVisible(boxAnimationMode);
 
     tickControls.addListener(this);
-    tickControls.setButtonText(locale.translate("options.category.optimization.animate_ctrl"));
     addAndMakeVisible(tickControls);
 
     tickEffects.addListener(this);
-    tickEffects.setButtonText(locale.translate("options.category.optimization.animate_fx"));
     addAndMakeVisible(tickEffects);
 
+    labelAnimations   .setJustificationType(juce::Justification::centred);
+    addAndMakeVisible(labelAnimations);
+    
+    labelAnimationMode.setJustificationType(juce::Justification::centredLeft);
+    addAndMakeVisible(labelAnimationMode);
+    
 #if COSSIN_USE_OPENGL
-    tickHardwareAcceleration.setButtonText(locale.translate("options.category.optimization.use_hardware"));
     tickHardwareAcceleration.setEnabled(editor.isOpenGLSupported());
     addAndMakeVisible(tickHardwareAcceleration);
 
-    tickMultisampling.setButtonText(locale.translate("options.category.optimization.multisampling"));
     tickMultisampling.setEnabled(editor.isOpenGLSupported());
     addAndMakeVisible(tickMultisampling);
 
-    tickSmoothing.setButtonText(locale.translate("options.category.optimization.filter"));
     tickSmoothing.setEnabled(editor.isOpenGLSupported());
     addAndMakeVisible(tickSmoothing);
+    
+    labelQuality.setJustificationType(juce::Justification::centred);
+    addAndMakeVisible(labelQuality);
 #endif
 }
 
@@ -1151,21 +1218,6 @@ void OptionPanelPerformance::paint(juce::Graphics &g)
     g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourContainerBackgroundId));
     g.drawRect(0, 145, getWidth(), 2);
 #endif
-
-    g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourFontId));
-    g.setFont(font);
-
-    const juce::String title_animations = locale.translate("options.category.optimization.animation_title");
-    jaut::FontFormat::drawSmallCaps(g, title_animations, 6, 0, getWidth(), 27, juce::Justification::centred);
-
-#if COSSIN_USE_OPENGL
-    const juce::String title_quality = locale.translate("options.category.optimization.quality_title");
-    jaut::FontFormat::drawSmallCaps(g, title_quality, 6, 147, getWidth(), 27, juce::Justification::centred);
-#endif
-
-    g.setFont(font.withHeight(13.0f));
-    jaut::FontFormat::drawSmallCaps(g, locale.translate("options.category.optimization.animation_mode"),
-                                    6, 27, getWidth(), 13, juce::Justification::centredLeft);
 }
 
 void OptionPanelPerformance::resized()
@@ -1177,12 +1229,17 @@ void OptionPanelPerformance::resized()
     tickControls    .setBounds(x_start, y_start + 40, 200, 16);
     tickEffects     .setBounds(x_start, y_start + 67, 200, 16);
 
+    labelAnimations   .setBounds(6, 0, getWidth(), 27);
+    labelAnimationMode.setBounds(6, 27, getWidth(), 13);
+    
 #if COSSIN_USE_OPENGL
     const int hy_start = 169;
 
     tickHardwareAcceleration.setBounds(x_start, hy_start,      200, 16);
     tickMultisampling       .setBounds(x_start, hy_start + 27, 200, 16);
     tickSmoothing           .setBounds(x_start, hy_start + 54, 200, 16);
+    
+    labelQuality.setBounds(6, 147, getWidth(), 27);
 #endif
 }
 
@@ -1217,6 +1274,9 @@ void OptionPanelPerformance::loadState(const SharedData &sharedData)
 void OptionPanelPerformance::reloadTheme(const jaut::ThemePointer &theme)
 {
     font = theme->getThemeFont();
+    labelAnimations   .setFont(font);
+    labelQuality      .setFont(font);
+    labelAnimationMode.setFont(font);
 }
 
 void OptionPanelPerformance::reloadConfig(const jaut::Config &config)
@@ -1257,6 +1317,11 @@ void OptionPanelPerformance::reloadLocale(const jaut::Localisation &locale)
     tickControls    .setTooltip(locale.translate("tooltip.option.animation.controls"));
     tickEffects     .setTooltip(locale.translate("tooltip.option.animation.effects"));
 
+    labelAnimations.setText(locale.translate("options.category.optimization.animation_title"),
+                            juce::dontSendNotification);
+    labelAnimationMode.setText(locale.translate("options.category.optimization.animation_mode"),
+                               juce::dontSendNotification);
+    
 #if COSSIN_USE_OPENGL
     tickHardwareAcceleration.setButtonText(locale.translate("options.category.optimization.use_hardware"));
     tickMultisampling       .setButtonText(locale.translate("options.category.optimization.multisampling"));
@@ -1268,16 +1333,19 @@ void OptionPanelPerformance::reloadLocale(const jaut::Localisation &locale)
                                          require_restart;
     const juce::String requires_one    = require + require_restart;
 
-    tickHardwareAcceleration.setTooltip(locale.translate("tooltip.option.hardware_acceleration")    + requires_one);
-    tickMultisampling       .setTooltip(locale.translate("tooltip.option.multisampling")            + requires_all);
-    tickSmoothing           .setTooltip(locale.translate("tooltip.option.filtering")                + requires_all);
+    tickHardwareAcceleration.setTooltip(locale.translate("tooltip.option.hardware_acceleration") + requires_one);
+    tickMultisampling       .setTooltip(locale.translate("tooltip.option.multisampling")         + requires_all);
+    tickSmoothing           .setTooltip(locale.translate("tooltip.option.filtering")             + requires_all);
+    
+    labelQuality.setText(locale.translate("options.category.optimization.quality_title"),
+                         juce::dontSendNotification);
 #endif
 }
 
 //======================================================================================================================
 void OptionPanelPerformance::buttonStateChanged(juce::Button *button)
 {
-    if(boxAnimationMode.getSelectedId() != 2)
+    if (boxAnimationMode.getSelectedId() != 2)
     {
         return;
     }
@@ -1298,10 +1366,7 @@ OptionPanelStandalone::DevicePanel::DevicePanel(OptionPanelStandalone &panel)
     : panel(panel), deviceManager(panel.plugin.deviceManager)
 {
     deviceManager.addChangeListener(this);
-
-    buttonControlPanel.setButtonText(panel.locale.translate("options.category.standalone.show_ct_panel"));
     addAndMakeVisible(buttonControlPanel);
-
     addAndMakeVisible(boxBufferSize);
     
     auto &types = deviceManager.getAvailableDeviceTypes();
@@ -1333,6 +1398,21 @@ OptionPanelStandalone::DevicePanel::DevicePanel(OptionPanelStandalone &panel)
     labelLatency.setText("Latency: 0ms", juce::dontSendNotification);
     labelLatency.setJustificationType(juce::Justification::topRight);
     addAndMakeVisible(labelLatency);
+     
+    labelDeviceType.setJustificationType(juce::Justification::left);
+    addAndMakeVisible(labelDeviceType);
+    
+    labelDeviceOutput.setJustificationType(juce::Justification::left);
+    addAndMakeVisible(labelDeviceOutput);
+    
+    labelDeviceInput.setJustificationType(juce::Justification::left);
+    addAndMakeVisible(labelDeviceInput);
+    
+    labelSampleRate.setJustificationType(juce::Justification::left);
+    addAndMakeVisible(labelSampleRate);
+    
+    labelBufferSize.setJustificationType(juce::Justification::left);
+    addAndMakeVisible(labelBufferSize);
 }
 
 OptionPanelStandalone::DevicePanel::~DevicePanel()
@@ -1341,25 +1421,6 @@ OptionPanelStandalone::DevicePanel::~DevicePanel()
 }
 
 //======================================================================================================================
-void OptionPanelStandalone::DevicePanel::paint(juce::Graphics &g)
-{
-    const juce::LookAndFeel &lf = getLookAndFeel();
-
-    g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourFontId));
-    g.setFont(panel.font.withHeight(13.0f));
-
-    jaut::FontFormat::drawSmallCaps(g, panel.locale.translate("options.category.standalone.device_type"),
-                                    0, 0, getWidth(), 13, juce::Justification::left);
-    jaut::FontFormat::drawSmallCaps(g, panel.locale.translate("options.category.standalone.device.output"),
-                                    0, 60, getWidth(), 13, juce::Justification::left);
-    jaut::FontFormat::drawSmallCaps(g, panel.locale.translate("options.category.standalone.device.input"),
-                                    0, 120, getWidth(), 13, juce::Justification::left);
-    jaut::FontFormat::drawSmallCaps(g, panel.locale.translate("options.category.standalone.sample_rate"),
-                                    0, 180, getWidth(), 13, juce::Justification::left);
-    jaut::FontFormat::drawSmallCaps(g, panel.locale.translate("options.category.standalone.buffer_size"),
-                                    (getWidth() - 8) / 2 + 3, 180, getWidth(), 13, juce::Justification::left);
-}
-
 void OptionPanelStandalone::DevicePanel::resized()
 {
     const int max_width = getWidth() - 8;
@@ -1372,8 +1433,13 @@ void OptionPanelStandalone::DevicePanel::resized()
     boxBufferSize.setBounds(max_width_half + 3, 197, max_width_half - 3, 30);
 
     buttonControlPanel.setBounds(0, 232, 100, 30);
-
     labelLatency.setBounds(0, getHeight() - 20, getWidth() - 8, 14);
+     
+    labelDeviceType  .setBounds(0,   0, getWidth(), 13);
+    labelDeviceOutput.setBounds(0,  60, getWidth(), 13);
+    labelDeviceInput .setBounds(0, 120, getWidth(), 13);
+    labelSampleRate  .setBounds(0, 180, getWidth(), 13);
+    labelBufferSize  .setBounds((getWidth() - 8) / 2 + 3, 180, getWidth(), 13);
 }
 
 //======================================================================================================================
@@ -1453,7 +1519,9 @@ public:
             }
 
             const float latency = static_cast<float>(setup.bufferSize / setup.sampleRate) * 1000.0f;
-            devicePanel.labelLatency.setText("Latency: " + juce::String(roundf(latency * 100.0f) / 100) + "ms",
+            
+            const juce::String label = devicePanel.labelLatency.getText().upToFirstOccurrenceOf(":", false, false);
+            devicePanel.labelLatency.setText(label + ": " + juce::String(roundf(latency * 100.0f) / 100) + "ms",
                                              juce::dontSendNotification);
         }
         else if(updateBufferSize)
@@ -1465,14 +1533,16 @@ public:
             }
 
             const float latency = static_cast<float>(setup.bufferSize / setup.sampleRate) * 1000.0f;
-            devicePanel.labelLatency.setText("Latency: " + juce::String(roundf(latency * 100.0f) / 100) + "ms",
+    
+            const juce::String label = devicePanel.labelLatency.getText().upToFirstOccurrenceOf(":", false, false);
+            devicePanel.labelLatency.setText(label + ": " + juce::String(roundf(latency * 100.0f) / 100) + "ms",
                                              juce::dontSendNotification);
         }
 
-        if(error.isNotEmpty())
+        if (error.isNotEmpty())
         {
-            const juce::String title = devicePanel.panel.locale.translate("options.category.standalone.error_device");
-            juce::AlertWindow::showMessageBoxAsync(juce::AlertWindow::NoIcon, title, error);
+            juce::AlertWindow::showMessageBoxAsync(juce::AlertWindow::NoIcon, devicePanel.panel.transAlertWindow,
+                                                   error);
         }
     }
 
@@ -1528,7 +1598,9 @@ public:
 
             const float latency = static_cast<float>(current_device->getCurrentBufferSizeSamples()
                                                      / current_device->getCurrentSampleRate()) * 1000.0f;
-            devicePanel.labelLatency.setText("Latency: " + juce::String(roundf(latency * 100.0f) / 100) + "ms",
+    
+            const juce::String label = devicePanel.labelLatency.getText().upToFirstOccurrenceOf(":", false, false);
+            devicePanel.labelLatency.setText(label + ": " + juce::String(roundf(latency * 100.0f) / 100) + "ms",
                                              juce::dontSendNotification);
         }
         else
@@ -1537,7 +1609,9 @@ public:
 
             sampleRateDropDown.setEnabled(false);
             bufferSizeDropDown.setEnabled(false);
-            devicePanel.labelLatency.setText("Latency: 0ms", juce::dontSendNotification);
+    
+            const juce::String label = devicePanel.labelLatency.getText().upToFirstOccurrenceOf(":", false, false);
+            devicePanel.labelLatency.setText(label + ": 0ms", juce::dontSendNotification);
 
             if (outputDeviceDropDown.isEnabled())
             {
@@ -1663,13 +1737,19 @@ private:
 // region OptionPanelStandalone
 //======================================================================================================================
 OptionPanelStandalone::OptionPanelStandalone(CossinAudioProcessorEditor &editor, jaut::Localisation &locale)
-    : OptionCategory(editor, locale), plugin(*CossinPluginWrapper::getInstance()), devicePanel(*this)
+    : OptionCategory(editor), plugin(*CossinPluginWrapper::getInstance()), devicePanel(*this)
 {
     addAndMakeVisible(devicePanel);
 
     tickMuteInput.getToggleStateValue().referTo(plugin.getMuteInputValue());
     addAndMakeVisible(tickMuteInput);
 
+    labelTitleAudio.setJustificationType(juce::Justification::centred);
+    addAndMakeVisible(labelTitleAudio);
+    
+    labelTitleDevice.setJustificationType(juce::Justification::centred);
+    addAndMakeVisible(labelTitleDevice);
+    
     ioSelector = std::make_unique<DeviceIOSelector>(devicePanel);
     updateAllData();
 }
@@ -1682,21 +1762,9 @@ void OptionPanelStandalone::resized()
     const int panel_half = getWidth() / 2;
     devicePanel.setBounds(panel_half, 27, panel_half, getHeight() - 27);
     tickMuteInput.setBounds(6, 44, panel_half, 16);
-}
-
-void OptionPanelStandalone::paint(juce::Graphics &g)
-{
-    const juce::LookAndFeel &lf = getLookAndFeel();
-
-    g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourFontId));
-    g.setFont(font);
-
-    const int panel_half = getWidth() / 2;
-
-    jaut::FontFormat::drawSmallCaps(g, locale.translate("options.category.standalone.audio_title"),
-                                    0, 0, panel_half, 27, juce::Justification::centred);
-    jaut::FontFormat::drawSmallCaps(g, locale.translate("options.category.standalone.device_title"),
-                                    panel_half, 0, panel_half, 27, juce::Justification::centred);
+    
+    labelTitleAudio .setBounds(         0, 0, panel_half, 27);
+    labelTitleDevice.setBounds(panel_half, 0, panel_half, 27);
 }
 
 //======================================================================================================================
@@ -1747,7 +1815,16 @@ void OptionPanelStandalone::updateAllData()
 void OptionPanelStandalone::reloadTheme(const jaut::ThemePointer &theme)
 {
     font = theme->getThemeFont();
-    devicePanel.labelLatency.setFont(font);
+    
+    labelTitleAudio .setFont(font);
+    labelTitleDevice.setFont(font);
+    
+    devicePanel.labelLatency     .setFont(font);
+    devicePanel.labelDeviceType  .setFont(font);
+    devicePanel.labelDeviceOutput.setFont(font);
+    devicePanel.labelDeviceInput .setFont(font);
+    devicePanel.labelSampleRate  .setFont(font);
+    devicePanel.labelBufferSize  .setFont(font);
 }
 
 void OptionPanelStandalone::reloadLocale(const jaut::Localisation &locale)
@@ -1760,6 +1837,26 @@ void OptionPanelStandalone::reloadLocale(const jaut::Localisation &locale)
 
     tickMuteInput.setTooltip(locale.translate("tooltip.option.standalone.mute_input"));
     devicePanel.buttonControlPanel.setTooltip(locale.translate("tooltip.option.standalone.ctrl_panel"));
+    
+    labelTitleAudio .setText(locale.translate("options.category.standalone.audio_title"),  juce::dontSendNotification);
+    labelTitleDevice.setText(locale.translate("options.category.standalone.device_title"), juce::dontSendNotification);
+    
+    const juce::String latency = devicePanel.labelLatency.getText().fromFirstOccurrenceOf(":", false, false);
+    devicePanel.labelLatency.setText(locale.translate("options.category.standalone.latency") + ":" + latency,
+                                     juce::dontSendNotification);
+    
+    devicePanel.labelDeviceType.setText(locale.translate("options.category.standalone.device_type"),
+                                        juce::dontSendNotification);
+    devicePanel.labelDeviceOutput.setText(locale.translate("options.category.standalone.device.output"),
+                                          juce::dontSendNotification);
+    devicePanel.labelDeviceInput.setText(locale.translate("options.category.standalone.device.input"),
+                                         juce::dontSendNotification);
+    devicePanel.labelSampleRate.setText(locale.translate("options.category.standalone.sample_rate"),
+                                        juce::dontSendNotification);
+    devicePanel.labelBufferSize.setText(locale.translate("options.category.standalone.buffer_size"),
+                                        juce::dontSendNotification);
+    
+    transAlertWindow = locale.translate("options.category.standalone.error_device");
 }
 //======================================================================================================================
 // endregion OptionPanelStandalone

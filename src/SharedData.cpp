@@ -289,8 +289,7 @@ void SharedData::initDefaults()
 {
     // make default locale
     juce::MemoryInputStream locale_stream(Assets::default_lang, Assets::default_langSize, false);
-    juce::LocalisedStrings  locale_def(locale_stream.readEntireStreamAsString(), true);
-    defaultLocale = std::make_unique<jaut::Localisation>(appData.dirLang, locale_def);
+    defaultLocale = std::make_unique<jaut::Localisation>(jaut::Localisation::fromStream(locale_stream));
 
     // make default theme
     juce::MemoryInputStream theme_stream(Assets::theme_meta, Assets::theme_metaSize, false);
@@ -300,19 +299,19 @@ void SharedData::initDefaults()
 
 void SharedData::initLangs()
 {
+    auto locale = std::make_unique<jaut::Localisation>(appData.dirLang,
+                                                       std::make_unique<jaut::Localisation>(*defaultLocale));
     const juce::String language_name = appConfig->getProperty("language").getValue().toString();
-    auto *const        locale        = new jaut::Localisation(appData.dirLang,
-                                                              defaultLocale->getInternalLocalisation());
     
     if(!language_name.equalsIgnoreCase("default"))
     {
-        if(!locale->setCurrentLanguage(language_name))
+        if(!locale->setCurrentLanguageFromDirectory(language_name))
         {
-            juce::Logger::writeToLog("Language '" + language_name + "' is not valid, keeping default.");
+            sendLog("Language '" + language_name + "' is not valid, keeping default.", "ERROR");
         }
     }
 
-    appLocale.reset(locale);
+    appLocale = std::move(locale);
 }
 
 void SharedData::initThemeManager()

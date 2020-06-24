@@ -132,7 +132,7 @@ void CossinAudioProcessorEditor::initializeData(CossinMainEditorWindow &parent, 
     }
     
     sharedData->addActionListener(this);
-    SharedData::ReadLock lock(*sharedData);
+    const SharedData::ReadLock lock(*sharedData);
 
 #if COSSIN_USE_OPENGL
     const bool accelerated_by_hardware      = sharedData->Configuration().getProperty("hardwareAcceleration",
@@ -156,45 +156,53 @@ void CossinAudioProcessorEditor::initializeData(CossinMainEditorWindow &parent, 
     }
 #endif
 
-    // Create logger
-    const juce::String session_id  = session.id.toDashedString();
-    const juce::String cpu_model   = !juce::SystemStats::getCpuModel().isEmpty() ?
-                                        juce::SystemStats::getCpuModel() : "n/a";
-    const juce::String cpu_vendor  = !juce::SystemStats::getCpuVendor().isEmpty() ?
+    if (juce::JUCEApplicationBase::isStandaloneApp())
+    {
+        // Create logger
+        const juce::String session_id = session.id.toDashedString();
+        const juce::String cpu_model = !juce::SystemStats::getCpuModel().isEmpty() ?
+                                       juce::SystemStats::getCpuModel() : "n/a";
+        const juce::String cpu_vendor = !juce::SystemStats::getCpuVendor().isEmpty() ?
                                         " (" + juce::SystemStats::getCpuVendor() + ")" : "";
-    const juce::String memory_size = juce::String(juce::SystemStats::getMemorySizeInMegabytes()) + "mb";
-
-    if (!gpuInfo.containsNonWhitespaceChars())
-    {
-        gpuInfo = "Unknown";
-    }
+        const juce::String memory_size = juce::String(juce::SystemStats::getMemorySizeInMegabytes()) + "mb";
     
-    juce::String message;
-    message << "**********************************************************"  << jaut::newLine
-            << "                        --Program--                       "  << jaut::newLine
-            << "App:        " << res::App_Name                               << jaut::newLine
-            << "Version:    " << res::App_Version                            << jaut::newLine
-            << "Session-ID: " << session_id                                  << jaut::newLine
-            << "**********************************************************"  << jaut::newLine
-            << "                        --Machine--                       "  << jaut::newLine
-            << "System:     " << juce::SystemStats::getOperatingSystemName() << jaut::newLine
-            << "Memory:     " << memory_size                                 << jaut::newLine
-            << "CPU:        " << cpu_model << cpu_vendor                     << jaut::newLine
-            << "Graphics:   " << gpuInfo                                     << jaut::newLine
-            << "**********************************************************"  << jaut::newLine;
-
-    JAUT_NDEBUGGING(if(sharedData->Configuration().getProperty("logToFile", res::Cfg_Standalone).getValue()
-                       && juce::JUCEApplication::isStandaloneApp()))
-    {
-        const juce::File file = sharedData->AppData().dirDataLogs.getChildFile("session-" + session_id + ".log");
-
-        if (file.getParentDirectory().exists())
+        if (!gpuInfo.containsNonWhitespaceChars())
         {
-            juce::Logger::setCurrentLogger(new juce::FileLogger(file, ""));
+            gpuInfo = "Unknown";
         }
+    
+        juce::String message;
+        message << "**********************************************************" << jaut::newLine
+                << "                        --Program--                       " << jaut::newLine
+                << "App:        " << res::App_Name << jaut::newLine
+                << "Version:    " << res::App_Version << jaut::newLine
+                << "Session-ID: " << session_id << jaut::newLine
+                << "**********************************************************" << jaut::newLine
+                << "                        --Machine--                       " << jaut::newLine
+                << "System:     " << juce::SystemStats::getOperatingSystemName() << jaut::newLine
+                << "Memory:     " << memory_size << jaut::newLine
+                << "CPU:        " << cpu_model << cpu_vendor << jaut::newLine
+                << "Graphics:   " << gpuInfo << jaut::newLine
+                << "**********************************************************" << jaut::newLine;
+    
+        JAUT_NDEBUGGING(if (sharedData->Configuration().getProperty("logToFile", res::Cfg_Standalone).getValue()
+                            && juce::JUCEApplication::isStandaloneApp()))
+        {
+            const juce::File file = sharedData->AppData().dirDataLogs.getChildFile("session-" + session_id + ".log");
+        
+            if (file.getParentDirectory().exists())
+            {
+                juce::Logger::setCurrentLogger(new juce::FileLogger(file, ""));
+            }
+        }
+    
+        juce::Logger::writeToLog(message);
+    }
+    else
+    {
+        juce::Logger::setCurrentLogger(nullptr);
     }
     
-    juce::Logger::writeToLog(message);
     sendLog("Initializing Cossin user interface...");
 
     // Load all data elements

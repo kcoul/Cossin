@@ -134,7 +134,7 @@ inline constexpr CString Prop_StandaloneDevicesOutput   = "output";
 
 
 /** Pan Modes */
-inline constexpr JAUT_DECLARE_AUTOMATIC_STD_ARRAY(List_PanModes,
+inline constexpr JAUT_DECLARE_AUTOMATIC_STD_ARRAY(List_PanningModes,
     "Linear",
     "Square",
     "Sinusoidal"

@@ -16,7 +16,7 @@
     Copyright (c) 2019 ElandaSunshine
     ===============================================================
     
-    @author Elanda (elanda@elandasunshine.xyz)
+    @author Elanda
     @file   OptionCategories.h
     @date   03, November 2019
     
@@ -32,15 +32,14 @@
 #include "ReloadListener.h"
 #include "Resources.h"
 #include "CossinDef.h"
+#include "SCLabel.h"
 
 class CossinAudioProcessorEditor;
 class SharedData;
 class OptionCategory : public juce::Component, public ReloadListener
 {
 public:
-    OptionCategory(CossinAudioProcessorEditor &editor, jaut::Localisation &locale)
-        : editor(editor), locale(locale)
-    {}
+    explicit OptionCategory(CossinAudioProcessorEditor &editor) : editor(editor) {}
 
     //==================================================================================================================
     virtual bool saveState(SharedData&) const = 0;
@@ -53,14 +52,13 @@ public:
 
 protected:
     CossinAudioProcessorEditor &editor;
-    jaut::Localisation &locale;
 };
 
 /* Holds general and default settings */
 class OptionPanelGeneral final : public OptionCategory, public juce::ListBoxModel
 {
 public:
-    OptionPanelGeneral(CossinAudioProcessorEditor&, jaut::Localisation&);
+    explicit OptionPanelGeneral(CossinAudioProcessorEditor&);
 
     //==================================================================================================================
     void paint(juce::Graphics&) override;
@@ -86,18 +84,19 @@ private:
         juce::TextEditor boxRatio;
         juce::TextEditor boxWindowWidth;
         juce::TextEditor boxWindowHeight;
-
+    
+        // Labels
+        SCLabel labelDefaultPanning;
+        SCLabel labelDefaultUnit;
+        SCLabel labelDefaultSize;
+        
         //==============================================================================================================
         explicit PanelDefaults(OptionPanelGeneral&);
 
         //==============================================================================================================
-        void paint(juce::Graphics&) override;
         void paintOverChildren(juce::Graphics&) override;
         void resized() override;
-
-        //==============================================================================================================
-        void mouseWheelMove(const juce::MouseEvent&, const juce::MouseWheelDetails&) override;
-
+        
         //==============================================================================================================
         juce::String filterNewText(juce::TextEditor&, const juce::String&) override;
 
@@ -117,10 +116,14 @@ private:
     // Components
     PanelDefaults defaultsBox;
     juce::ListBox languageList;
-
+    
+    // Labels
+    SCLabel labelDefaultsTitle;
+    SCLabel labelSwitchLanguage;
+    
     // Theme resources
     juce::Font font;
-
+    
     //==================================================================================================================
     void reloadLocale(const jaut::Localisation&) override;
     void reloadTheme (const jaut::ThemePointer&) override;
@@ -142,7 +145,7 @@ private:
 class OptionPanelThemes final : public OptionCategory
 {
 public:
-    OptionPanelThemes(CossinAudioProcessorEditor&, jaut::Localisation&);
+    explicit OptionPanelThemes(CossinAudioProcessorEditor&);
 
     //==================================================================================================================
     void resized() override;
@@ -165,7 +168,10 @@ private:
             juce::HyperlinkButton buttonWebsiteLink;
             juce::HyperlinkButton buttonLicenseLink;
             juce::Label labelNoPreview;
-
+            juce::Label labelWebsite;
+            juce::Label labelLicense;
+            juce::Label labelAuthors;
+            
             //==========================================================================================================
             explicit ThemePreview(ThemePanel&);
 
@@ -227,7 +233,7 @@ private:
 class OptionPanelPerformance final : public OptionCategory, private juce::ToggleButton::Listener
 {
 public:
-    OptionPanelPerformance(CossinAudioProcessorEditor&, jaut::Localisation&);
+    explicit OptionPanelPerformance(CossinAudioProcessorEditor&);
     ~OptionPanelPerformance() override;
 
     //==================================================================================================================
@@ -242,11 +248,14 @@ private:
     juce::ComboBox boxAnimationMode;
     juce::ToggleButton tickControls;
     juce::ToggleButton tickEffects;
-
+    SCLabel labelAnimations;
+    SCLabel labelAnimationMode;
+    
 #if COSSIN_USE_OPENGL
     juce::ToggleButton tickHardwareAcceleration;
     juce::ToggleButton tickMultisampling;
     juce::ToggleButton tickSmoothing;
+    SCLabel labelQuality;
 #endif
     
     juce::Font font;
@@ -270,7 +279,6 @@ public:
 
     //==================================================================================================================
     void resized() override;
-    void paint(juce::Graphics&) override;
 
     //==================================================================================================================
     bool saveState(SharedData&) const override;
@@ -287,7 +295,13 @@ private:
         juce::ComboBox boxOutput;
         juce::ComboBox boxSampleRate;
         juce::Label labelLatency;
-    
+        
+        SCLabel labelDeviceType;
+        SCLabel labelDeviceOutput;
+        SCLabel labelDeviceInput;
+        SCLabel labelSampleRate;
+        SCLabel labelBufferSize;
+        
         OptionPanelStandalone &panel;
         juce::AudioDeviceManager &deviceManager;
         juce::String audioDeviceSettingsCompType;
@@ -298,7 +312,6 @@ private:
 
         //==============================================================================================================
         void resized() override;
-        void paint(juce::Graphics&) override;
 
         //==============================================================================================================
         void changeListenerCallback(juce::ChangeBroadcaster*) override;
@@ -309,6 +322,11 @@ private:
     CossinPluginWrapper &plugin;
     DevicePanel devicePanel;
     std::unique_ptr<DeviceIOSelector> ioSelector;
+    
+    juce::String transAlertWindow;
+    
+    SCLabel labelTitleAudio;
+    SCLabel labelTitleDevice;
     
     juce::ToggleButton tickMuteInput;
     juce::Font font;
