@@ -342,3 +342,4 @@ logs/
 *.kdev4
 plugin*.xml
 cmake-build*
+compile_commands.json

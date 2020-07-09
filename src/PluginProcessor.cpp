@@ -121,7 +121,7 @@ bool CossinAudioProcessor::isBusesLayoutSupported(const BusesLayout &layouts) co
     return main_bus == layouts.getMainInputChannelSet();
 }
 
-void CossinAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce::MidiBuffer &midi)
+void CossinAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce::MidiBuffer&)
 {
     juce::ScopedNoDenormals denormals;
 
@@ -268,8 +268,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout CossinAudioProcessor::getPar
     const jaut::Config &config  = sharedData->Configuration();
     const int default_pan_mode  = std::clamp<int>(config.getProperty(res::Prop_DefaultsPanningMode, res::Cfg_Defaults)
                                                   ->getValue(), 0, last_panning_mode);
-    const int default_processor = std::clamp<int>(config.getProperty(res::Prop_DefaultsProcessMode, res::Cfg_Defaults)
-                                                  ->getValue(), 0, last_process_mode);
+    //const int default_processor = std::clamp<int>(config.getProperty(res::Prop_DefaultsProcessMode, res::Cfg_Defaults)
+    //                                              ->getValue(), 0, last_process_mode);
     
     return {
         // Volume parameter

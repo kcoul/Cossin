@@ -44,20 +44,8 @@ class SharedData;
 
 //======================================================================================================================
 // CONSTANTS
-inline constexpr int Flag_AnimationEffects     = 0;
-inline constexpr int Flag_AnimationComponents  = 1;
-#if COSSIN_USE_OPENGL
-inline constexpr int Flag_HardwareAcceleration = 2;
-inline constexpr int Flag_GlMultisampling      = 3;
-inline constexpr int Flag_GlTextureSmoothing   = 4;
-inline constexpr int Flag_End                  = 4;
-#else
-inline constexpr int Flag_End                  = 1;
-#endif
-inline constexpr int Flag_Num                  = Flag_End + 1;
-
-inline constexpr int Const_WindowDefaultWidth  = 800;
-inline constexpr int Const_WindowDefaultHeight = 500;
+static constexpr int Const_WindowDefaultWidth  = 800;
+static constexpr int Const_WindowDefaultHeight = 500;
 
 //======================================================================================================================
 // FORWARDING
@@ -67,8 +55,9 @@ class CossinAudioProcessor;
 // CLASSES
 struct PluginSession final
 {
-    const juce::Time startTime;
-    const juce::Uuid id;
+    //==================================================================================================================
+    juce::Time startTime;
+    juce::Uuid id;
     
     //==================================================================================================================
     PluginSession() noexcept
@@ -76,25 +65,38 @@ struct PluginSession final
     {}
 };
 
-class CossinAudioProcessorEditor final : public juce::Component, public juce::ActionListener,
-                                         private juce::Button::Listener, private juce::Slider::Listener,
-                                         private juce::LookAndFeel_V4, private juce::Timer
+class CossinAudioProcessorEditor final : public juce::Component, private juce::Button::Listener,
+                                         private juce::Slider::Listener,
+                                         
 #if COSSIN_USE_OPENGL
-                                         , public juce::OpenGLRenderer
+                                         public juce::OpenGLRenderer,
 #endif
+                                         private juce::LookAndFeel_V4
 {
 public:
+    enum Flags
+    {
+        FlagAnimationEffects,
+        FlagAnimationComponents,
+#if COSSIN_USE_OPENGL
+        FlagHardwareAcceleration,
+        FlagGlMultisampling,
+        FlagGlTextureSmoothing,
+#endif
+        FlagEnd
+    };
+    
     enum ColourIds
     {
-        ColourComponentBackgroundId = 0x2000100,
-        ColourComponentForegroundId = 0x2000101,
-        ColourContainerBackgroundId = 0x2000102,
-        ColourContainerForegroundId = 0x2000103,
-        ColourHeaderBackgroundId    = 0x2000104,
-        ColourTooltipBackgroundId   = 0x2000105,
-        ColourTooltipBorderId       = 0x2000106,
-        ColourTooltipFontId         = 0x2000107,
-        ColourFontId                = 0x2000108
+        ColourComponentBackgroundId = 0x1110100,
+        ColourComponentForegroundId = 0x1110101,
+        ColourContainerBackgroundId = 0x1110102,
+        ColourContainerForegroundId = 0x1110103,
+        ColourHeaderBackgroundId    = 0x1110104,
+        ColourTooltipBackgroundId   = 0x1110105,
+        ColourTooltipBorderId       = 0x1110106,
+        ColourTooltipFontId         = 0x1110107,
+        ColourFontId                = 0x1110108
     };
     
     //==================================================================================================================
@@ -104,19 +106,12 @@ public:
     CossinAudioProcessorEditor(CossinAudioProcessor&, juce::AudioProcessorValueTreeState&, foleys::LevelMeterSource&,
                                CossinMainEditorWindow&, bool, const juce::String&);
     ~CossinAudioProcessorEditor() override;
-
-private:
-    void initializeData(CossinMainEditorWindow&, juce::String);
-    void initializeComponents();
-
-public:
+    
+    //==================================================================================================================
     void paint(juce::Graphics&) override;
     void resized() override;
-
-private:
-    void paintBasicInterface(juce::Graphics&) const;
-
-public:
+    
+    //==================================================================================================================
     void reloadConfig(const jaut::Config&);
     void reloadLocale(const jaut::Localisation&);
     void reloadTheme (const jaut::ThemePointer&);
@@ -124,14 +119,10 @@ public:
     //==================================================================================================================
     bool getOption(int) const noexcept;
     void setOption(int, bool) noexcept;
-    const PluginSession &getSession() const noexcept;
+    const PluginSession& getSession() const noexcept;
 #if COSSIN_USE_OPENGL
     bool isOpenGLSupported() const noexcept;
 #endif
-
-    //==================================================================================================================
-    void addReloadListener(ReloadListener*);
-    void removeReloadListener(ReloadListener*);
 
 private:
     class BackgroundBlur : public Component
@@ -150,10 +141,8 @@ private:
     // General
     PluginSession session;
     juce::SharedResourcePointer<SharedData> sharedData;
-    CossinAudioProcessor   &processor;
+    CossinAudioProcessor &processor;
     foleys::LevelMeterSource &sourceMetre;
-    bool initialized;
-    juce::ListenerList<ReloadListener> listeners;
     PluginStyle lookAndFeel;
     juce::TooltipWindow tooltipServer;
 
@@ -164,17 +153,18 @@ private:
     // Shared data
     juce::String lastLocale;
     juce::String lastTheme;
-    jaut::Localisation locale;
-    std::atomic<bool> needsUpdate;
-    std::bitset<Flag_Num> options;
+    std::bitset<FlagEnd> options;
 
     // Components
     BackgroundBlur backgroundBlur;
+    
     juce::ToggleButton   buttonPanningLaw;
     juce::DrawableButton buttonPanningLawSelection;
     juce::DrawableButton buttonSettings;
+    
     foleys::LevelMeter metreLevel;
     OptionPanel optionsPanel;
+    
     juce::Slider sliderLevel;
     juce::Slider sliderMix;
     juce::Slider sliderPanning;
@@ -193,7 +183,20 @@ private:
     juce::Image imgTabControl;
     juce::Image imgTabSettings;
     juce::Font  fontTheme;
-
+    
+    SCLabel labelLevel;
+    SCLabel labelMix;
+    SCLabel labelPan;
+    
+    bool initialized { false };
+    
+    //==================================================================================================================
+    void initializeData(CossinMainEditorWindow&, juce::String);
+    void initializeComponents();
+    
+    //==================================================================================================================
+    void paintBasicInterface(juce::Graphics&) const;
+    
     //==================================================================================================================
     void mouseDown(const juce::MouseEvent&) override;
     void mouseMove(const juce::MouseEvent&) override;
@@ -206,11 +209,6 @@ private:
     void drawDrawableButton(juce::Graphics&, juce::DrawableButton&, bool, bool) override;
     void drawLinearSlider(juce::Graphics&, int, int, int, int, float, float, float,
                           juce::Slider::SliderStyle, juce::Slider&) override;
-
-    //==================================================================================================================
-    void timerCallback() override;
-    void actionListenerCallback(const juce::String&) override;
-    void reloadAllData();
     
 #if COSSIN_USE_OPENGL
     //==================================================================================================================

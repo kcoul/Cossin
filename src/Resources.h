@@ -94,6 +94,7 @@ inline constexpr CString Col_FormatF       = "font_colour_f";
 
 /** Config dictionary */
 inline constexpr CString Cfg_General      = "general";
+inline constexpr CString Cfg_Themes       = "themes";
 inline constexpr CString Cfg_Defaults     = "defaults";
 inline constexpr CString Cfg_Optimization = "optimization";
 inline constexpr CString Cfg_Standalone   = "standalone";

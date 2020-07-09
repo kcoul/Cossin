@@ -29,6 +29,8 @@
 #include "ThemeFolder.h"
 #include "Resources.h"
 
+#include <jaut_util/general/scopedcursor.h>
+
 //**********************************************************************************************************************
 // region Namespace
 //======================================================================================================================
@@ -56,8 +58,6 @@ SharedData::SharedData() noexcept
 {
     initialize();
 }
-
-SharedData::~SharedData() = default;
 
 //======================================================================================================================
 jaut::Config& SharedData::Configuration() noexcept
@@ -106,22 +106,28 @@ const jaut::Localisation& SharedData::getDefaultLocale() const noexcept
     return *defaultLocale;
 }
 
-//======================================================================================================================
-void SharedData::sendChangeToAllInstancesExcept(CossinAudioProcessorEditor *except) const
+void SharedData::sendUpdates()
 {
-    sendActionMessage(except ? except->getSession().id.toDashedString() : "");
+    jaut::ScopedCursorWait wait;
+    
+    {
+        ReadLock lock(*this);
+        EventConfigChange(*appConfig);
+        EventLocaleChange(*appLocale);
+        EventThemeChange (appThemes->getCurrentTheme());
+    }
 }
 
 //======================================================================================================================
 void SharedData::initialize()
 {
-    if(initialized)
+    if (initialized)
     {
         return;
     }
     
     initialized = true;
-
+    
     using jaut::MetadataHelper;
     MetadataHelper::setPlaceholder("name",        res::App_Name);
     MetadataHelper::setPlaceholder("version",     res::App_Version);
@@ -328,9 +334,9 @@ void SharedData::initThemeManager()
     
     theme_manager->reloadThemes();
 
-    if(!theme_name.equalsIgnoreCase("default"))
+    if (!theme_name.equalsIgnoreCase("default"))
     {
-        if(!theme_manager->setCurrentTheme(theme_name))
+        if (!theme_manager->setCurrentTheme(theme_name))
         {
             juce::Logger::writeToLog("Theme '" + theme_name + "' is not valid, keeping default.");
         }

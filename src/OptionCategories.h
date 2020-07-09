@@ -36,30 +36,38 @@
 
 class CossinAudioProcessorEditor;
 class SharedData;
+
 class OptionCategory : public juce::Component, public ReloadListener
 {
 public:
     explicit OptionCategory(CossinAudioProcessorEditor &editor) : editor(editor) {}
-
+    ~OptionCategory() override = default;
+    
+    //==================================================================================================================
+    virtual const char* getCategoryName() const noexcept = 0;
+    
     //==================================================================================================================
     virtual bool saveState(SharedData&) const = 0;
     virtual void loadState(const SharedData&) = 0;
-
+    
     //==================================================================================================================
     void reloadConfig(const jaut::Config&)       override {}
     void reloadTheme (const jaut::ThemePointer&) override {}
     void reloadLocale(const jaut::Localisation&) override {}
-
+    
 protected:
     CossinAudioProcessorEditor &editor;
 };
 
 /* Holds general and default settings */
-class OptionPanelGeneral final : public OptionCategory, public juce::ListBoxModel
+class OptionPanelGeneral : public OptionCategory, public juce::ListBoxModel
 {
 public:
     explicit OptionPanelGeneral(CossinAudioProcessorEditor&);
-
+    
+    //==================================================================================================================
+    const char* getCategoryName() const noexcept override { return res::Cfg_General; }
+    
     //==================================================================================================================
     void paint(juce::Graphics&) override;
     void resized() override;
@@ -67,7 +75,12 @@ public:
     //==================================================================================================================
     bool saveState(SharedData&) const override;
     void loadState(const SharedData&) override;
-
+    
+    //==================================================================================================================
+    void reloadLocale(const jaut::Localisation&) override;
+    void reloadTheme (const jaut::ThemePointer&) override;
+    void reloadConfig(const jaut::Config&)       override;
+    
 private:
     class PanelDefaults final : public Component, private juce::TextEditor::InputFilter,
                                 private juce::ComboBox::Listener, private juce::TextEditor::Listener
@@ -103,15 +116,12 @@ private:
         //==============================================================================================================
         void comboBoxChanged(juce::ComboBox*) override;
         void textEditorTextChanged(juce::TextEditor&) override;
-        void textEditorFocusLost(juce::TextEditor&)   override;
 
         JUCE_DECLARE_NON_COPYABLE(PanelDefaults)
     };
     
     // General data
     std::vector<std::pair<juce::String, juce::String>> languages;
-    int currentLanguageIndex;
-    int lastSelected;
 
     // Components
     PanelDefaults defaultsBox;
@@ -124,16 +134,16 @@ private:
     // Theme resources
     juce::Font font;
     
+    int currentLanguageIndex { 0 };
+    int lastSelected         { 0 };
+    
     //==================================================================================================================
-    void reloadLocale(const jaut::Localisation&) override;
-    void reloadTheme (const jaut::ThemePointer&) override;
-    void reloadConfig(const jaut::Config&)       override;
-
+    void populateLangList(const jaut::Localisation&);
+    
     //==================================================================================================================
     int getNumRows() override;
     void paintListBoxItem(int, juce::Graphics&, int, int, bool) override;
     void listBoxItemClicked(int, const juce::MouseEvent&)       override;
-    void listBoxItemDoubleClicked(int, const juce::MouseEvent&) override;
 
     //==================================================================================================================
     void selectLangRow(const juce::File&);
@@ -142,11 +152,14 @@ private:
 };
 
 /* Holds theme settings. */
-class OptionPanelThemes final : public OptionCategory
+class OptionPanelThemes : public OptionCategory
 {
 public:
     explicit OptionPanelThemes(CossinAudioProcessorEditor&);
-
+    
+    //==================================================================================================================
+    const char* getCategoryName() const noexcept override { return res::Cfg_Themes; }
+    
     //==================================================================================================================
     void resized() override;
 
@@ -154,8 +167,12 @@ public:
     bool saveState(SharedData&) const override;
     void loadState(const SharedData&) override;
     
+    //==================================================================================================================
+    void reloadLocale(const jaut::Localisation&) override;
+    void reloadTheme (const jaut::ThemePointer&) override;
+    
 private:
-    class ThemePanel final : public Component, public juce::ListBoxModel, juce::TextButton::Listener
+    class ThemePanel final : public Component, public juce::ListBoxModel
     {
     public:
         class ThemePreview final : public Component
@@ -187,16 +204,16 @@ private:
 
         //==============================================================================================================
         // General
-        OptionPanelThemes &panel;
         std::vector<jaut::ThemePointer> themes;
+        
+        // Components
+        ThemePreview previewBox;
+        juce::ListBox themeList;
+    
+        OptionPanelThemes &panel;
         int selectedTheme;
         int selectedRow;
         
-        // Components
-        juce::TextButton buttonApply;
-        ThemePreview previewBox;
-        juce::ListBox themeList;
-
         //==============================================================================================================
         explicit ThemePanel(OptionPanelThemes&);
 
@@ -208,12 +225,7 @@ private:
         int getNumRows() override;
         void paintListBoxItem(int, juce::Graphics&, int, int, bool) override;
         void listBoxItemClicked(int, const juce::MouseEvent&) override;
-        void listBoxItemDoubleClicked(int, const juce::MouseEvent&) override;
-
-        //==============================================================================================================
-        void buttonClicked(juce::Button*) override;
-        void changeButtonState();
-
+        
         JUCE_DECLARE_NON_COPYABLE(ThemePanel)
     };
 
@@ -221,21 +233,19 @@ private:
     juce::Font font;
 
     //==================================================================================================================
-    void reloadLocale(const jaut::Localisation&) override;
-    void reloadTheme (const jaut::ThemePointer&) override;
-
-    //==================================================================================================================
     void selectThemeRow(const jaut::ThemePointer&);
 
     JUCE_DECLARE_NON_COPYABLE(OptionPanelThemes)
 };
 
-class OptionPanelPerformance final : public OptionCategory, private juce::ToggleButton::Listener
+class OptionPanelPerformance : public OptionCategory
 {
 public:
     explicit OptionPanelPerformance(CossinAudioProcessorEditor&);
-    ~OptionPanelPerformance() override;
-
+    
+    //==================================================================================================================
+    const char* getCategoryName() const noexcept override { return res::Cfg_Optimization; }
+    
     //==================================================================================================================
     void resized() override;
     void paint(juce::Graphics&) override;
@@ -243,7 +253,12 @@ public:
     //==================================================================================================================
     bool saveState(SharedData&) const override;
     void loadState(const SharedData&) override;
-
+    
+    //==================================================================================================================
+    void reloadTheme(const jaut::ThemePointer&) override;
+    void reloadConfig(const jaut::Config&) override;
+    void reloadLocale(const jaut::Localisation&) override;
+    
 private:
     juce::ComboBox boxAnimationMode;
     juce::ToggleButton tickControls;
@@ -259,31 +274,29 @@ private:
 #endif
     
     juce::Font font;
-
-    //==================================================================================================================
-    void reloadTheme(const jaut::ThemePointer&) override;
-    void reloadConfig(const jaut::Config&) override;
-    void reloadLocale(const jaut::Localisation&) override;
-
-    //==================================================================================================================
-    void buttonClicked(juce::Button*) override {}
-    void buttonStateChanged(juce::Button*) override;
 };
 
 class CossinPluginWrapper;
-class OptionPanelStandalone final : public OptionCategory
+class OptionPanelStandalone : public OptionCategory
 {
 public:
-    OptionPanelStandalone(CossinAudioProcessorEditor&, jaut::Localisation&);
+    explicit OptionPanelStandalone(CossinAudioProcessorEditor&);
     ~OptionPanelStandalone() override;
-
+    
+    //==================================================================================================================
+    const char* getCategoryName() const noexcept override { return res::Cfg_Standalone; }
+    
     //==================================================================================================================
     void resized() override;
 
     //==================================================================================================================
     bool saveState(SharedData&) const override;
-    void loadState(const SharedData&) override {}
-
+    void loadState(const SharedData&) override;
+    
+    //==================================================================================================================
+    void reloadTheme(const jaut::ThemePointer&) override;
+    void reloadLocale(const jaut::Localisation&) override;
+    
 private:
     class DevicePanel final : public Component, private juce::ChangeListener
     {
@@ -309,7 +322,7 @@ private:
         //==============================================================================================================
         explicit DevicePanel(OptionPanelStandalone&);
         ~DevicePanel() override;
-
+        
         //==============================================================================================================
         void resized() override;
 
@@ -323,8 +336,6 @@ private:
     DevicePanel devicePanel;
     std::unique_ptr<DeviceIOSelector> ioSelector;
     
-    juce::String transAlertWindow;
-    
     SCLabel labelTitleAudio;
     SCLabel labelTitleDevice;
     
@@ -332,9 +343,5 @@ private:
     juce::Font font;
 
     //==================================================================================================================
-    void updateAllData();
-
-    //==================================================================================================================
-    void reloadTheme(const jaut::ThemePointer&) override;
-    void reloadLocale(const jaut::Localisation&) override;
+    void updateAllData(bool force = false);
 };
