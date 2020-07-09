@@ -135,11 +135,13 @@
 
 inline void sendLog(const juce::String &message, const juce::String &importance = "INFO")
 {
+#if !JUCE_DEBUG
     if (!juce::Logger::getCurrentLogger())
     {
         return;
     }
-    
+#endif
+
     const juce::Time   time        = juce::Time::getCurrentTime();
     const juce::String thread_name = juce::MessageManager::getInstance()->isThisTheMessageThread() ? "MESSAGE"
                                                                                                    : "OTHER";

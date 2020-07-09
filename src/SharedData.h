@@ -30,7 +30,7 @@
 
 class CossinAudioProcessorEditor;
 
-class SharedData final : public juce::ActionBroadcaster
+class SharedData
 {
 public:
     JAUT_CREATE_EXCEPTION_WITH_STRING(AppDataFolderCreationException, "Couldn't create plugin data folders: ");
@@ -65,12 +65,12 @@ public:
         explicit ReadLock(SharedData &sharedData, LockPriority priority = LockPriority::HIGH)
             : sharedData(sharedData), lockWasSuccessful(priority == LockPriority::HIGH)
         {
-            if(juce::JUCEApplicationBase::isStandaloneApp() || priority == LockPriority::NONE)
+            if (priority == LockPriority::NONE)
             {
                 return;
             }
 
-            if(priority == LockPriority::HIGH)
+            if (priority == LockPriority::HIGH)
             {
                 sharedData.rwLock.enterRead();
             }
@@ -82,12 +82,7 @@ public:
 
         ~ReadLock()
         {
-            if(juce::JUCEApplicationBase::isStandaloneApp())
-            {
-                return;
-            }
-
-            if(lockWasSuccessful)
+            if (lockWasSuccessful)
             {
                 sharedData.rwLock.exitRead();
             }
@@ -104,12 +99,12 @@ public:
         explicit WriteLock(SharedData &sharedData, LockPriority priority = LockPriority::HIGH)
             : sharedData(sharedData), lockWasSuccessful(priority == LockPriority::HIGH)
         {
-            if(juce::JUCEApplicationBase::isStandaloneApp() || priority == LockPriority::NONE)
+            if (priority == LockPriority::NONE)
             {
                 return;
             }
 
-            if(priority == LockPriority::HIGH)
+            if (priority == LockPriority::HIGH)
             {
                 sharedData.rwLock.enterWrite();
             }
@@ -121,12 +116,7 @@ public:
 
         ~WriteLock()
         {
-            if(juce::JUCEApplicationBase::isStandaloneApp())
-            {
-                return;
-            }
-            
-            if(lockWasSuccessful)
+            if (lockWasSuccessful)
             {
                 sharedData.rwLock.exitWrite();
             }
@@ -138,11 +128,20 @@ public:
     };
     
     //==================================================================================================================
+    using ConfigChangedHandler = jaut::EventHandler<const jaut::Config&>;
+    using LocaleChangedHandler = jaut::EventHandler<const jaut::Localisation&>;
+    using ThemeChangedHandler  = jaut::EventHandler<const jaut::ThemePointer&>;
+    
+    //==================================================================================================================
+    jaut::Event<ConfigChangedHandler> EventConfigChange;
+    jaut::Event<LocaleChangedHandler> EventLocaleChange;
+    jaut::Event<ThemeChangedHandler>  EventThemeChange;
+    
+    //==================================================================================================================
     static juce::SharedResourcePointer<SharedData> getInstance();
 
     //==================================================================================================================
     SharedData() noexcept;
-    ~SharedData() override;
 
     //==================================================================================================================
     jaut::Config&       Configuration() noexcept;
@@ -157,10 +156,10 @@ public:
     //==================================================================================================================
     const jaut::ThemePointer& getDefaultTheme()  const noexcept;
     const jaut::Localisation& getDefaultLocale() const noexcept;
-
+    
     //==================================================================================================================
-    void sendChangeToAllInstancesExcept(CossinAudioProcessorEditor* = nullptr) const;
-
+    void sendUpdates();
+    
 private:
     friend class ReadLock;
 

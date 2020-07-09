@@ -24,8 +24,6 @@ juce_add_plugin(Cossin
 add_subdirectory(externals)
 add_subdirectory(src)
 
-juce_generate_juce_header(Cossin)
-
 target_compile_definitions(Cossin PUBLIC
     JUCE_WEB_BROWSER=0
     JUCE_USE_CURL=0
@@ -33,8 +31,6 @@ target_compile_definitions(Cossin PUBLIC
     JUCE_USE_CUSTOM_PLUGIN_STANDALONE_APP=1
     JUCE_OPENGL_ALLOW_NON_POWER_OF_TWO_TEXTURES=1
     FF_AUDIO_ALLOW_ALLOCATIONS_IN_MEASURE_BLOCK=0)
-
-juce_disable_default_flags()
 
 target_link_libraries(Cossin PRIVATE
     yaml-cpp

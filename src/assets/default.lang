@@ -1,117 +1,120 @@
-language: English
-countries: GB
+language=English
 
 # General
-"general.none" = "None"
-"general.pan.linear" = "Linear"
-"general.pan.square" = "Square"
-"general.pan.sinusoidal" = "Sinusoidal"
+general.none=None
+general.pan.linear=Linear
+general.pan.square=Square
+general.pan.sinusoidal=Sinusoidal
+general.button.ok=Ok
+general.button.cancel=Cancel
+general.button.apply=Apply
 
 # Alerts
-"alert.cancel" = "Cancel"
-"alert.no"     = "No"
-"alert.ok"     = "Ok"
-"alert.yes"    = "Yes"
+alert.cancel=Cancel
+alert.no=No
+alert.ok=Ok
+alert.yes=Yes
 
 
 # Controls
-"control.slider.master.level" = "Level"
-"control.slider.master.mix"   = "Mix"
-"control.slider.master.pan"   = "Pan"
+control.slider.master.level=Level
+control.slider.master.mix=Mix
+control.slider.master.pan=Pan
 
 
 # Frame Rack
-"frame_rack.not_active" = "This frame is not active currently."
-"frame_rack.activate"   = "Activate"
-"frame_rack.switch"     = "Switch"
+frame_rack.not_active=This frame is not active currently.
+frame_rack.activate=Activate
+frame_rack.switch=Switch
 
 
 # Options
-"options.category.account" = "Account"
+options.category.account=Account
 # ------------------------
-"options.category.general"                 = "General"
-"options.category.general.defaults_title"  = "Default settings"
-"options.category.general.default_size"    = "Window size"
-"options.category.general.default_panning" = "Panning"
-"options.category.general.default_unit"    = "Processor"
-"options.category.general.select_language" = "Language"
+options.category.general=General
+options.category.general.defaults_title=Default settings
+options.category.general.default_size=Window size
+options.category.general.default_panning=Panning
+options.category.general.default_unit=Processor
+options.category.general.select_language=Language
 # ------------------------
-"options.category.optimization"                 = "Performance"
-"options.category.optimization.animation_title" = "Animations"
-"options.category.optimization.quality_title"   = "Quality"
-"options.category.optimization.animation_mode"  = "Animation mode"
-"options.category.optimization.animation.all"   = "All"
-"options.category.optimization.animation.some"  = "Reduced"
-"options.category.optimization.animation.user"  = "Custom"
-"options.category.optimization.animation.none"  = "None"
-"options.category.optimization.animate_ctrl"    = "Animate controls"
-"options.category.optimization.animate_fx"      = "Visualize effects"
-"options.category.optimization.use_hardware"    = "Hardware acceleration"
-"options.category.optimization.multisampling"   = "Anti-Aliasing"
-"options.category.optimization.filter"          = "Texture filtering"
-"options.category.optimization.vsync"           = "Vertical-sync"
+options.category.optimization=Performance
+options.category.optimization.animation_title=Animations
+options.category.optimization.quality_title=Quality
+options.category.optimization.animation_mode=Animation mode
+options.category.optimization.animation.all=All
+options.category.optimization.animation.some=Reduced
+options.category.optimization.animation.user=Custom
+options.category.optimization.animation.none=None
+options.category.optimization.animate_ctrl=Animate controls
+options.category.optimization.animate_fx=Visualize effects
+options.category.optimization.use_hardware=Hardware acceleration
+options.category.optimization.multisampling=Anti-Aliasing
+options.category.optimization.filter=Texture filtering
+options.category.optimization.vsync=Vertical-sync
 # ------------------------
-"options.category.standalone"               = "Standalone"
-"options.category.standalone.audio_title"   = "Audio settings"
-"options.category.standalone.buffer_size"   = "Buffer size"
-"options.category.standalone.device.input"  = "Input"
-"options.category.standalone.device.output" = "Output"
-"options.category.standalone.device_title"  = "Device settings"
-"options.category.standalone.device_type"   = "Device type"
-"options.category.standalone.error_device"  = "Error when trying to open device:"
-"options.category.standalone.mute_input"    = "Mute input device"
-"options.category.standalone.sample_rate"   = "Sample rate"
-"options.category.standalone.show_ct_panel" = "Control Panel"
+options.category.standalone=Standalone
+options.category.standalone.audio_title=Audio settings
+options.category.standalone.buffer_size=Buffer size
+options.category.standalone.device.input=Input
+options.category.standalone.device.output=Output
+options.category.standalone.device_title=Device settings
+options.category.standalone.device_type=Device type
+options.category.standalone.error_device=Error when trying to open device:
+options.category.standalone.mute_input=Mute input device
+options.category.standalone.sample_rate=Sample rate
+options.category.standalone.show_ct_panel=Control Panel
+options.category.standalone.latency=Latency
 # ------------------------
-"options.category.themes"            = "Themes"
-"options.category.themes.apply"      = "Apply theme"
-"options.category.themes.authors"    = "Other authors"
-"options.category.themes.license"    = "License"
-"options.category.themes.no_preview" = "No preview available"
+options.category.themes=Themes
+options.category.themes.apply=Apply theme
+options.category.themes.authors=Other authors
+options.category.themes.license=License
+options.category.themes.no_preview=No preview available
 # ------------------------
-"options.title" = "Options"
+options.title=Options
 
 
 # State save/load
-"state.chooser.load.title" = "Load Cossin state:"
-"state.chooser.save.title" = "Save Cossin state:"
-"state.load.err.title"     = "Couldn't read selected file."
-"state.load.err.text"      = "There was an error while trying to open the selected file.\nDo you want to open a different file?"
-"state.load.fail.title"    = "Failed to read the selected file."
-"state.load.fail.text"     = "An unexpected error occured while trying to load the selected file."
-"state.load.file.title"    = "Open session?"
-"state.load.file.text"     = "Do you want to open the selected file?"
-"state.save.err.title"     = "Couldn't write to file."
-"state.save.err.text"      = "There was an error while attempting to save the file.\nDo you want to try a different location?"
-"state.save.fail.title"    = "Couldn't save session."
-"state.save.fail.text"     = "An unexpected error occured while trying to save the current session."
-"state.save.new.title"     = "Save your current session?"
-"state.save.new.text"      = "Changes were made to the current session. Do you want to save them?"
+state.chooser.load.title=Load Cossin state:
+state.chooser.save.title=Save Cossin state:
+state.load.err.title=Couldn't read selected file.
+state.load.err.text=There was an error while trying to open the selected file.\nDo you want to open a different file?
+state.load.fail.title=Failed to read the selected file.
+state.load.fail.text=An unexpected error occured while trying to load the selected file.
+state.load.file.title=Open session?
+state.load.file.text=Do you want to open the selected file?
+state.save.err.title=Couldn't write to file.
+state.save.err.text=There was an error while attempting to save the file.\nDo you want to try a different location?
+state.save.fail.title=Couldn't save session.
+state.save.fail.text=An unexpected error occured while trying to save the current session.
+state.save.new.title=Save your current session?
+state.save.new.text=Changes were made to the current session. Do you want to save them?
 
 
 # Tooltips
-"tooltip.panning_law"        = "&xPanning function\n\n&rThe panning function to use.\nSelect between &zlinear&r, &zsquare-root\n&ror &zsinusoidal&r panning.\n\n&y&aCurrent: "
-"tooltip.panning_law.linear" = "Linear panning"
-"tooltip.panning_law.sine"   = "Sinusoidal panning"
-"tooltip.panning_law.square" = "Square-root panning (default)"
+tooltip.panning_law=&xPanning function\n\n&rThe panning function to use.\nSelect between &zlinear&r, &zsquare-root\n&ror &zsinusoidal&r panning.\n\n&y&aCurrent: 
+tooltip.panning_law.linear=Linear panning
+tooltip.panning_law.sine=Sinusoidal panning
+tooltip.panning_law.square=Square-root panning (default)
 # ------------------------
-"tooltip.option.animations"            = "The level of activated animations:\n&xAll: &rActivate all animations\n&xReduced: &rOnly activate crucial animations\n&xCustom: &rCustomize animation setting\n&xNone: &rDon't show any animations at all"
-"tooltip.option.animation.controls"    = "Determines whether the window and controls should be animated or not."
-"tooltip.option.animation.effects"     = "Determines whether effects' visualizers are enabled or not."
-"tooltip.option.default_panning"       = "Select the default panning law when a new session was created."
-"tooltip.option.default_processor"     = "Select the default processor tab when a new session was created."
-"tooltip.option.default_size"          = "Choose the default plugin window size when a new session was created."
-"tooltip.option.default_size.height"   = "The default height of the window."
-"tooltip.option.default_size.width"    = "The default width of the window."
-"tooltip.option.default_size.ratio"    = "The ratio of the width and height boxes. (delete colon to unlock)"
-"tooltip.option.filtering"             = "Sets whether textures should be smoothed out or not."
-"tooltip.option.hardware_acceleration" = "If this is enabled, Cossin will be rendered by the GPU.\nIf you get lags or glitches, it is better to turn this off."
-"tooltip.option.multisampling"         = "Sets whether the window should be anti-aliased or not.\n&6Warning: This may affect performance and is not guaranteed\nto work on all platforms!"
-"tooltip.option.requires"              = "Requires:"
-"tooltip.option.requires_ha"           = "Hardware acceleration"
-"tooltip.option.requires_restart"      = "Restart"
-"tooltip.option.select_language"       = "Select the language Cossin should be displayed in."
-"tooltip.option.select_theme"          = "Select the theme Cossin should be using."
-"tooltip.option.select_animations"     = "Select what animations to be used."
-"tooltip.option.standalone.ctrl_panel" = "Show control panel of current device."
-"tooltip.option.standalone.mute_input" = "Mutes the input device.\nSelect this if you get an unpleasant feedback loop."
+tooltip.option.animations=The level of activated animations:\n&xAll: &rActivate all animations\n&xReduced: &rOnly activate crucial animations\n&xCustom: &rCustomize animation setting\n&xNone: &rDon't show any animations at all
+tooltip.option.animation.controls=Determines whether the window and controls should be animated or not.
+tooltip.option.animation.effects=Determines whether effects' visualizers are enabled or not.
+tooltip.option.default_panning=Select the default panning law when a new session was created.
+tooltip.option.default_processor=Select the default processor tab when a new session was created.
+tooltip.option.default_size=Choose the default plugin window size when a new session was created.
+tooltip.option.default_size.height=The default height of the window.
+tooltip.option.default_size.width=The default width of the window.
+tooltip.option.default_size.ratio=The ratio of the width and height boxes. (delete colon to unlock)
+tooltip.option.filtering=Sets whether textures should be smoothed out or not.
+tooltip.option.hardware_acceleration=If this is enabled, Cossin will be rendered by the GPU.\nIf you get lags or glitches, it is better to turn this off.
+tooltip.option.multisampling=Sets whether the window should be anti-aliased or not.\n&6Warning: This may affect performance and is not guaranteed\nto work on all platforms!
+tooltip.option.requires=Requires:
+tooltip.option.requires_ha=Hardware acceleration
+tooltip.option.requires_restart=Restart
+tooltip.option.select_language=Select the language Cossin should be displayed in.
+tooltip.option.select_theme=Select the theme Cossin should be using.
+tooltip.option.select_animations=Select what animations to be used.
+tooltip.option.standalone.ctrl_panel=Show control panel of current device.
+tooltip.option.standalone.mute_input=Mutes the input device.\nSelect this if you get an unpleasant feedback loop.

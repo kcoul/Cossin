@@ -1,0 +1,4 @@
+Cannot generate into /home/elanda/Documents/Development/Juce/Plugins/Cossin/build
+This directory is already used for 'Debug' profile
+
+Please either delete it manually or select another generation directory

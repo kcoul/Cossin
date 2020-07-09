@@ -94,6 +94,7 @@ inline constexpr CString Col_FormatF       = "font_colour_f";
 
 /** Config dictionary */
 inline constexpr CString Cfg_General      = "general";
+inline constexpr CString Cfg_Themes       = "themes";
 inline constexpr CString Cfg_Defaults     = "defaults";
 inline constexpr CString Cfg_Optimization = "optimization";
 inline constexpr CString Cfg_Standalone   = "standalone";
@@ -134,7 +135,7 @@ inline constexpr CString Prop_StandaloneDevicesOutput   = "output";
 
 
 /** Pan Modes */
-inline constexpr JAUT_DECLARE_AUTOMATIC_STD_ARRAY(List_PanModes,
+inline constexpr JAUT_DECLARE_AUTOMATIC_STD_ARRAY(List_PanningModes,
     "Linear",
     "Square",
     "Sinusoidal"

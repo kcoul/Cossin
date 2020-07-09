@@ -8,7 +8,7 @@ It supports a wide range of effects and audio manipulation features.
 ## Details
 - **Version**: Developement
 - **Type**: Plugin
-- **Supported hosts**: VST3, AAX, AU
+- **Supported hosts**: VST3, Standalone
 - **CPU**: 64x bit
 
 ## Dependencies

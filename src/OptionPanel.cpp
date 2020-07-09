@@ -26,7 +26,7 @@
 #include "OptionPanel.h"
 
 #include <jaut_provider/jaut_provider.h>
-#include <jaut_util/jaut_util.h>
+#include <jaut_util/general/scopedcursor.h>
 
 #include "Assets.h"
 #include "PluginEditor.h"
@@ -49,31 +49,49 @@ OptionPanel::OptionsContainer::OptionsContainer(OptionPanel &optionPanel)
     addAndMakeVisible(contentComponent);
 }
 
+OptionPanel::OptionsContainer::~OptionsContainer()
+{
+
+}
+
 //======================================================================================================================
 void OptionPanel::OptionsContainer::resized()
 {
-    contentComponent.setSize(getWidth(), getHeight() * parent.getNumRows());
-
-    for(int i = 0; i < contentComponent.getNumChildComponents(); ++i)
+    contentComponent.setSize(getWidth(), getHeight() * contentComponent.getNumChildComponents());
+    
+    for (int i = 0; i < contentComponent.getNumChildComponents(); ++i)
     {
-        Component *comp = contentComponent.getChildren().getUnchecked(i);
-        comp->setBounds(0, getHeight() * i, getWidth(), getHeight());
+        contentComponent.getChildComponent(i)->setBounds(0, getHeight() * i, getWidth(), getHeight());
     }
 }
 
 //======================================================================================================================
 void OptionPanel::OptionsContainer::addOptionPanel(OptionCategory &category)
 {
-    category.setBounds(0, getHeight() * contentComponent.getNumChildComponents(), getWidth(), getHeight());
-    categories.emplace_back(&category);
     contentComponent.addAndMakeVisible(category);
+}
+
+void OptionPanel::OptionsContainer::removeOptionPanel(OptionCategory &category)
+{
+    if (contentComponent.getIndexOfChildComponent(&category) >= 0)
+    {
+        contentComponent.removeChildComponent(&category);
+        
+        for (int i = 0; i < contentComponent.getNumChildComponents(); ++i)
+        {
+            Component *comp = contentComponent.getChildren().getUnchecked(i);
+            comp->setBounds(0, getHeight() * i, getWidth(), getHeight());
+        }
+    
+        repaint();
+    }
 }
 
 void OptionPanel::OptionsContainer::showPanel(int, int newIndex, bool animate)
 {
     const juce::Rectangle<int> bounds_final = contentComponent.getBounds().withY(-getHeight() * newIndex);
 
-    if(animate)
+    if (animate)
     {
         juce::Desktop::getInstance().getAnimator().animateComponent(&contentComponent, bounds_final, 1.0f, 200,
                                                                     true, 2, 0);
@@ -83,45 +101,123 @@ void OptionPanel::OptionsContainer::showPanel(int, int newIndex, bool animate)
         contentComponent.setTopLeftPosition(bounds_final.getPosition());
     }
 }
-
-//======================================================================================================================
-const std::vector<OptionCategory*>& OptionPanel::OptionsContainer::getCategories() const noexcept
-{
-    return categories;
-}
 //======================================================================================================================
 // endregion OptionsContainer
 //**********************************************************************************************************************
 // region OptionPanel
 //======================================================================================================================
-OptionPanel::OptionPanel(CossinAudioProcessorEditor &editor, jaut::Localisation &locale)
-    : editor(editor), closeCallback(nullptr), lastSelectedRow(0), bttClose("X"),
-      optionContainer(*this), optionsGeneral(editor, locale),
-      optionsThemes(editor, locale), optionsPerformance(editor, locale),
-      optionTabs("OptionTabs", this), locale(locale)
+// region Functors
+//======================================================================================================================
+struct OptionPanel::NameGetter
 {
-    // About resources
-    imgCossinAbout   = juce::ImageCache::getFromMemory(Assets::png011_png,         Assets::png011_pngSize);
-    imgSocialDiscord = juce::ImageCache::getFromMemory(Assets::social_discord_png, Assets::social_discord_pngSize);
-    imgSocialTumblr  = juce::ImageCache::getFromMemory(Assets::social_tumblr_png,  Assets::social_tumblr_pngSize);
-    imgSocialTwitter = juce::ImageCache::getFromMemory(Assets::social_twitter_png, Assets::social_twitter_pngSize);
-    imgSocialWebsite = juce::ImageCache::getFromMemory(Assets::social_web_png,     Assets::social_web_pngSize);
-
-    // TODO option categories
-    addOptionCategory(res::Cfg_General,      optionsGeneral);
-    addOptionCategory("themes",              optionsThemes);
-    addOptionCategory(res::Cfg_Optimization, optionsPerformance);
-    //addOptionCategory(res::Cfg_Account,      optionsAccount);
-
-    if(juce::JUCEApplicationBase::isStandaloneApp())
+    template<class ...Types>
+    NameArray operator()(CategoryArray &categories)
     {
-        optionsStandalone = std::make_unique<OptionPanelStandalone>(editor, locale);
-        addOptionCategory(res::Cfg_Standalone, *optionsStandalone);
+        return { std::get<Types>(categories.at(CategoryList::indexOf<Types>)).getCategoryName()... };
+    }
+};
 
+template<class Arg>
+struct OptionPanel::DataReloader
+{
+    template<class Type>
+    void operator()(CategoryArray &categories, const Arg &arg)
+    {
+        using BareType = std::remove_cv_t<std::remove_reference_t<Arg>>;
+        static_assert(   std::is_same_v<BareType, jaut::Config>
+                      || std::is_same_v<BareType, jaut::Localisation>
+                      || std::is_same_v<BareType, jaut::ThemePointer>,
+                      "Is not an appropriate type for this functor");
+    
+        Type &category = std::get<Type>(categories.at(CategoryList::indexOf<Type>));
+        
+        if constexpr (std::is_same_v<BareType, jaut::Config>)
+        {
+            category.reloadConfig(arg);
+        }
+        else if constexpr (std::is_same_v<BareType, jaut::Localisation>)
+        {
+            category.reloadLocale(arg);
+        }
+        else if constexpr (std::is_same_v<BareType, jaut::ThemePointer>)
+        {
+            category.reloadTheme(arg);
+        }
+    }
+};
+
+template<>
+struct OptionPanel::StateManager<true>
+{
+    juce::SharedResourcePointer<SharedData> sharedData;
+    SharedData::ReadLock lock;
+    
+    explicit StateManager() noexcept
+        : sharedData(SharedData::getInstance()),
+          lock(*sharedData)
+    {}
+    
+    template<class Type>
+    void operator()(CategoryArray &categories)
+    {
+        std::get<Type>(categories.at(CategoryList::indexOf<Type>)).loadState(*sharedData);
+    }
+};
+
+template<>
+struct OptionPanel::StateManager<false>
+{
+    juce::SharedResourcePointer<SharedData> sharedData;
+    SharedData::WriteLock lock;
+    bool needsReload { false };
+    
+    explicit StateManager() noexcept
+        : sharedData(SharedData::getInstance()),
+          lock(*sharedData)
+    {}
+    
+    ~StateManager()
+    {
+        if (needsReload)
+        {
+            (void) sharedData->Configuration().save();
+            sharedData->sendUpdates();
+        }
+    }
+    
+    template<class Type>
+    void operator()(CategoryArray &categories)
+    {
+        if (std::get<Type>(categories.at(CategoryList::indexOf<Type>)).saveState(*sharedData))
+        {
+            needsReload = true;
+        }
+    }
+};
+//======================================================================================================================
+// endregion Functors
+//======================================================================================================================
+OptionPanel::OptionPanel(CossinAudioProcessorEditor &editor)
+    : editor(editor), closeCallback([](juce::Button*){}),
+      optionsContainer(*this),
+      listBoxOptionTabs("OptionTabs", this),
+      categories(CategoryList::fillArray(editor))
+{
+    for (auto &panel : categories)
+    {
+        std::visit([this](OptionCategory &panel)
+        {
+            optionsContainer.addOptionPanel(panel);
+        }, panel);
+    }
+    
+    // Change tabs for the standalone version
+    if (juce::JUCEApplicationBase::isStandaloneApp())
+    {
 #if !JUCE_USE_CUSTOM_PLUGIN_STANDALONE_APP
         this->onIntercept = [this](const String &categoryName)
         {
-            if(categoryName == res::Cfg_Standalone)
+            if (categoryName == res::Cfg_Standalone)
             {
                 StandalonePluginHolder::getInstance()->showAudioSettingsDialog();
                 return false;
@@ -131,24 +227,53 @@ OptionPanel::OptionPanel(CossinAudioProcessorEditor &editor, jaut::Localisation 
         };
 #endif
     }
-    
-    addAndMakeVisible(optionContainer);
-
-    for(auto *category : optionContainer.getCategories())
+    else
     {
-        editor.addReloadListener(category);
+        auto &panel = std::get<OptionPanelStandalone>(categories.at(CategoryList::indexOf<OptionPanelStandalone>));
+        optionsContainer.removeOptionPanel(panel);
     }
-
-    optionTabs.setRowHeight(30);
-    optionTabs.selectRow(0);
-    optionTabs.updateContent();
-    addAndMakeVisible(optionTabs);
-
-    bttClose.addListener(this);
-    bttClose.setLookAndFeel(this);
-    bttClose.getProperties().set("OptionsPanelClose", {});
-    addAndMakeVisible(bttClose);
-
+    
+    addAndMakeVisible(optionsContainer);
+    
+    listBoxOptionTabs.setRowHeight(30);
+    listBoxOptionTabs.selectRow(0);
+    listBoxOptionTabs.updateContent();
+    addAndMakeVisible(listBoxOptionTabs);
+    
+    labelTitleOptions.setJustificationType(juce::Justification::centred);
+    addAndMakeVisible(labelTitleOptions);
+    
+    buttonApply.setLookAndFeel(this);
+    buttonApply.setMouseCursor(juce::MouseCursor::PointingHandCursor);
+    buttonApply.onClick = [this]()
+    {
+        jaut::ScopedCursorWait cursor;
+        CategoryList::forEach<StateManager<false>>(categories);
+    };
+    addAndMakeVisible(buttonApply);
+    
+    buttonCancel.setLookAndFeel(this);
+    buttonCancel.setMouseCursor(juce::MouseCursor::PointingHandCursor);
+    buttonCancel.getProperties().set("OptionsPanelClose", {});
+    buttonCancel.onClick = [this]()
+    {
+        closeCallback(&buttonCancel);
+    };
+    addAndMakeVisible(buttonCancel);
+    
+    buttonOk.setLookAndFeel(this);
+    buttonOk.setMouseCursor(juce::MouseCursor::PointingHandCursor);
+    buttonOk.onClick = [this]()
+    {
+        {
+            jaut::ScopedCursorWait cursor;
+            CategoryList::forEach<StateManager<false>>(categories);
+        }
+        
+        closeCallback(&buttonCancel);
+    };
+    addAndMakeVisible(buttonOk);
+    
     const juce::Font link_font = juce::Font().withHeight(14.0f);
 
     linkDiscord.setURL(juce::URL::createWithoutParsing("https://discord.io/ElandaSunshine"));
@@ -170,17 +295,18 @@ OptionPanel::OptionPanel(CossinAudioProcessorEditor &editor, jaut::Localisation 
     linkWebsite.setButtonText("Website");
     linkWebsite.setFont(link_font, false, juce::Justification::centredLeft);
     addAndMakeVisible(linkWebsite);
+    
+    // About resources
+    imgCossinAbout   = juce::ImageCache::getFromMemory(Assets::png011_png,         Assets::png011_pngSize);
+    imgSocialDiscord = juce::ImageCache::getFromMemory(Assets::social_discord_png, Assets::social_discord_pngSize);
+    imgSocialTumblr  = juce::ImageCache::getFromMemory(Assets::social_tumblr_png,  Assets::social_tumblr_pngSize);
+    imgSocialTwitter = juce::ImageCache::getFromMemory(Assets::social_twitter_png, Assets::social_twitter_pngSize);
+    imgSocialWebsite = juce::ImageCache::getFromMemory(Assets::social_web_png,     Assets::social_web_pngSize);
+    
+    imgCossinAbout = imgCossinAbout.getClippedImage({0, 36, imgCossinAbout.getWidth(), imgCossinAbout.getHeight() - 36});
 }
 
-OptionPanel::~OptionPanel()
-{
-    optionsStandalone.reset();
-    
-    for(auto *category : optionContainer.getCategories())
-    {
-        editor.removeReloadListener(category);
-    }
-}
+OptionPanel::~OptionPanel() = default;
 
 //======================================================================================================================
 void OptionPanel::paint(juce::Graphics &g)
@@ -189,35 +315,41 @@ void OptionPanel::paint(juce::Graphics &g)
 
     g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourContainerForegroundId));
     g.fillAll();
+    
     g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourContainerBackgroundId));
     g.drawRect(0, 30, getWidth(), 2);
-
-    g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourFontId));
-    g.setFont(font);
-    jaut::FontFormat::drawSmallCaps(g, locale.translate("options.title"), 0, 0, getWidth(), 30,
-                                    juce::Justification::centred);
-
+    
+    {
+        juce::Graphics::ScopedSaveState sss(g);
+        
+        g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourContainerBackgroundId));
+        g.setOrigin(getWidth() - 202, 32);
+        g.fillRect(0, 0, 202, getHeight() - 68);
+        
+        const int distance = 10;
+        const int start = 12;
+        g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourContainerBackgroundId).contrasting());
+        g.drawImageAt(imgCossinAbout,   0,     0);
+        g.drawImageAt(imgSocialDiscord, start, start);
+        g.drawImageAt(imgSocialTumblr,  start, start + 32 + distance);
+        g.drawImageAt(imgSocialTwitter, start, start + 64 + distance * 2);
+        g.drawImageAt(imgSocialWebsite, start, start + 96 + distance * 3);
+    }
+    
     g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourContainerBackgroundId));
-    g.setOrigin(getWidth() - 202, 32);
-    g.fillRect(0, 0, 202, getHeight() - 32);
-
-    const int distance = 10;
-    const int start    = 12;
-    g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourContainerBackgroundId).contrasting());
-    g.drawImageAt(imgCossinAbout, 0, 0, true);
-    g.drawImageAt(imgSocialDiscord, start, start,                     true);
-    g.drawImageAt(imgSocialTumblr,  start, start + 32 + distance,     true);
-    g.drawImageAt(imgSocialTwitter, start, start + 64 + distance * 2, true);
-    g.drawImageAt(imgSocialWebsite, start, start + 96 + distance * 3, true);
+    g.fillRect(0, getHeight() - 36, getWidth(), 2);
 }
 
 void OptionPanel::resized()
 {   
-    const int content_pos_x = getHeight() - 32;
-
-    optionContainer.setBounds(100, 32, getWidth() - 300, content_pos_x);
-    optionTabs     .setBounds(0, 32, 100, content_pos_x);
-    bttClose       .setBounds(getWidth() - 30, 0, 30, 30);
+    const int content_pos_x = getHeight() - 68;
+    const int button_y      = getHeight() - 34;
+    
+    optionsContainer .setBounds(100,              32,       getWidth() - 300, content_pos_x);
+    listBoxOptionTabs.setBounds(0,                32,       100,              content_pos_x);
+    buttonOk         .setBounds(getWidth() - 303, button_y, 101,              34);
+    buttonCancel     .setBounds(getWidth() - 202, button_y, 101,              34);
+    buttonApply      .setBounds(getWidth() - 101, button_y, 101,              34);
     
     const int distance = 10;
     const int start    = 12;
@@ -230,52 +362,14 @@ void OptionPanel::resized()
     linkTumblr .setBounds(x + distance, y + 32 + distance,     w, h);
     linkTwitter.setBounds(x + distance, y + 64 + distance * 2, w, h);
     linkWebsite.setBounds(x + distance, y + 96 + distance * 3, w, h);
+    
+    labelTitleOptions.setBounds(0, 0, getWidth(), 30);
 }
 
 //======================================================================================================================
-void OptionPanel::addOptionCategory(const juce::String &name, OptionCategory &category)
+void OptionPanel::load()
 {
-    const juce::String category_id = name.removeCharacters(" ").toLowerCase();
-
-    category.setName(category_id);
-    categories.add(category_id);
-    optionContainer.addOptionPanel(category);
-}
-
-//======================================================================================================================
-void OptionPanel::show()
-{
-    const jaut::ScopedCursorWait wait;
-    auto shared_data = SharedData::getInstance();
-    const SharedData::ReadLock lock(*shared_data);
-
-    for(auto *category : optionContainer.getCategories())
-    {
-        category->loadState(*shared_data);
-    }
-    
-    setVisible(true);
-}
-
-void OptionPanel::hide()
-{
-    const jaut::ScopedCursorWait wait;
-    auto shared_data = SharedData::getInstance();
-    const SharedData::WriteLock lock(*shared_data);
-    
-    bool needs_full_reload = false;
-
-    for(auto *category : optionContainer.getCategories())
-    {
-        if(!category->saveState(*shared_data))
-        {
-            needs_full_reload = true;
-        }
-    }
-
-    (void) shared_data->Configuration().save();
-    shared_data->sendChangeToAllInstancesExcept(needs_full_reload ? nullptr : &editor);
-    setVisible(false);
+    CategoryList::forEach<StateManager<true>>(categories);
 }
 
 //======================================================================================================================
@@ -285,22 +379,20 @@ void OptionPanel::setCloseButtonCallback(std::function<void(juce::Button*)> call
 }
 
 //======================================================================================================================
-void OptionPanel::buttonClicked(juce::Button *button)
-{
-    if (closeCallback && button == &bttClose)
-    {
-        closeCallback(button);
-    }
-}
-
-//======================================================================================================================
 void OptionPanel::drawButtonText(juce::Graphics &g, juce::TextButton &button, bool highlighted, bool)
 {
     const LookAndFeel &lf = getLookAndFeel();
+    
     g.setFont(font);
-    g.setColour(highlighted ? lf.findColour(CossinAudioProcessorEditor::ColourComponentForegroundId)
-                            : lf.findColour(CossinAudioProcessorEditor::ColourContainerBackgroundId));
-    g.drawText(button.getName(), 0, 0, button.getWidth(), button.getHeight(), juce::Justification::centred);
+    g.setColour(highlighted ? lf.findColour(CossinAudioProcessorEditor::ColourComponentBackgroundId)
+                            : lf.findColour(CossinAudioProcessorEditor::ColourContainerForegroundId));
+    g.fillAll();
+    
+    g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourContainerBackgroundId));
+    g.drawRect(0, 0, 2, button.getHeight(), 2);
+    
+    g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourFontId));
+    g.drawText(button.getButtonText(), 0, 0, button.getWidth(), button.getHeight(), juce::Justification::centred);
 }
 
 //======================================================================================================================
@@ -311,10 +403,9 @@ int OptionPanel::getNumRows()
 
 void OptionPanel::paintListBoxItem(int rowNumber, juce::Graphics &g, int width, int height, bool rowIsSelected)
 {
-    const LookAndFeel  &lf            = getLookAndFeel();
-    const juce::String &category_name = categories.getReference(rowNumber);
+    const LookAndFeel &lf = getLookAndFeel();
 
-    if(rowIsSelected)
+    if (rowIsSelected)
     {
         const juce::DropShadow shadow(juce::Colours::black, 10, {101, 0});
         g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourContainerForegroundId));
@@ -324,26 +415,26 @@ void OptionPanel::paintListBoxItem(int rowNumber, juce::Graphics &g, int width, 
     
     g.setFont(font);
     g.setColour(lf.findColour(CossinAudioProcessorEditor::ColourFontId));
-    g.drawText(locale.translate("options.category." + category_name), 10, 0, width - 10, height,
-               juce::Justification::centredLeft);
+    
+    const juce::String &category_name = categoryNames[static_cast<NameArray::size_type>(rowNumber)];
+    g.drawText(category_name, 10, 0, width - 10, height, juce::Justification::centredLeft);
 }
 
 void OptionPanel::listBoxItemClicked(int row, const juce::MouseEvent&)
 {
-    if(row == lastSelectedRow)
+    if (row == lastSelectedRow)
     {
         return;
     }
-
-    const juce::String &category_name = categories.getReference(row);
     
-    if(onIntercept && !onIntercept(category_name))
+    if (onIntercept && !onIntercept(categoryNames.at(static_cast<NameArray::size_type>(row))))
     {
-        optionTabs.selectRow(lastSelectedRow);
+        listBoxOptionTabs.selectRow(lastSelectedRow);
         return;
     }
 
-    optionContainer.showPanel(lastSelectedRow, row, editor.getOption(Flag_AnimationComponents));
+    optionsContainer.showPanel(lastSelectedRow, row,
+                               editor.getOption(CossinAudioProcessorEditor::FlagAnimationComponents));
     lastSelectedRow = row;
 }
 
@@ -352,12 +443,41 @@ void OptionPanel::reloadTheme(const jaut::ThemePointer &theme)
 {
     const juce::Colour colour_background_contrasting = theme->getThemeColour(res::Col_ContainerBg).contrasting();
 
-    linkDiscord.setColour(juce::HyperlinkButton::textColourId, colour_background_contrasting);
-    linkTumblr .setColour(juce::HyperlinkButton::textColourId, colour_background_contrasting);
-    linkTwitter.setColour(juce::HyperlinkButton::textColourId, colour_background_contrasting);
-    linkWebsite.setColour(juce::HyperlinkButton::textColourId, colour_background_contrasting);
-
+    linkDiscord .setColour(juce::HyperlinkButton::textColourId, colour_background_contrasting);
+    linkTumblr  .setColour(juce::HyperlinkButton::textColourId, colour_background_contrasting);
+    linkTwitter .setColour(juce::HyperlinkButton::textColourId, colour_background_contrasting);
+    linkWebsite .setColour(juce::HyperlinkButton::textColourId, colour_background_contrasting);
+    
     font = theme->getThemeFont();
+    labelTitleOptions.setFont(font);
+    
+    CategoryList::forEach<DataReloader<jaut::ThemePointer>>(categories, theme);
+}
+
+void OptionPanel::reloadLocale(const jaut::Localisation &locale)
+{
+    labelTitleOptions.setText(locale.translate("options.title"), juce::dontSendNotification);
+    
+    buttonApply .setButtonText(locale.translate("general.button.apply"));
+    buttonCancel.setButtonText(locale.translate("general.button.cancel"));
+    buttonOk    .setButtonText(locale.translate("general.button.ok"));
+    
+    for (int i = 0; i < static_cast<int>(categoryNames.size()); ++i)
+    {
+        std::visit([&](auto &&var)
+        {
+            juce::String name = locale.translate("options.category." + juce::String(var.getCategoryName()));
+            std::swap(categoryNames[static_cast<NameArray::size_type>(i)], name);
+        },
+        categories.at(static_cast<NameArray::size_type>(i)));
+    }
+    
+    CategoryList::forEach<DataReloader<jaut::Localisation>>(categories, locale);
+}
+
+void OptionPanel::reloadConfig(const jaut::Config &config)
+{
+    CategoryList::forEach<DataReloader<jaut::Config>>(categories, config);
 }
 //======================================================================================================================
 // endregion OptionPanel

@@ -29,6 +29,8 @@
 #include "ThemeFolder.h"
 #include "Resources.h"
 
+#include <jaut_util/general/scopedcursor.h>
+
 //**********************************************************************************************************************
 // region Namespace
 //======================================================================================================================
@@ -56,8 +58,6 @@ SharedData::SharedData() noexcept
 {
     initialize();
 }
-
-SharedData::~SharedData() = default;
 
 //======================================================================================================================
 jaut::Config& SharedData::Configuration() noexcept
@@ -106,22 +106,28 @@ const jaut::Localisation& SharedData::getDefaultLocale() const noexcept
     return *defaultLocale;
 }
 
-//======================================================================================================================
-void SharedData::sendChangeToAllInstancesExcept(CossinAudioProcessorEditor *except) const
+void SharedData::sendUpdates()
 {
-    sendActionMessage(except ? except->getSession().id.toDashedString() : "");
+    jaut::ScopedCursorWait wait;
+    
+    {
+        ReadLock lock(*this);
+        EventConfigChange(*appConfig);
+        EventLocaleChange(*appLocale);
+        EventThemeChange (appThemes->getCurrentTheme());
+    }
 }
 
 //======================================================================================================================
 void SharedData::initialize()
 {
-    if(initialized)
+    if (initialized)
     {
         return;
     }
     
     initialized = true;
-
+    
     using jaut::MetadataHelper;
     MetadataHelper::setPlaceholder("name",        res::App_Name);
     MetadataHelper::setPlaceholder("version",     res::App_Version);
@@ -289,8 +295,7 @@ void SharedData::initDefaults()
 {
     // make default locale
     juce::MemoryInputStream locale_stream(Assets::default_lang, Assets::default_langSize, false);
-    juce::LocalisedStrings  locale_def(locale_stream.readEntireStreamAsString(), true);
-    defaultLocale = std::make_unique<jaut::Localisation>(appData.dirLang, locale_def);
+    defaultLocale = std::make_unique<jaut::Localisation>(jaut::Localisation::fromStream(locale_stream));
 
     // make default theme
     juce::MemoryInputStream theme_stream(Assets::theme_meta, Assets::theme_metaSize, false);
@@ -300,19 +305,19 @@ void SharedData::initDefaults()
 
 void SharedData::initLangs()
 {
+    auto locale = std::make_unique<jaut::Localisation>(appData.dirLang,
+                                                       std::make_unique<jaut::Localisation>(*defaultLocale));
     const juce::String language_name = appConfig->getProperty("language").getValue().toString();
-    auto *const        locale        = new jaut::Localisation(appData.dirLang,
-                                                              defaultLocale->getInternalLocalisation());
     
     if(!language_name.equalsIgnoreCase("default"))
     {
-        if(!locale->setCurrentLanguage(language_name))
+        if(!locale->setCurrentLanguageFromDirectory(language_name))
         {
-            juce::Logger::writeToLog("Language '" + language_name + "' is not valid, keeping default.");
+            sendLog("Language '" + language_name + "' is not valid, keeping default.", "ERROR");
         }
     }
 
-    appLocale.reset(locale);
+    appLocale = std::move(locale);
 }
 
 void SharedData::initThemeManager()
@@ -329,9 +334,9 @@ void SharedData::initThemeManager()
     
     theme_manager->reloadThemes();
 
-    if(!theme_name.equalsIgnoreCase("default"))
+    if (!theme_name.equalsIgnoreCase("default"))
     {
-        if(!theme_manager->setCurrentTheme(theme_name))
+        if (!theme_manager->setCurrentTheme(theme_name))
         {
             juce::Logger::writeToLog("Theme '" + theme_name + "' is not valid, keeping default.");
         }

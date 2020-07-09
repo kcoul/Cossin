@@ -51,10 +51,12 @@ std::unique_ptr<Member> newParameter(Member *&member, Args &&...args)
 auto createSineTable() noexcept
 {
     std::array<float, Resolution_LookupTable + 1> table {};
-
-    for (int i = 0; i < table.size(); ++i)
+    constexpr int size = static_cast<std::size_t>(table.size());
+    
+    for (int i = 0; i < size; ++i)
     {
-        table[i] = std::sqrt(static_cast<float>(i) / 100.0f) * Const_SquarePanningCompensation;
+        table[static_cast<std::size_t>(i)] = std::sqrt(static_cast<float>(i) / 100.0f) *
+                                             Const_SquarePanningCompensation;
     }
     
     return table;
@@ -63,10 +65,12 @@ auto createSineTable() noexcept
 auto createSquareTable() noexcept
 {
     std::array<float, ::Resolution_LookupTable + 1> table {};
+    constexpr int size = static_cast<std::size_t>(table.size());
     
-    for (int i = 0; i < table.size(); ++i)
+    for (int i = 0; i < size; ++i)
     {
-        table[i] = std::sin((static_cast<float>(i) / 100.0f) * (Const_Pi / 2.0f)) * Const_SinePanningCompensation;
+        table[static_cast<std::size_t>(i)] = std::sin((static_cast<float>(i) / 100.0f) * (Const_Pi / 2.0f)) *
+                                             Const_SinePanningCompensation;
     }
     
     return table;
@@ -117,7 +121,7 @@ bool CossinAudioProcessor::isBusesLayoutSupported(const BusesLayout &layouts) co
     return main_bus == layouts.getMainInputChannelSet();
 }
 
-void CossinAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce::MidiBuffer &midi)
+void CossinAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce::MidiBuffer&)
 {
     juce::ScopedNoDenormals denormals;
 
@@ -172,7 +176,7 @@ void CossinAudioProcessor::getStateInformation(juce::MemoryBlock &destData)
         juce::ValueTree property_tree = state.getOrCreateChildWithName("Properties", nullptr);
 
         // Dump data
-        std::unique_ptr<juce::XmlElement> state_xml(std::move(state.createXml()));
+        std::unique_ptr<juce::XmlElement> state_xml(state.createXml());
         copyXmlToBinary(*state_xml, destData);
 
         // Store output debug information
@@ -236,7 +240,7 @@ float CossinAudioProcessor::calculatePanningGain(int panMode, int channel) const
     static auto SineLookupTable   = ::createSineTable();
     static auto SquareLookupTable = ::createSquareTable();
     
-    jassert(jaut::fit<int>(panMode, 0, res::List_PanModes.size()));
+    jassert(jaut::fit<int>(panMode, 0, res::List_PanningModes.size()));
 
     if (panMode == 0) // linear
     {
@@ -248,7 +252,8 @@ float CossinAudioProcessor::calculatePanningGain(int panMode, int channel) const
     {
         const int panning_p   = juce::roundToInt(parPanning->get() * 100.0f) + 100;
         const int table_index = channel == 0 ? 200 - panning_p : panning_p;
-        return panMode == 1 ? SquareLookupTable[table_index] : SineLookupTable[table_index];
+        return panMode == 1 ? SquareLookupTable[static_cast<std::size_t>(table_index)]
+                            : SineLookupTable  [static_cast<std::size_t>(table_index)];
     }
 }
 
@@ -257,14 +262,14 @@ juce::AudioProcessorValueTreeState::ParameterLayout CossinAudioProcessor::getPar
 {
     using Range = juce::NormalisableRange<float>;
     
-    const int last_panning_mode = res::List_PanModes.size()     - 1;
+    const int last_panning_mode = res::List_PanningModes.size() - 1;
     const int last_process_mode = res::List_ProcessModes.size() - 1;
     
     const jaut::Config &config  = sharedData->Configuration();
     const int default_pan_mode  = std::clamp<int>(config.getProperty(res::Prop_DefaultsPanningMode, res::Cfg_Defaults)
                                                   ->getValue(), 0, last_panning_mode);
-    const int default_processor = std::clamp<int>(config.getProperty(res::Prop_DefaultsProcessMode, res::Cfg_Defaults)
-                                                  ->getValue(), 0, last_process_mode);
+    //const int default_processor = std::clamp<int>(config.getProperty(res::Prop_DefaultsProcessMode, res::Cfg_Defaults)
+    //                                              ->getValue(), 0, last_process_mode);
     
     return {
         // Volume parameter
@@ -305,7 +310,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout CossinAudioProcessor::getPar
                        default_pan_mode, "",
                        [](int value, int maximumStringLength)
                        {
-                           return juce::String(res::List_PanModes[value]).substring(maximumStringLength);
+                           return juce::String(res::List_PanningModes[static_cast<std::size_t>(value)])
+                                        .substring(maximumStringLength);
                        })
     
         // TODO Processor mode parameter
