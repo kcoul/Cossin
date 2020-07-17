@@ -101,7 +101,7 @@ CossinAudioProcessorEditor::CossinAudioProcessorEditor(CossinAudioProcessor &p, 
                                                        const juce::String &gpuInfo)
     : processor(p), sourceMetre(metreSource), tooltipServer(this),
 #if COSSIN_USE_OPENGL
-      glContext(supportsOpenGl ? new juce::OpenGLContext() : nullptr),
+      glContext(supportsOpenGl ? new juce::OpenGLContext : nullptr),
 #endif
       buttonPanningLawSelection("ButtonPanningLawSelection", juce::DrawableButton::ImageRaw),
       buttonSettings("ButtonSettings", juce::DrawableButton::ButtonStyle::ImageRaw),
@@ -122,8 +122,8 @@ CossinAudioProcessorEditor::CossinAudioProcessorEditor(CossinAudioProcessor &p, 
         parent.setLookAndFeel(&lookAndFeel);
     )
     
-    initializeData(parent, gpuInfo);
-    initializeComponents();
+    initialiseData(parent, gpuInfo);
+    initialiseComponents();
     sliderDragEnded(&sliderTabControl);
     
     auto &pars = p.getParameterList();
@@ -177,14 +177,14 @@ CossinAudioProcessorEditor::~CossinAudioProcessorEditor()
 }
 
 //======================================================================================================================
-void CossinAudioProcessorEditor::initializeData(CossinMainEditorWindow &parent, juce::String gpuInfo)
+void CossinAudioProcessorEditor::initialiseData(CossinMainEditorWindow &parent, juce::String gpuInfo)
 {
-    if (initialized)
+    if (initialised)
     {
         return;
     }
     
-    initialized = true;
+    initialised = true;
     
     const SharedData::ReadLock lock(*sharedData);
     const jaut::Config &config = sharedData->Configuration();
@@ -217,7 +217,7 @@ void CossinAudioProcessorEditor::initializeData(CossinMainEditorWindow &parent, 
     reloadTheme (sharedData->ThemeManager().getCurrentTheme());
 }
 
-void CossinAudioProcessorEditor::initializeComponents()
+void CossinAudioProcessorEditor::initialiseComponents()
 {
     const juce::Slider::SliderStyle style_rotary = juce::Slider::RotaryHorizontalVerticalDrag;
     
@@ -304,7 +304,7 @@ void CossinAudioProcessorEditor::paint(juce::Graphics &g)
 
 void CossinAudioProcessorEditor::resized()
 {
-    if (!initialized)
+    if (!initialised)
     {
         return;
     }
@@ -684,6 +684,7 @@ void CossinAudioProcessorEditor::renderOpenGL()
 void CossinAudioProcessorEditor::openGLContextClosing()
 {}
 #endif
+//======================================================================================================================
 // endregion CossinAudioProcessorEditor
 //**********************************************************************************************************************
 // region CossinMainEditorWindow
@@ -692,7 +693,7 @@ CossinMainEditorWindow::CossinMainEditorWindow(CossinAudioProcessor &processor, 
     : AudioProcessorEditor(processor),
       processor(processor), metreSource(metreSource)
 {
-    initializeWindow();
+    initialiseWindow();
 
 #if COSSIN_USE_OPENGL
     testContext.setRenderer(this);
@@ -708,7 +709,7 @@ CossinMainEditorWindow::~CossinMainEditorWindow() = default;
 void CossinMainEditorWindow::resized()
 {
 #if COSSIN_USE_OPENGL
-    if (initialized)
+    if (initialised)
 #else
     if (editor)
 #endif
@@ -718,12 +719,12 @@ void CossinMainEditorWindow::resized()
 }
 
 //======================================================================================================================
-void CossinMainEditorWindow::initializeWindow()
+void CossinMainEditorWindow::initialiseWindow()
 {
     int window_width  = Const_WindowDefaultWidth;
     int window_height = Const_WindowDefaultHeight;
 
-    COSSIN_IS_STANDALONE({})
+    COSSIN_IS_STANDALONE()
     COSSIN_STANDALONE_ELSE
     (
         window_width  = processor.getWindowSize().getWidth();
@@ -746,14 +747,13 @@ void CossinMainEditorWindow::initializeWindow()
             window_max_height = user_area.getHeight();
         }
     }
-
+    
     setResizable(true, processor.wrapperType != juce::AudioProcessor::WrapperType::wrapperType_VST3);
     setResizeLimits(Const_WindowDefaultWidth, Const_WindowDefaultHeight, window_max_width, window_max_height);
     setSize(window_width, window_height);
 }
 
 #if COSSIN_USE_OPENGL
-//======================================================================================================================
 void CossinMainEditorWindow::newOpenGLContextCreated()
 {
     graphicsCardDetails = juce::String((char*) glGetString(GL_RENDERER));
@@ -768,7 +768,7 @@ void CossinMainEditorWindow::handleAsyncUpdate()
     bool is_supported = false;
 
 #if COSSIN_USE_OPENGL
-    if (initialized)
+    if (initialised)
     {
         return;
     }
@@ -787,7 +787,7 @@ void CossinMainEditorWindow::handleAsyncUpdate()
     addAndMakeVisible(editor.get());
 
 #if COSSIN_USE_OPENGL
-    initialized = true;
+    initialised = true;
 #endif
     resized();
 }

@@ -34,7 +34,6 @@
 #include "CossinDef.h"
 #include "PluginStyle.h"
 #include "OptionPanel.h"
-#include "ReloadListener.h"
 #include "AttachmentList.h"
 
 #include <bitset>
@@ -188,11 +187,11 @@ private:
     SCLabel labelMix;
     SCLabel labelPan;
     
-    bool initialized { false };
+    bool initialised { false };
     
     //==================================================================================================================
-    void initializeData(CossinMainEditorWindow&, juce::String);
-    void initializeComponents();
+    void initialiseData(CossinMainEditorWindow&, juce::String);
+    void initialiseComponents();
     
     //==================================================================================================================
     void paintBasicInterface(juce::Graphics&) const;
@@ -238,15 +237,14 @@ private:
     foleys::LevelMeterSource &metreSource;
     
 #if COSSIN_USE_OPENGL
-    juce::MessageManager::Lock messageManagerLock;
     juce::OpenGLContext testContext;
-    bool initialized { false };
+    bool initialised { false };
     std::atomic<bool> isSupported { false };
     juce::String graphicsCardDetails;
 #endif
 
     //==================================================================================================================
-    void initializeWindow();
+    void initialiseWindow();
 
     //==================================================================================================================
 #if COSSIN_USE_OPENGL

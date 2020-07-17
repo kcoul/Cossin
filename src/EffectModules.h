@@ -66,7 +66,7 @@ public:
     
     //==================================================================================================================
     std::unique_ptr<juce::Component> createComponent() override;
-    
-protected:
+
+private:
     juce::UndoManager &undoManager;
 };

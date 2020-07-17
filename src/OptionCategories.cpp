@@ -1192,8 +1192,11 @@ void OptionPanelPerformance::reloadTheme(const jaut::ThemePointer &theme)
     font = theme->getThemeFont();
     
     labelAnimations   .setFont(font);
-    labelQuality      .setFont(font);
     labelAnimationMode.setFont(font);
+
+#if COSSIN_USE_OPENGL
+    labelQuality.setFont(font);
+#endif
 }
 
 void OptionPanelPerformance::reloadConfig(const jaut::Config &config)
