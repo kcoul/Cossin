@@ -87,7 +87,7 @@ juce::Rectangle<float> MetreLookAndFeel::getMeterClipIndicatorBounds(juce::Recta
 juce::Rectangle<float> MetreLookAndFeel::getMeterMaxNumberBounds(juce::Rectangle<float> bounds,
                                                                  foleys::LevelMeter::MeterFlags) const
 {
-    return {0.0f, 36.0f, bounds.getWidth(), 14.0f};
+    return { 0.0f, 36.0f, bounds.getWidth(), 14.0f };
 }
 
 juce::Rectangle<float> MetreLookAndFeel::drawBackground(juce::Graphics &g, foleys::LevelMeter::MeterFlags,
@@ -174,7 +174,7 @@ void MetreLookAndFeel::drawMeterChannel(juce::Graphics &g, foleys::LevelMeter::M
 void MetreLookAndFeel::drawMeterChannelBackground(juce::Graphics &g, foleys::LevelMeter::MeterFlags meterType,
                                                   juce::Rectangle<float> bounds)
 {
-    juce::Rectangle<float> clip = getMeterClipIndicatorBounds(bounds, meterType);
+    juce::Rectangle<float> clip  = getMeterClipIndicatorBounds(bounds, meterType);
     juce::Rectangle<float> ticks = getMeterTickmarksBounds(bounds, meterType);
     juce::Rectangle<float> maxes = getMeterMaxNumberBounds(bounds, meterType);
 

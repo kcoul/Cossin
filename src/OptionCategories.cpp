@@ -1275,13 +1275,10 @@ OptionPanelStandalone::DevicePanel::DevicePanel(OptionPanelStandalone &panel)
     addAndMakeVisible(boxBufferSize);
     
     auto &types = deviceManager.getAvailableDeviceTypes();
-
-    if(types.size() > 0)
+    
+    for (int i = 0; i < types.size(); ++i)
     {
-        for (int i = 0; i < types.size(); ++i)
-        {
-            boxDevice.addItem(types.getUnchecked(i)->getTypeName(), i + 1);
-        }
+        boxDevice.addItem(types.getUnchecked(i)->getTypeName(), i + 1);
     }
 
     boxDevice.onChange = [this]()

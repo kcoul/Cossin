@@ -96,8 +96,7 @@ void sendStartupMessage(const PluginSession &session, juce::String gpuInfo)
 //**********************************************************************************************************************
 // region CossinAudioProcessorEditor
 //======================================================================================================================
-CossinAudioProcessorEditor::CossinAudioProcessorEditor(CossinAudioProcessor &p, juce::AudioProcessorValueTreeState &vts,
-                                                       FFAU::LevelMeterSource &metreSource,
+CossinAudioProcessorEditor::CossinAudioProcessorEditor(CossinAudioProcessor &p, FFAU::LevelMeterSource &metreSource,
                                                        CossinMainEditorWindow &parent, bool supportsOpenGl,
                                                        const juce::String &gpuInfo)
     : processor(p), sourceMetre(metreSource), tooltipServer(this),
@@ -127,13 +126,20 @@ CossinAudioProcessorEditor::CossinAudioProcessorEditor(CossinAudioProcessor &p, 
     initializeComponents();
     sliderDragEnded(&sliderTabControl);
     
-    parameterAttachments.attach(ParameterIds::MasterLevel,         vts, sliderLevel,      nullptr);
-    parameterAttachments.attach(ParameterIds::MasterMix,           vts, sliderMix,        nullptr);
-    parameterAttachments.attach(ParameterIds::MasterPan,           vts, sliderPanning,    nullptr);
-    parameterAttachments.attach(ParameterIds::PropertyPanningMode, vts, valuePanningMode, nullptr);
-    // TODO parameterAttachments.attach(ParameterIds::PropertyProcessMode, vts, valueProcessMode, nullptr);
+    auto &pars = p.getParameterList();
+    parameterAttachments.attach(*pars.getMainParameter(ParameterIds::MasterLevel),         sliderLevel,      nullptr);
+    parameterAttachments.attach(*pars.getMainParameter(ParameterIds::MasterMix),           sliderMix,        nullptr);
+    parameterAttachments.attach(*pars.getMainParameter(ParameterIds::MasterPan),           sliderPanning,    nullptr);
+    parameterAttachments.attach(*pars.getMainParameter(ParameterIds::PropertyPanningMode), valuePanningMode, nullptr);
+    
+    if (auto *const par = pars.getMainParameter(ParameterIds::PropertyProcessMode))
+    {
+        parameterAttachments.attach(*par, valueProcessMode, nullptr);
+    }
     
     sendLog("Done initializing Cossin.");
+    
+    sendLookAndFeelChange();
     resized();
 }
 
@@ -160,7 +166,8 @@ CossinAudioProcessorEditor::~CossinAudioProcessorEditor()
         getParentComponent()->setLookAndFeel(nullptr);
     )
 
-    JAUT_NDEBUGGING(if(sharedData->Configuration().getProperty(res::Prop_StandaloneLogToFile, res::Cfg_Standalone).getValue()
+    JAUT_NDEBUGGING(if(sharedData->Configuration().getProperty(res::Prop_StandaloneLogToFile, res::Cfg_Standalone)
+                                                  .getValue()
                        && juce::JUCEApplicationBase::isStandaloneApp()))
     {
         const juce::Logger *const logger_to_delete = juce::Logger::getCurrentLogger();
@@ -310,8 +317,8 @@ void CossinAudioProcessorEditor::resized()
     // Header
     const int header_tab_setting_w = 34;
     const int header_tab_setting_x = header.getRight() - header_tab_setting_w;
-    // const int header_process_w     = 102;
-    const int header_tab_process_w = 2; //TODO topUnitRackGui.getProcessorCount() * header_process_w;
+    const int header_process_w     = 102;
+    const int header_tab_process_w = CossinAudioProcessor::TopProcessorList::size * header_process_w;
     const int header_tab_process_x = header_tab_setting_x - header_tab_process_w;
 
     sliderTabControl.setBounds(header_tab_process_x, header.getY(), header_tab_process_w, header.getHeight());
@@ -345,7 +352,7 @@ void CossinAudioProcessorEditor::resized()
     
     optionsPanel.setBounds(options_x, body.getCentreY() - options_h / 2, ::Const_WindowDefaultWidth, options_h);
     
-    COSSIN_IS_STANDALONE({})
+    COSSIN_IS_STANDALONE()
     COSSIN_STANDALONE_ELSE
     (
         // Window sizing
@@ -455,9 +462,6 @@ void CossinAudioProcessorEditor::reloadTheme(const jaut::ThemePointer &theme)
         
         lookAndFeel.reset(theme);
         optionsPanel.reloadTheme(theme);
-        
-        sendLookAndFeelChange();
-        resized();
     }
     
     sendLog("Resources successfully reloaded.");
@@ -684,10 +688,9 @@ void CossinAudioProcessorEditor::openGLContextClosing()
 //**********************************************************************************************************************
 // region CossinMainEditorWindow
 //======================================================================================================================
-CossinMainEditorWindow::CossinMainEditorWindow(CossinAudioProcessor &processor, juce::AudioProcessorValueTreeState &vts,
-                                               foleys::LevelMeterSource &metreSource)
+CossinMainEditorWindow::CossinMainEditorWindow(CossinAudioProcessor &processor, foleys::LevelMeterSource &metreSource)
     : AudioProcessorEditor(processor),
-      processor(processor), vts(vts), metreSource(metreSource)
+      processor(processor), metreSource(metreSource)
 {
     initializeWindow();
 
@@ -769,19 +772,18 @@ void CossinMainEditorWindow::handleAsyncUpdate()
     {
         return;
     }
-
+    
     is_supported = isSupported.load();
     testContext.detach();
     testContext.setRenderer(nullptr);
 #endif
-    
     juce::String card_info = "n/a";
 
 #if COSSIN_USE_OPENGL
     card_info = graphicsCardDetails;
 #endif
-
-    editor = std::make_unique<CossinAudioProcessorEditor>(processor, vts, metreSource, *this, is_supported, card_info);
+    
+    editor = std::make_unique<CossinAudioProcessorEditor>(processor, metreSource, *this, is_supported, card_info);
     addAndMakeVisible(editor.get());
 
 #if COSSIN_USE_OPENGL

@@ -103,8 +103,8 @@ public:
     using AttachmentTypes = DefaultAttachmentList<AttachmentEntry<juce::Value, jaut::ValueParameterAttachment>>;
     
     //==================================================================================================================
-    CossinAudioProcessorEditor(CossinAudioProcessor&, juce::AudioProcessorValueTreeState&, foleys::LevelMeterSource&,
-                               CossinMainEditorWindow&, bool, const juce::String&);
+    CossinAudioProcessorEditor(CossinAudioProcessor&, foleys::LevelMeterSource&, CossinMainEditorWindow&, bool,
+                               const juce::String&);
     ~CossinAudioProcessorEditor() override;
     
     //==================================================================================================================
@@ -226,7 +226,7 @@ class CossinMainEditorWindow final : public juce::AudioProcessorEditor, private 
 #endif
 {
 public:
-    CossinMainEditorWindow(CossinAudioProcessor&, juce::AudioProcessorValueTreeState&, foleys::LevelMeterSource&);
+    CossinMainEditorWindow(CossinAudioProcessor&, foleys::LevelMeterSource&);
     ~CossinMainEditorWindow() override;
     
     //==================================================================================================================
@@ -235,9 +235,8 @@ public:
 private:
     std::unique_ptr<CossinAudioProcessorEditor> editor;
     CossinAudioProcessor &processor;
-    juce::AudioProcessorValueTreeState &vts;
     foleys::LevelMeterSource &metreSource;
-
+    
 #if COSSIN_USE_OPENGL
     juce::MessageManager::Lock messageManagerLock;
     juce::OpenGLContext testContext;

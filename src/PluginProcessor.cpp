@@ -25,7 +25,6 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-#include "CossinDef.h"
 #include "SharedData.h"
 #include "Resources.h"
 
@@ -33,30 +32,76 @@
 
 namespace
 {
+struct ProcInit
+{
+    //==================================================================================================================
+    using TopSet   = CossinAudioProcessor::TopProcessor;
+    using FrameSet = CossinAudioProcessor::FrameProcessor;
+    
+    //==================================================================================================================
+    template<class>
+    struct FrameInit;
+    
+    template<class ...Processors>
+    struct FrameInit<jaut::TypeArray<Processors...>>
+    {
+        ProcInit &procInit;
+        
+        //==============================================================================================================
+        explicit FrameInit(ProcInit &procInit)
+            : procInit(procInit)
+        {}
+        
+        //==============================================================================================================
+        auto operator()() -> typename FrameSet::ProcessorArray
+        {
+            // Automatic effect initialisation, doesn't need to be touched
+            return {
+                (FrameSet::template makeProcessor<Processors>(procInit.undoManager), ...)
+            };
+        }
+    };
+    
+    //==================================================================================================================
+    juce::UndoManager &undoManager;
+    
+    //==================================================================================================================
+    explicit ProcInit(juce::UndoManager &undoManager)
+        : undoManager(undoManager)
+    {}
+    
+    //==================================================================================================================
+    auto operator()() -> typename CossinAudioProcessor::TopProcessor::ProcessorArray
+    {
+        // TODO more processors
+        return {
+            TopSet::template makeProcessor<FrameSet>(FrameInit<CossinAudioProcessor::EffectProcessorList>(*this))
+        };
+    }
+};
+
 //======================================================================================================================
 inline constexpr float Const_Pi                        = 3.14159f;
 inline constexpr float Const_LinearPanningCompensation = 2.0f;
 inline constexpr float Const_SquarePanningCompensation = 1.41421356238f;
 inline constexpr float Const_SinePanningCompensation   = 1.41421356238f;
 
-inline constexpr int Resolution_LookupTable = 200;
-
 //======================================================================================================================
 template<class Member, class ...Args>
-std::unique_ptr<Member> newParameter(Member *&member, Args &&...args)
+juce::RangedAudioParameter* newParameter(Member *&member, const char *id, Args &&...args)
 {
-    return std::unique_ptr<Member>((member = new Member(std::forward<Args>(args)...)));
+    return (member = new Member(id, std::forward<Args>(args)...));
 }
 
 auto createSineTable() noexcept
 {
-    std::array<float, Resolution_LookupTable + 1> table {};
-    constexpr int size = static_cast<std::size_t>(table.size());
+    std::array<float, CossinAudioProcessor::Resolution_LookupTable + 1> table {};
+    constexpr int size = static_cast<array_size_type>(table.size());
     
     for (int i = 0; i < size; ++i)
     {
-        table[static_cast<std::size_t>(i)] = std::sqrt(static_cast<float>(i) / 100.0f) *
-                                             Const_SquarePanningCompensation;
+        table[static_cast<array_size_type>(i)] = std::sqrt(static_cast<float>(i) / 100.0f) *
+                                                 Const_SquarePanningCompensation;
     }
     
     return table;
@@ -64,13 +109,13 @@ auto createSineTable() noexcept
 
 auto createSquareTable() noexcept
 {
-    std::array<float, ::Resolution_LookupTable + 1> table {};
-    constexpr int size = static_cast<std::size_t>(table.size());
+    std::array<float, CossinAudioProcessor::Resolution_LookupTable + 1> table {};
+    constexpr int size = static_cast<array_size_type>(table.size());
     
     for (int i = 0; i < size; ++i)
     {
-        table[static_cast<std::size_t>(i)] = std::sin((static_cast<float>(i) / 100.0f) * (Const_Pi / 2.0f)) *
-                                             Const_SinePanningCompensation;
+        table[static_cast<array_size_type>(i)] = std::sin((static_cast<float>(i) / 100.0f) * (Const_Pi / 2.0f)) *
+                                                 Const_SinePanningCompensation;
     }
     
     return table;
@@ -80,7 +125,10 @@ auto createSquareTable() noexcept
 //======================================================================================================================
 CossinAudioProcessor::CossinAudioProcessor()
      : AudioProcessor(getDefaultBusesLayout()),
-       parameters(*this, nullptr, "CossinState", getParameters())
+       sineTable(::createSineTable()),
+       sqrtTable(::createSquareTable()),
+       processors(::ProcInit(undoManager)),
+       parameters(*this)
 {
     initialize();
 }
@@ -96,8 +144,8 @@ const juce::String CossinAudioProcessor::getName() const
 //======================================================================================================================
 void CossinAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
-    const float gain   = parGain->get();
-    const int pan_mode = parPanMode->get();
+    const float gain   = parameters.parGain   ->get();
+    const int pan_mode = parameters.parPanMode->get();
     previousGain[0]    = gain * calculatePanningGain(pan_mode, 0);
     previousGain[1]    = gain * calculatePanningGain(pan_mode, 1);
     
@@ -105,8 +153,7 @@ void CossinAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 }
 
 void CossinAudioProcessor::releaseResources()
-{
-}
+{}
 
 bool CossinAudioProcessor::isBusesLayoutSupported(const BusesLayout &layouts) const
 {
@@ -125,8 +172,8 @@ void CossinAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce::
 {
     juce::ScopedNoDenormals denormals;
 
-    const float gain   = parGain->get();
-    const int pan_mode = parPanMode->get();
+    const float gain   = parameters.parGain   ->get();
+    const int pan_mode = parameters.parPanMode->get();
     
     for (auto i = 0; i < buffer.getNumChannels(); ++i)
     {
@@ -154,122 +201,189 @@ bool CossinAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* CossinAudioProcessor::createEditor()
 {
-    return new CossinMainEditorWindow(*this, parameters, metreSource);
+    return new CossinMainEditorWindow(*this, metreSource);
 }
 
 //======================================================================================================================
 void CossinAudioProcessor::getStateInformation(juce::MemoryBlock &destData)
 {
-    juce::ValueTree state = parameters.copyState();
-
-    if (state.isValid())
+    juce::XmlElement plugin_state("Cossin");
+    
     {
-        COSSIN_IS_STANDALONE({})
-        COSSIN_STANDALONE_ELSE
-        (
-            // Gui data
-            state.setProperty("GuiWidth",  windowBounds.getWidth(), nullptr);
-            state.setProperty("GuiHeight", windowBounds.getHeight(), nullptr);
-        )
-
-        // Property data
-        juce::ValueTree property_tree = state.getOrCreateChildWithName("Properties", nullptr);
-
-        // Dump data
-        std::unique_ptr<juce::XmlElement> state_xml(state.createXml());
-        copyXmlToBinary(*state_xml, destData);
-
-        // Store output debug information
-      #ifdef JUCE_DEBUG
-        state_xml->writeTo(juce::File::getCurrentWorkingDirectory().getChildFile("../../plugin_state.xml"));
-      #endif
+        juce::XmlElement *const params_state = plugin_state.createNewChildElement("Parameters");
+        
+        // Main parameters
+        {
+            juce::XmlElement *const master_state = params_state->createNewChildElement("Master");
+            
+            for (auto &[key, par] : parameters.mainParameters)
+            {
+                juce::XmlElement *const parameter_state = master_state->createNewChildElement("Parameter");
+                parameter_state->setAttribute("id",    key);
+                parameter_state->setAttribute("value", par->getValue());
+            }
+        }
+        
+        // Macro parameters
+        {
+            juce::XmlElement *const macro_state = params_state->createNewChildElement("Macros");
+            
+            for (int i = 0; i < static_cast<int>(parameters.macroParameters.size()); ++i)
+            {
+                juce::XmlElement *const parameter_state = macro_state->createNewChildElement("Macro");
+                parameter_state->setAttribute("index", i);
+                parameter_state->setAttribute("value", parameters.macroParameters.at(static_cast<array_size_type>(i))
+                                                                 ->getValue());
+            }
+        }
     }
+    
+    COSSIN_IS_STANDALONE()
+    COSSIN_STANDALONE_ELSE
+    (
+        // Gui data
+        plugin_state.setAttribute("width",  windowBounds.getWidth());
+        plugin_state.setAttribute("height", windowBounds.getHeight());
+    )
+    
+    juce::ValueTree processor_state("Processors");
+    processors.writeData(processor_state);
+    plugin_state.addChildElement(processor_state.createXml().release());
+    
+    copyXmlToBinary(plugin_state, destData);
+
+#ifdef JUCE_DEBUG
+    // Store output debug information
+    plugin_state.writeTo(juce::File::getCurrentWorkingDirectory().getChildFile("../../plugin_state.xml"));
+#endif
 }
 
 void CossinAudioProcessor::setStateInformation(const void *data, int sizeInBytes)
 {
-    std::unique_ptr<juce::XmlElement> state_xml(getXmlFromBinary(data, sizeInBytes));
+    const std::unique_ptr<const juce::XmlElement> plugin_state(getXmlFromBinary(data, sizeInBytes));
 
-    if (state_xml.get() && state_xml->hasTagName(parameters.state.getType()))
+    if (plugin_state.get() && plugin_state->hasTagName("Cossin"))
     {
-        const juce::ValueTree state = juce::ValueTree::fromXml(*state_xml);
-
-        if (state.isValid())
+        if (const juce::XmlElement *const params_state = plugin_state->getChildByName("Parameters"))
         {
-            COSSIN_IS_STANDALONE()
-            COSSIN_STANDALONE_ELSE
-            (
-                // Gui data
-                windowBounds.setBounds(0, 0, state.getProperty("GuiWidth", -1), state.getProperty("GuiHeight", -1));
-            )
+            if (const juce::XmlElement *const master_state = params_state->getChildByName("Master"))
+            {
+                forEachXmlChildElement(*master_state, parameter_state)
+                {
+                    auto it = parameters.mainParameters.find(parameter_state->getStringAttribute("id", ""));
+                    
+                    if (it != parameters.mainParameters.end())
+                    {
+                        const auto value = static_cast<float>(parameter_state->getDoubleAttribute("value", 1.0));
+                        it->second->setValueNotifyingHost(value);
+                    }
+                }
+            }
             
-            // Contain data
-            parameters.replaceState(state);
+            if (const juce::XmlElement *const macro_state = params_state->getChildByName("Macros"))
+            {
+                forEachXmlChildElement(*macro_state, parameter_state)
+                {
+                    const auto index = static_cast<array_size_type>(parameter_state->getIntAttribute("index", -1));
+                    
+                    if (jaut::fit<int>(index, 0, Const_MaxMacros))
+                    {
+                        const auto value = static_cast<float>(parameter_state->getDoubleAttribute("value", 1.0));
+                        parameters.macroParameters.at(index)->setValueNotifyingHost(value);
+                    }
+                }
+            }
+        }
+        
+        COSSIN_IS_STANDALONE()
+        COSSIN_STANDALONE_ELSE
+        (
+            const int width  = plugin_state->getIntAttribute("width",  -1);
+            const int height = plugin_state->getIntAttribute("height", -1);
+            windowBounds.setBounds(0, 0, width, height);
+        )
+        
+        if (const juce::XmlElement *const processor_state_xml = plugin_state->getChildByName("Processors"))
+        {
+            const juce::ValueTree processor_state = juce::ValueTree::fromXml(*processor_state_xml);
+            processors.readData(processor_state);
         }
     }
 }
 
 //======================================================================================================================
-juce::Rectangle<int> &CossinAudioProcessor::getWindowSize() noexcept
+juce::Rectangle<int>& CossinAudioProcessor::getWindowSize() noexcept
 {
     return windowBounds;
+}
+
+CossinAudioProcessor::ParameterList& CossinAudioProcessor::getParameterList() noexcept
+{
+    return parameters;
 }
 
 //======================================================================================================================
 void CossinAudioProcessor::initialize()
 {
-    SharedData::ReadLock lock(*sharedData);
-
-    // Default init properties
-    const jaut::Config &config = sharedData->Configuration();
-    auto property_window_size  = config.getProperty("size", res::Cfg_Defaults);
-
-    COSSIN_IS_STANDALONE({})
-    COSSIN_STANDALONE_ELSE
-    (
-        windowBounds.setBounds(0, 0, property_window_size->getProperty("width") ->getValue(),
-                                     property_window_size->getProperty("height")->getValue());
-    )
-
+    {
+        SharedData::ReadLock lock(*sharedData);
+        
+        // Default init properties
+        const jaut::Config &config = sharedData->Configuration();
+        auto property_window_size = config.getProperty("size", res::Cfg_Defaults);
+        
+        COSSIN_IS_STANDALONE()
+        COSSIN_STANDALONE_ELSE
+        (
+            windowBounds.setBounds(0, 0, property_window_size->getProperty("width")->getValue(),
+                                         property_window_size->getProperty("height")->getValue());
+        )
+    }
+    
     // Misc
     metreSource.setMaxHoldMS(50);
 }
 
 float CossinAudioProcessor::calculatePanningGain(int panMode, int channel) const noexcept
 {
-    static auto SineLookupTable   = ::createSineTable();
-    static auto SquareLookupTable = ::createSquareTable();
-    
     jassert(jaut::fit<int>(panMode, 0, res::List_PanningModes.size()));
 
     if (panMode == 0) // linear
     {
-        const float panning_p    = parPanning->get() / 2.0f + 0.5f;
+        const float panning_p    = parameters.parPanning->get() / 2.0f + 0.5f;
         const float channel_mod  = channel == 0 ? 1.0f - panning_p : panning_p;
         return channel_mod * Const_LinearPanningCompensation;
     }
     else
     {
-        const int panning_p   = juce::roundToInt(parPanning->get() * 100.0f) + 100;
+        const int panning_p   = juce::roundToInt(parameters.parPanning->get() * 100.0f) + 100;
         const int table_index = channel == 0 ? 200 - panning_p : panning_p;
-        return panMode == 1 ? SquareLookupTable[static_cast<std::size_t>(table_index)]
-                            : SineLookupTable  [static_cast<std::size_t>(table_index)];
+        return panMode == 1 ? sqrtTable[static_cast<array_size_type>(table_index)]
+                            : sineTable[static_cast<array_size_type>(table_index)];
     }
 }
 
 //======================================================================================================================
-juce::AudioProcessorValueTreeState::ParameterLayout CossinAudioProcessor::getParameters()
+std::vector<juce::RangedAudioParameter*> CossinAudioProcessor::ParameterList::createMainParameters()
 {
     using Range = juce::NormalisableRange<float>;
     
+    //==================================================================================================================
     const int last_panning_mode = res::List_PanningModes.size() - 1;
     const int last_process_mode = res::List_ProcessModes.size() - 1;
     
-    const jaut::Config &config  = sharedData->Configuration();
-    const int default_pan_mode  = std::clamp<int>(config.getProperty(res::Prop_DefaultsPanningMode, res::Cfg_Defaults)
+    int default_pan_mode;
+    int default_processor;
+    
+    {
+        SharedData::ReadLock lock(*p.sharedData);
+        
+        const jaut::Config &config = p.sharedData->Configuration();
+        default_pan_mode  = std::clamp<int>(config.getProperty(res::Prop_DefaultsPanningMode, res::Cfg_Defaults)
                                                   ->getValue(), 0, last_panning_mode);
-    //const int default_processor = std::clamp<int>(config.getProperty(res::Prop_DefaultsProcessMode, res::Cfg_Defaults)
-    //                                              ->getValue(), 0, last_process_mode);
+        default_processor = std::clamp<int>(config.getProperty(res::Prop_DefaultsProcessMode, res::Cfg_Defaults)
+                                                  ->getValue(), 0, last_process_mode);
+    }
     
     return {
         // Volume parameter
@@ -310,17 +424,21 @@ juce::AudioProcessorValueTreeState::ParameterLayout CossinAudioProcessor::getPar
                        default_pan_mode, "",
                        [](int value, int maximumStringLength)
                        {
-                           return juce::String(res::List_PanningModes[static_cast<std::size_t>(value)])
-                                        .substring(maximumStringLength);
-                       })
-    
-        // TODO Processor mode parameter
-        /*::newParameter(parProcMode, ParameterIds::PropertyProcessMode, "Process mode", 0, last_process_mode,
-                       default_processor, "",
-                       [](int value, int maximumStringLength)
-                       {
-                           return juce::String(res::List_PanModes[value]).substring(maximumStringLength);
-                       })*/
+                           return juce::String(res::List_PanningModes[static_cast<array_size_type>(value)])
+                                                    .substring(maximumStringLength);
+                       }),
+                       
+        // Process mode
+        (last_process_mode <= 0
+             ? nullptr
+             : ::newParameter(parProcMode, ParameterIds::PropertyProcessMode, "Process mode", 0, last_process_mode,
+                              default_processor, "",
+                              [](int value, int maximumStringLength)
+                              {
+                                  return juce::String(res::List_ProcessModes[static_cast<array_size_type>(value)])
+                                                          .substring(maximumStringLength);
+                              })
+        )
     };
 }
 

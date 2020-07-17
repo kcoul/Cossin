@@ -9,6 +9,7 @@ target_link_libraries(Cossin PRIVATE PluginAssets)
 
 target_sources(Cossin PRIVATE
     CossinMain.cpp
+    EffectModules.cpp
     MetreLookAndFeel.cpp
     OptionCategories.cpp
     OptionPanel.cpp

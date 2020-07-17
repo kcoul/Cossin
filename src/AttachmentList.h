@@ -93,26 +93,6 @@ public:
                                                                        target, std::forward<Args>(args)...));
             }
         }
-    
-        template<class Target, class ...Args>
-        void attach(const juce::String &id, juce::AudioProcessorValueTreeState &vts, Target &target, Args &&...args)
-        {
-            static_assert(hasAttachmentFor<Target>, "No attachment type for the given target type was registered");
-    
-            if constexpr (hasAttachmentFor<Target>)
-            {
-                if (juce::RangedAudioParameter *const par = vts.getParameter(id))
-                {
-                    attach<Target, Args...>(*par, target, std::forward<Args>(args)...);
-                }
-                else
-                {
-                    DBG("Could not attach parameter '" << id << "', no such parameter was registered.");
-                    jassertfalse;
-                }
-            }
-        }
-        
     private:
         std::vector<std::unique_ptr<VariantType>> attachments;
     };

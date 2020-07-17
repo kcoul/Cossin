@@ -16,7 +16,7 @@
     Copyright (c) 2019 ElandaSunshine
     ===============================================================
     
-    @author Elanda (elanda@elandasunshine.xyz)
+    @author Elanda
     @file   EffectModuleGuis.h
     @date   25, December 2019
     
@@ -26,16 +26,7 @@
 #pragma once
 
 class EffectEqualizer;
-
-class EffectEqualizerGui final : public jaut::DspGui
+class EffectEqualizerGui : public juce::Component
 {
-public:
-    EffectEqualizerGui(EffectEqualizer&);
 
-    //==================================================================================================================
-    void paint(Graphics&) override;
-    void resized() override;
-
-private:
-    
 };

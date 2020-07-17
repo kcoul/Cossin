@@ -151,3 +151,5 @@ inline void sendLog(const juce::String &message, const juce::String &importance 
     
     juce::Logger::writeToLog(prependix + message);
 }
+
+using array_size_type = std::array<void*, 0>::size_type;

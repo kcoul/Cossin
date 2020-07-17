@@ -16,7 +16,7 @@
     Copyright (c) 2019 ElandaSunshine
     ===============================================================
     
-    @author Elanda (elanda@elandasunshine.xyz)
+    @author Elanda
     @file   EffectModules.h
     @date   24, December 2019
     
@@ -26,45 +26,47 @@
 #pragma once
 
 #include <jaut_audio/jaut_audio.h>
-#include <juce_audio_processors/juce_audio_processors.h>
 
-class EffectModule : public jaut::SfxUnit
+class CossinAudioProcessor;
+class EffectEqualiser : public jaut::SerialisableAudioProcessor
 {
 public:
-    EffectModule(DspUnit &unit, AudioProcessorValueTreeState &vts, UndoManager *undoManager = nullptr)
-        : SfxUnit(unit, vts, undoManager)
-    {}
-
+    enum class FilterType
+    {
+        LowPass,
+        HighPass,
+        LowShelf,
+        HighShelf,
+        Notch,
+        Bell
+    };
+    
+    struct Band
+    {
+        FilterType type;
+        float q;
+        float gain;
+        float frequency;
+    };
+    
     //==================================================================================================================
-    virtual Rectangle<int> getIconCoordinates() const = 0;
-    virtual Colour getColour() const = 0;
-};
-
-class EffectEqualizer final : public EffectModule
-{
-public:
-    EffectEqualizer(DspUnit&, AudioProcessorValueTreeState&, UndoManager*);
-
+    explicit EffectEqualiser(juce::UndoManager&) noexcept;
+    
     //==================================================================================================================
-    const String getName() const override { return "Equalizer"; }
-    bool hasEditor() const override { return true; }
-
+    juce::String getName() const noexcept override { return "Equalizer"; }
+    
     //==================================================================================================================
-    void processEffect(int index, AudioBuffer<float> &buffer,  MidiBuffer &midiBuffer) override;
-    void processEffect(int index, AudioBuffer<double> &buffer, MidiBuffer &midiBuffer) override;
-    void beginPlayback(int index, double sampleRate, int bufferSize) override;
-    void finishPlayback(int index) override;
-
+    void prepare(jaut::ProcessSpec) override;
+    void release() override;
+    void process(juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
+    
     //==================================================================================================================
-    std::vector<SfxParameter> createParameters() const override;
-    int getMaxInstances() const override { return 5; }
-    DataContext *getNewContext() const override;
-
+    void readData(juce::ValueTree) override;
+    void writeData(juce::ValueTree) override;
+    
     //==================================================================================================================
-    int getMaxBands() const noexcept { return 30; }
-    Rectangle<int> getIconCoordinates() const override { return {128, 0, 32, 32}; }
-    Colour getColour() const override { return Colour(255, 123, 59); }
-
-private:
-    jaut::DspGui *getGuiType() override;
+    std::unique_ptr<juce::Component> createComponent() override;
+    
+protected:
+    juce::UndoManager &undoManager;
 };

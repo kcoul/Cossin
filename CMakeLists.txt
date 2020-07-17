@@ -6,11 +6,27 @@ project(Cossin
     HOMEPAGE_URL "https://github.com/ElandaSunshine/Cossin"
     LANGUAGES    CXX)
 
+option(JUCE_LIB_LOCAL
+       "If on, it will point to the juce version inside the project root, otherwise will search for an installed package"
+       OFF)
+
 set(CMAKE_CXX_STANDARD            17)
 set(CMAKE_CXX_STANDARD_REQUIRED   ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-find_package(JUCE CONFIG REQUIRED)
+if(JUCE_LIB_LOCAL)
+    if(EXISTS "${PROJECT_SOURCE_DIR}/juce")
+        add_subdirectory(juce)
+    else()
+        message(FATAL_ERROR "Could not find any juce version at the root of this project folder")
+    endif()
+else()
+    find_package(JUCE CONFIG REQUIRED)
+
+    if(NOT JUCE_FOUND)
+        message(FATAL_ERROR "Could not find any juce package on your system")
+    endif()
+endif()
 
 juce_add_plugin(Cossin
     VERSION                  ${COSSIN_VERSION}
@@ -39,6 +55,7 @@ target_link_libraries(Cossin PRIVATE
     jaut::jaut_provider
     jaut::jaut_util
     jaut::jaut_audio
+    juce::juce_dsp
     juce::juce_recommended_warning_flags
     juce::juce_recommended_config_flags
     juce::juce_recommended_lto_flags

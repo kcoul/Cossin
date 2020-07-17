@@ -27,8 +27,13 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <ff_meters/ff_meters.h>
+#include <jaut_audio/jaut_audio.h>
+
+#include "CossinDef.h"
+#include "EffectModules.h"
 
 inline constexpr int Const_NumChannels = 2;
+inline constexpr int Const_MaxMacros   = 30;
 
 struct ParameterIds
 {
@@ -45,6 +50,93 @@ class SharedData;
 class CossinAudioProcessor final : public juce::AudioProcessor
 {
 public:
+    class ParameterList
+    {
+    public:
+        explicit ParameterList(CossinAudioProcessor &p)
+            : p(p)
+        {
+            {
+                auto macro_group = std::make_unique<juce::AudioProcessorParameterGroup>("macros", "Macros", "-");
+                
+                for (int i = 0; i < Const_MaxMacros; ++i)
+                {
+                    const juce::String macnr(i + 1);
+                    auto par = std::make_unique<juce::AudioParameterFloat>("macro_" + macnr, "Macro #" + macnr,
+                                                                           juce::NormalisableRange<float>(0.0f, 1.0f),
+                                                                           1.0f);
+                    
+                    macroParameters[static_cast<array_size_type>(i)] = par.get();
+                    macro_group->addChild(std::move(par));
+                }
+                
+                parGroupMacros = macro_group.get();
+                p.addParameterGroup(std::move(macro_group));
+            }
+            
+            for (auto &par : createMainParameters())
+            {
+                if (par)
+                {
+                    mainParameters.emplace(par->paramID, par);
+                    p.addParameter(par);
+                }
+            }
+        }
+    
+        //==============================================================================================================
+        juce::RangedAudioParameter* getMainParameter(const juce::String &id)
+        {
+            auto it = mainParameters.find(id);
+            return it != mainParameters.end() ? it->second : nullptr;
+        }
+        
+        juce::RangedAudioParameter* getMacroParameter(int index)
+        {
+            jassert(jaut::fit(index, 0, Const_MaxMacros));
+            return macroParameters.at(static_cast<array_size_type>(index));
+        }
+        
+    private:
+        friend class CossinAudioProcessor;
+        
+        //==============================================================================================================
+        CossinAudioProcessor &p;
+        
+        std::unordered_map<juce::String, juce::RangedAudioParameter*> mainParameters;
+        std::array<juce::RangedAudioParameter*, Const_MaxMacros>      macroParameters { nullptr };
+        
+        juce::AudioProcessorParameterGroup *parGroupMacros { nullptr };
+        juce::AudioParameterFloat          *parGain        { nullptr };
+        juce::AudioParameterFloat          *parPanning     { nullptr };
+        juce::AudioParameterFloat          *parMix         { nullptr };
+        juce::AudioParameterInt            *parPanMode     { nullptr };
+        juce::AudioParameterInt            *parProcMode    { nullptr };
+    
+        //==============================================================================================================
+        std::vector<juce::RangedAudioParameter*> createMainParameters();
+        
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ParameterList)
+    };
+    
+    //==================================================================================================================
+    using EffectProcessorList = jaut::TypeArray
+    <
+        EffectEqualiser
+    >;
+    
+    using TopProcessorList = jaut::TypeArray
+    <
+        EffectProcessorList::to<jaut::AudioProcessorSet>
+    >;
+    
+    using FrameProcessor = EffectProcessorList::to<jaut::AudioProcessorSet>;
+    using TopProcessor   = TopProcessorList   ::to<jaut::AudioProcessorSet>;
+    
+    //==================================================================================================================
+    static constexpr int Resolution_LookupTable = 200;
+    
+    //==================================================================================================================
     CossinAudioProcessor();
     ~CossinAudioProcessor() override;
     
@@ -63,7 +155,6 @@ public:
 
     //==================================================================================================================
     const juce::String getName() const override;
-    
     // region Unused
     bool   acceptsMidi() const override  { return false; }
     bool   producesMidi() const override { return false; }
@@ -84,30 +175,25 @@ public:
 
     //==================================================================================================================
     // GUI FUNCTIONS
-    juce::Rectangle<int> &getWindowSize() noexcept;
-
+    juce::Rectangle<int>& getWindowSize()    noexcept;
+    ParameterList&        getParameterList() noexcept;
+    
 private:
     static BusesProperties getDefaultBusesLayout()
     {
-        return BusesProperties()
-                   .withInput ("Input",     juce::AudioChannelSet::stereo())
-                   .withOutput("Output",    juce::AudioChannelSet::stereo())
-                   .withInput ("Sidechain", juce::AudioChannelSet::mono());
+        return BusesProperties().withInput ("Input",     juce::AudioChannelSet::stereo())
+                                .withOutput("Output",    juce::AudioChannelSet::stereo())
+                                .withInput ("Sidechain", juce::AudioChannelSet::mono());
     }
     
     //==================================================================================================================
+    std::array<float, Resolution_LookupTable + 1> sineTable;
+    std::array<float, Resolution_LookupTable + 1> sqrtTable;
     juce::SharedResourcePointer<SharedData> sharedData;
-    
-    juce::AudioParameterFloat *parGain     { nullptr };
-    juce::AudioParameterFloat *parPanning  { nullptr };
-    juce::AudioParameterFloat *parMix      { nullptr };
-    juce::AudioParameterInt   *parPanMode  { nullptr };
-    juce::AudioParameterInt   *parProcMode { nullptr };
-    
     juce::UndoManager undoManager;
+    TopProcessor processors;
+    ParameterList parameters;
     foleys::LevelMeterSource metreSource;
-    juce::AudioProcessorValueTreeState parameters;
-    
     float previousGain[Const_NumChannels] { 0.0f, 0.0f };
 
     //==================================================================================================================
@@ -118,9 +204,5 @@ private:
     void initialize();
     float calculatePanningGain(int, int) const noexcept;
     
-    //======================================================================================================================
-    juce::AudioProcessorValueTreeState::ParameterLayout getParameters();
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CossinAudioProcessor)
-
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CossinAudioProcessor)
 };
