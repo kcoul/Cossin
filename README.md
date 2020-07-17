@@ -1,4 +1,4 @@
-# ESAC-Cossin 
+# ES-Cossin 
 
 ESAC-Cossin is a multi-purpose effector plugin for creatives and artists made by ElandaSunshine.  
 It supports a wide range of effects and audio manipulation features.
