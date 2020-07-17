@@ -344,3 +344,4 @@ plugin*.xml
 cmake-build*
 compile_commands.json
 build/
+juce
