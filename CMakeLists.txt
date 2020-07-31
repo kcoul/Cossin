@@ -8,25 +8,10 @@ project(Cossin
 
 option(JUCE_LIB_LOCAL
        "If on, it will point to the juce version inside the project root, otherwise will search for an installed package"
-       OFF)
+       ON)
 
-set(CMAKE_CXX_STANDARD            17)
-set(CMAKE_CXX_STANDARD_REQUIRED   ON)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-if(${JUCE_LIB_LOCAL})
-    if(EXISTS "${PROJECT_SOURCE_DIR}/juce")
-        add_subdirectory(juce)
-    else()
-        message(FATAL_ERROR "Could not find any juce folder in the project root")
-    endif()
-else()
-    find_package(JUCE CONFIG REQUIRED)
-
-    if(NOT JUCE_FOUND)
-        message(FATAL_ERROR "Could not find any juce package on your system")
-    endif()
-endif()
+set(CMAKE_CXX_STANDARD          17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 juce_add_plugin(Cossin
     VERSION                  ${COSSIN_VERSION}
