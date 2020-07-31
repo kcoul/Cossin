@@ -22,6 +22,7 @@ juce_add_plugin(Cossin
     FORMATS                  VST3 Standalone
     VST3_CATEGORIES          "Fx")
 
+add_subdirectory(assets)
 add_subdirectory(externals)
 add_subdirectory(src)
 
