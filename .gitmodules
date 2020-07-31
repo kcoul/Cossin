@@ -6,11 +6,10 @@
 	path = externals/yaml-cpp
 	url = https://github.com/jbeder/yaml-cpp.git
 	branch = master
-[submodule "externals/modules/ff_meters"]
-	path = externals/modules/ff_meters
-	url = https://github.com/ffAudio/ff_meters.git
-	branch = master
 [submodule "externals/juce"]
 	path = externals/juce
 	url = https://github.com/juce-framework/juce.git
 	branch = develop
+[submodule "externals/ff_meters"]
+	path = externals/ff_meters
+	url = https://github.com/ffAudio/ff_meters.git
