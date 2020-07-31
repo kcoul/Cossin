@@ -27,6 +27,4 @@
 
 class EffectEqualizer;
 class EffectEqualizerGui : public juce::Component
-{
-
-};
+{};

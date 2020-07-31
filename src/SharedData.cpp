@@ -23,11 +23,13 @@
     ===============================================================
  */
 
-#include "Assets.h"
 #include "SharedData.h"
+
+#include "Assets.h"
 #include "PluginEditor.h"
-#include "ThemeFolder.h"
 #include "Resources.h"
+#include "ThemeFolder.h"
+#include "Util.h"
 
 #include <jaut_util/general/scopedcursor.h>
 
@@ -309,9 +311,9 @@ void SharedData::initLangs()
                                                        std::make_unique<jaut::Localisation>(*defaultLocale));
     const juce::String language_name = appConfig->getProperty("language").getValue().toString();
     
-    if(!language_name.equalsIgnoreCase("default"))
+    if (!language_name.equalsIgnoreCase("default"))
     {
-        if(!locale->setCurrentLanguageFromDirectory(language_name))
+        if (!locale->setCurrentLanguageFromDirectory(language_name))
         {
             sendLog("Language '" + language_name + "' is not valid, keeping default.", "ERROR");
         }

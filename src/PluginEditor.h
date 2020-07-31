@@ -25,16 +25,15 @@
 
 #pragma once
 
+#include "AttachmentList.h"
+#include "CossinDef.h"
+#include "OptionPanel.h"
+#include "PluginStyle.h"
+
 #include <ff_meters/ff_meters.h>
 #include <jaut_audio/jaut_audio.h>
 #include <jaut_provider/jaut_provider.h>
-#include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_opengl/juce_opengl.h>
-
-#include "CossinDef.h"
-#include "PluginStyle.h"
-#include "OptionPanel.h"
-#include "AttachmentList.h"
 
 #include <bitset>
 

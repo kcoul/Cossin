@@ -24,9 +24,12 @@
  */
 
 #include "PluginEditor.h"
+
 #include "PluginProcessor.h"
 #include "SharedData.h"
 #include "Resources.h"
+
+#include "Util.h"
 
 //**********************************************************************************************************************
 // region Namespace
@@ -50,10 +53,12 @@ void sendStartupMessage(const PluginSession &session, juce::String gpuInfo)
     {
         // Create logger
         const juce::String session_id = session.id.toDashedString();
-        const juce::String cpu_model = !juce::SystemStats::getCpuModel().isEmpty() ?
-                                       juce::SystemStats::getCpuModel() : "n/a";
-        const juce::String cpu_vendor = !juce::SystemStats::getCpuVendor().isEmpty() ?
-                                        " (" + juce::SystemStats::getCpuVendor() + ")" : "";
+        const juce::String cpu_model  = !juce::SystemStats::getCpuModel().isEmpty()
+                                            ? juce::SystemStats::getCpuModel()
+                                            : "n/a";
+        const juce::String cpu_vendor = !juce::SystemStats::getCpuVendor().isEmpty()
+                                            ? " (" + juce::SystemStats::getCpuVendor() + ")"
+                                            : "";
         const juce::String memory_size = juce::String(juce::SystemStats::getMemorySizeInMegabytes()) + "mb";
         
         if (!gpuInfo.containsNonWhitespaceChars())
@@ -62,23 +67,24 @@ void sendStartupMessage(const PluginSession &session, juce::String gpuInfo)
         }
         
         juce::String message;
-        message << "**********************************************************" << jaut::newLine
-                << "                        --Program--                       " << jaut::newLine
-                << "App:        " << res::App_Name << jaut::newLine
-                << "Version:    " << res::App_Version << jaut::newLine
-                << "Session-ID: " << session_id << jaut::newLine
-                << "**********************************************************" << jaut::newLine
-                << "                        --Machine--                       " << jaut::newLine
-                << "System:     " << juce::SystemStats::getOperatingSystemName() << jaut::newLine
-                << "Memory:     " << memory_size << jaut::newLine
-                << "CPU:        " << cpu_model << cpu_vendor << jaut::newLine
-                << "Graphics:   " << gpuInfo << jaut::newLine
-                << "**********************************************************" << jaut::newLine;
+        message << "**********************************************************"  << jaut::newLine
+                << "                        --Program--                       "  << jaut::newLine
+                << "App: " << res::App_Name                                      << jaut::newLine
+                << "Version: " << res::App_Version                               << jaut::newLine
+                << "Session-ID: " << session_id                                  << jaut::newLine
+                << "**********************************************************"  << jaut::newLine
+                << "                        --Machine--                       "  << jaut::newLine
+                << "System: " << juce::SystemStats::getOperatingSystemName()     << jaut::newLine
+                << "Memory: " << memory_size                                     << jaut::newLine
+                << "CPU: " << cpu_model << cpu_vendor                            << jaut::newLine
+                << "Graphics: " << gpuInfo                                       << jaut::newLine
+                << "**********************************************************"  << jaut::newLine;
         
-        JAUT_NDEBUGGING(if (sharedData->Configuration().getProperty("logToFile", res::Cfg_Standalone).getValue()
+        auto shared_data (SharedData::getInstance());
+        
+        JAUT_NDEBUGGING(if (shared_data->Configuration().getProperty("logToFile", res::Cfg_Standalone).getValue()
                             && juce::JUCEApplication::isStandaloneApp()))
         {
-            auto shared_data (SharedData::getInstance());
             const juce::File file = shared_data->AppData().dirDataLogs.getChildFile("session-" + session_id + ".log");
             
             if (file.getParentDirectory().exists())
@@ -87,7 +93,7 @@ void sendStartupMessage(const PluginSession &session, juce::String gpuInfo)
             }
         }
         
-        sendLog(message);
+        juce::Logger::writeToLog(message);
     }
 }
 }

@@ -25,12 +25,11 @@
 
 #pragma once
 
-#include <juce_audio_processors/juce_audio_processors.h>
-#include <ff_meters/ff_meters.h>
-#include <jaut_audio/jaut_audio.h>
-
 #include "CossinDef.h"
 #include "EffectModules.h"
+
+#include <ff_meters/ff_meters.h>
+#include <jaut_audio/jaut_audio.h>
 
 inline constexpr int Const_NumChannels = 2;
 inline constexpr int Const_MaxMacros   = 30;
@@ -66,7 +65,7 @@ public:
                                                                            juce::NormalisableRange<float>(0.0f, 1.0f),
                                                                            1.0f);
                     
-                    macroParameters[static_cast<array_size_type>(i)] = par.get();
+                    macroParameters[static_cast<jaut::SizeTypes::Array>(i)] = par.get();
                     macro_group->addChild(std::move(par));
                 }
                 
@@ -94,7 +93,7 @@ public:
         juce::RangedAudioParameter* getMacroParameter(int index)
         {
             jassert(jaut::fit(index, 0, Const_MaxMacros));
-            return macroParameters.at(static_cast<array_size_type>(index));
+            return macroParameters.at(static_cast<jaut::SizeTypes::Array>(index));
         }
         
     private:
@@ -120,18 +119,10 @@ public:
     };
     
     //==================================================================================================================
-    using EffectProcessorList = jaut::TypeArray
-    <
-        EffectEqualiser
-    >;
-    
-    using TopProcessorList = jaut::TypeArray
-    <
-        EffectProcessorList::to<jaut::AudioProcessorSet>
-    >;
-    
-    using FrameProcessor = EffectProcessorList::to<jaut::AudioProcessorSet>;
-    using TopProcessor   = TopProcessorList   ::to<jaut::AudioProcessorSet>;
+    using EffectProcessorList = jaut::TypeArray<EffectEqualiser>;
+    using TopProcessorList    = jaut::TypeArray<EffectProcessorList::to<jaut::AudioProcessorSet>>;
+    using FrameProcessor      = EffectProcessorList::to<jaut::AudioProcessorSet>;
+    using TopProcessor        = TopProcessorList   ::to<jaut::AudioProcessorSet>;
     
     //==================================================================================================================
     static constexpr int Resolution_LookupTable = 200;
@@ -139,9 +130,6 @@ public:
     //==================================================================================================================
     CossinAudioProcessor();
     ~CossinAudioProcessor() override;
-    
-    //==================================================================================================================
-    using juce::AudioProcessor::processBlock;
     
     //==================================================================================================================
     void prepareToPlay(double, int) override;
@@ -191,8 +179,8 @@ private:
     std::array<float, Resolution_LookupTable + 1> sqrtTable;
     juce::SharedResourcePointer<SharedData> sharedData;
     juce::UndoManager undoManager;
-    TopProcessor processors;
     ParameterList parameters;
+    TopProcessor processors;
     foleys::LevelMeterSource metreSource;
     float previousGain[Const_NumChannels] { 0.0f, 0.0f };
 

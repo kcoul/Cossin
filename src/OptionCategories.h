@@ -29,15 +29,14 @@
 #include <juce_audio_devices/juce_audio_devices.h>
 #include <juce_opengl/juce_opengl.h>
 
-#include "ReloadListener.h"
-#include "Resources.h"
 #include "CossinDef.h"
+#include "Resources.h"
 #include "SCLabel.h"
 
 class CossinAudioProcessorEditor;
 class SharedData;
 
-class OptionCategory : public juce::Component, public ReloadListener
+class OptionCategory : public juce::Component
 {
 public:
     explicit OptionCategory(CossinAudioProcessorEditor &editor) : editor(editor) {}
@@ -51,9 +50,9 @@ public:
     virtual void loadState(const SharedData&) = 0;
     
     //==================================================================================================================
-    void reloadConfig(const jaut::Config&)       override {}
-    void reloadTheme (const jaut::ThemePointer&) override {}
-    void reloadLocale(const jaut::Localisation&) override {}
+    virtual void reloadConfig(const jaut::Config&) {}
+    virtual void reloadTheme (const jaut::ThemePointer&) {}
+    virtual void reloadLocale(const jaut::Localisation&) {}
     
 protected:
     CossinAudioProcessorEditor &editor;

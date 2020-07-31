@@ -16,7 +16,7 @@
     Copyright (c) 2019 ElandaSunshine
     ===============================================================
     
-    @author Elanda (elanda@elandasunshine.xyz)
+    @author Elanda
     @file   SharedData.h
     @date   05, October 2019
     
@@ -25,7 +25,6 @@
 
 #pragma once
 
-#include <juce_events/juce_events.h>
 #include <jaut_provider/jaut_provider.h>
 
 class CossinAudioProcessorEditor;

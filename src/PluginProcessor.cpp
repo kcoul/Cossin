@@ -24,6 +24,7 @@
  */
 
 #include "PluginProcessor.h"
+
 #include "PluginEditor.h"
 #include "SharedData.h"
 #include "Resources.h"
@@ -96,12 +97,12 @@ juce::RangedAudioParameter* newParameter(Member *&member, const char *id, Args &
 auto createSineTable() noexcept
 {
     std::array<float, CossinAudioProcessor::Resolution_LookupTable + 1> table {};
-    constexpr int size = static_cast<array_size_type>(table.size());
+    constexpr int size = static_cast<jaut::SizeTypes::Array>(table.size());
     
     for (int i = 0; i < size; ++i)
     {
-        table[static_cast<array_size_type>(i)] = std::sqrt(static_cast<float>(i) / 100.0f) *
-                                                 Const_SquarePanningCompensation;
+        table[static_cast<jaut::SizeTypes::Array>(i)] = std::sqrt(static_cast<float>(i) / 100.0f) *
+                                                        Const_SquarePanningCompensation;
     }
     
     return table;
@@ -110,12 +111,12 @@ auto createSineTable() noexcept
 auto createSquareTable() noexcept
 {
     std::array<float, CossinAudioProcessor::Resolution_LookupTable + 1> table {};
-    constexpr int size = static_cast<array_size_type>(table.size());
+    constexpr int size = static_cast<jaut::SizeTypes::Array>(table.size());
     
     for (int i = 0; i < size; ++i)
     {
-        table[static_cast<array_size_type>(i)] = std::sin((static_cast<float>(i) / 100.0f) * (Const_Pi / 2.0f)) *
-                                                 Const_SinePanningCompensation;
+        table[static_cast<jaut::SizeTypes::Array>(i)] = std::sin((static_cast<float>(i) / 100.0f) * (Const_Pi / 2.0f))
+                                                        * Const_SinePanningCompensation;
     }
     
     return table;
@@ -127,8 +128,8 @@ CossinAudioProcessor::CossinAudioProcessor()
      : AudioProcessor(getDefaultBusesLayout()),
        sineTable(::createSineTable()),
        sqrtTable(::createSquareTable()),
-       processors(::ProcInit(undoManager)),
-       parameters(*this)
+       parameters(*this),
+       processors(::ProcInit(undoManager))
 {
     initialize();
 }
@@ -232,8 +233,9 @@ void CossinAudioProcessor::getStateInformation(juce::MemoryBlock &destData)
             {
                 juce::XmlElement *const parameter_state = macro_state->createNewChildElement("Macro");
                 parameter_state->setAttribute("index", i);
-                parameter_state->setAttribute("value", parameters.macroParameters.at(static_cast<array_size_type>(i))
-                                                                 ->getValue());
+                parameter_state->setAttribute("value",
+                                              parameters.macroParameters.at(static_cast<jaut::SizeTypes::Array>(i))
+                                                        ->getValue());
             }
         }
     }
@@ -284,7 +286,8 @@ void CossinAudioProcessor::setStateInformation(const void *data, int sizeInBytes
             {
                 forEachXmlChildElement(*macro_state, parameter_state)
                 {
-                    const auto index = static_cast<array_size_type>(parameter_state->getIntAttribute("index", -1));
+                    const auto index = static_cast<jaut::SizeTypes::Array>(parameter_state
+                                                                           ->getIntAttribute("index", -1));
                     
                     if (jaut::fit<int>(index, 0, Const_MaxMacros))
                     {
@@ -358,8 +361,8 @@ float CossinAudioProcessor::calculatePanningGain(int panMode, int channel) const
     {
         const int panning_p   = juce::roundToInt(parameters.parPanning->get() * 100.0f) + 100;
         const int table_index = channel == 0 ? 200 - panning_p : panning_p;
-        return panMode == 1 ? sqrtTable[static_cast<array_size_type>(table_index)]
-                            : sineTable[static_cast<array_size_type>(table_index)];
+        return panMode == 1 ? sqrtTable[static_cast<jaut::SizeTypes::Array>(table_index)]
+                            : sineTable[static_cast<jaut::SizeTypes::Array>(table_index)];
     }
 }
 
@@ -424,7 +427,7 @@ std::vector<juce::RangedAudioParameter*> CossinAudioProcessor::ParameterList::cr
                        default_pan_mode, "",
                        [](int value, int maximumStringLength)
                        {
-                           return juce::String(res::List_PanningModes[static_cast<array_size_type>(value)])
+                           return juce::String(res::List_PanningModes[static_cast<jaut::SizeTypes::Array>(value)])
                                                     .substring(maximumStringLength);
                        }),
                        
@@ -435,7 +438,7 @@ std::vector<juce::RangedAudioParameter*> CossinAudioProcessor::ParameterList::cr
                               default_processor, "",
                               [](int value, int maximumStringLength)
                               {
-                                  return juce::String(res::List_ProcessModes[static_cast<array_size_type>(value)])
+                                  return juce::String(res::List_ProcessModes[static_cast<jaut::SizeTypes::Array>(value)])
                                                           .substring(maximumStringLength);
                               })
         )

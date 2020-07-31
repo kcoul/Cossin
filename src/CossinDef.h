@@ -16,7 +16,7 @@
     Copyright (c) 2019 ElandaSunshine
     ===============================================================
     
-    @author Elanda (elanda@elandasunshine.xyz)
+    @author Elanda
     @file   PluginEditor.cpp
     @date   05, October 2019
 
@@ -25,9 +25,7 @@
 
 #pragma once
 
-#include <juce_events/juce_events.h>
-
-#if JUCE_OPENGL && !defined(COSSIN_USE_OPENGL)
+#if !defined(COSSIN_USE_OPENGL)
     #define COSSIN_USE_OPENGL 1
 #endif
 
@@ -132,24 +130,3 @@
      */
     #define COSSIN_STANDALONE_ELSE(x) else {x}
 #endif
-
-inline void sendLog(const juce::String &message, const juce::String &importance = "INFO")
-{
-#if !JUCE_DEBUG
-    if (!juce::Logger::getCurrentLogger())
-    {
-        return;
-    }
-#endif
-
-    const juce::Time   time        = juce::Time::getCurrentTime();
-    const juce::String thread_name = juce::MessageManager::getInstance()->isThisTheMessageThread() ? "MESSAGE"
-                                                                                                   : "OTHER";
-    
-    juce::String prependix;
-    prependix << "[" << time.toString(false, true) << "]" << "[" << thread_name << "/" << importance << "] ";
-    
-    juce::Logger::writeToLog(prependix + message);
-}
-
-using array_size_type = std::array<void*, 0>::size_type;
