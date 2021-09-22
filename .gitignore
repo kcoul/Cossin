@@ -344,3 +344,6 @@ plugin*.xml
 cmake-build*
 compile_commands.json
 build/
+
+#macOS
+.DS_Store

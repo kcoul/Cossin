@@ -37,7 +37,7 @@
 //======================================================================================================================
 namespace
 {
-inline constexpr int getAuthorPosY(int maxLineWidth, float descriptionLength) noexcept
+inline int getAuthorPosY(int maxLineWidth, float descriptionLength) noexcept
 {
     return 16 * std::min(static_cast<int>(std::ceil(descriptionLength / static_cast<float>(maxLineWidth))), 3);
 }

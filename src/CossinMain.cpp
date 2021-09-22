@@ -46,7 +46,9 @@ namespace
                                                                        locale.translate(message),
                                                                        locale.translate("alert.yes"),
                                                                        locale.translate("alert.no"),
-                                                                       locale.translate("alert.cancel"));
+                                                                       locale.translate("alert.cancel"),
+                                                                       nullptr,
+                                                                       nullptr);
         
         return result;
     }
@@ -507,8 +509,10 @@ bool CossinPluginWrapper::savePluginState(bool askToSave, bool askIfNotSuccessfu
     }
     else if (notifyOnFail)
     {
-        juce::AlertWindow::showMessageBox(juce::AlertWindow::NoIcon, locale.translate("state.save.fail.title"),
-                                          locale.translate("state.save.fail.text"), locale.translate("alert.ok"));
+        juce::AlertWindow::showMessageBoxAsync(juce::AlertWindow::NoIcon,
+                                          locale.translate("state.save.fail.title"),
+                                          locale.translate("state.save.fail.text"),
+                                          locale.translate("alert.ok"));
 
         return false;
     }
@@ -563,8 +567,10 @@ bool CossinPluginWrapper::reloadPluginState(bool askToLoad, bool askIfNotSuccess
     }
     else if (notifyOnFail)
     {
-        juce::AlertWindow::showMessageBox(juce::AlertWindow::NoIcon, locale.translate("state.load.fail.title"),
-                                          locale.translate("state.load.fail.text"), locale.translate("alert.ok"));
+        juce::AlertWindow::showMessageBoxAsync(juce::AlertWindow::NoIcon,
+                                               locale.translate("state.load.fail.title"),
+                                               locale.translate("state.load.fail.text"),
+                                               locale.translate("alert.ok"));
         return false;
     }
 

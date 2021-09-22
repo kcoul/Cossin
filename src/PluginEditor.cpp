@@ -753,7 +753,7 @@ void CossinMainEditorWindow::initializeWindow()
 //======================================================================================================================
 void CossinMainEditorWindow::newOpenGLContextCreated()
 {
-    graphicsCardDetails = juce::String((char*) glGetString(GL_RENDERER));
+    graphicsCardDetails = juce::String((char*) juce::gl::glGetString(juce::gl::GL_RENDERER));
     isSupported.store(testContext.extensions.glActiveTexture != nullptr);
     triggerAsyncUpdate();
 }
